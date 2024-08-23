@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+    <style>
+        /* Responsive Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .content-main {
+            padding: 20px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-form input {
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .search-form button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 4px;
+            color: #fff;
+        }
+
+        .badge-success {
+            background-color: #28a745;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+        }
+
+        .badge-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 5px; /* Spacing between buttons */
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: #fff;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        img.thumbnail {
+            width: 100px; /* Thumbnail size */
+            height: 100px;
+            object-fit: cover;
+            cursor: pointer;
+            margin-right: 5px;
+            border: 2px solid #ddd;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination-container a {
+            padding: 10px 15px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            color: #007bff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .pagination-container a.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.8); /* Black with opacity */
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%; /* Adjust to control size */
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 4px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+
+        #caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+        }
+
+        /* Center image in modal */
+        .modal-content {
+            display: block;
+            margin: auto;
+        }
+
+        /* Responsive design for smaller devices */
+        @media screen and (max-width: 768px) {
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            table th, table td {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .search-form input, .search-form button {
+                font-size: 14px;
+            }
+
+            .modal-content {
+                width: 90%;
+                max-width: 100%;
+                max-height: 90%;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+                margin-bottom: 5px; /* Spacing for stacked buttons */
+            }
+
+            .pagination-container a {
+                padding: 8px 12px;
+                margin: 0 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/admin/header') %>
+
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Product List</h2>
+            <div>
+                <a href="/admin/add-products" class="btn btn-primary">Add Product</a>
+            </div>
+            <form class="search-form" action="/admin/products" method="get">
+                <input type="text" name="search" placeholder="Search products..." value="<%= searchQuery %>">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <!-- Display Success or Error Messages -->
+        <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+
+        <!-- Product List -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Regular Price</th>
+                    <th>Sale Price</th>
+                    <th>Offer</th>
+                    <th>Status</th>
+                    <th>Quantity</th>
+                    <th>Images</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(function(product) { %>
+                    <tr>
+                        <td><%= product.productName %></td>
+                        <td><%= product.description %></td>
+                        <td><%= product.brand %></td>
+                        <td>
+                            <% if (product.categoryId) { %>
+                                <%= product.categoryId.categoryName || 'No Category' %>
+                            <% } else { %>
+                                No Category
+                            <% } %>
+                        </td>
+                        <td><%= product.regularPrice %></td>
+                        <td><%= product.salePrice %></td>
+                        <td><%= product.productOffer ? (product.productOffer + '%') : 'No offer' %></td>
+                        <td>
+                            <% if (product.is_blocked) { %>
+                                <span class="badge badge-danger">Blocked</span>
+                            <% } else { %>
+                                <span class="badge badge-warning">Listed</span>
+                            <% } %>
+                        </td>
+                        <td><%= product.quantity %></td>
+                        <td>
+                            <% if (product.productImages.length > 0) { %>
+                                <% product.productImages.forEach(function(image) { %>
+                                    <img src="<%= image %>" alt="Product Image" class="thumbnail">
+                                <% }) %>
+                            <% } else { %>
+                                No images
+                            <% } %>
+                        </td>
+                        <td>
+                            <a href="/admin/edit-product/<%= product._id %>" data-id="<%= product._id %>" class="btn btn-info edit-product">Edit</a>
+                            <% if (product.is_blocked) { %>
+                                <a href="/admin/unblock-product?id=<%= product._id  %>" data-id="<%= product._id %>" class="btn btn-success unblock-product">Unblock</a>
+                            <% } else { %>
+                                <a href="/admin/block-product?id=<%= product._id  %>" data-id="<%= product._id %>" class="btn btn-danger block-product">Block</a>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-container">
+            <% for (let i = 1; i <= totalPage; i++) { %>
+                <a href="?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+        </div>
+    </section>
+
+    <%- include('../../partials/admin/footer') %>
+
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.block-product').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const productId = button.getAttribute('data-id');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You are about to block this product!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, block it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `/admin/block-product?id=${productId}`;
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.unblock-product').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const productId = button.getAttribute('data-id');
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'You are about to unblock this product!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, unblock it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `/admin/unblock-product?id=${productId}`;
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll('.edit-product').forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const productId = button.getAttribute('data-id');
+                    Swal.fire({
+                        title: 'Edit Product',
+                        text: 'Are you sure you want to edit this product?',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, edit it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = `/admin/edit-product/${productId}`;
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

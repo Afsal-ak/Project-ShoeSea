@@ -1,0 +1,83 @@
+body {
+    font-family: 'Crimson Pro', serif; /* Set font to Crimson Pro */
+    background-color: #F7F5F0; /* White background for the page */
+    display: flex; /* Use Flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 100vh; /* Use full viewport height */
+    margin: 0; /* Remove default margin */
+}
+.box {
+    background-color: #EAEAEA; /* Yellow background for the login box */
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 400px; /* Maximum width of the login box */
+    width: 100%; /* Full width on smaller screens */
+    position: relative; /* Allow positioning of the circle */
+}
+.circle {
+    width: 20px; /* Size of the circle */
+    height: 20px; /* Size of the circle */
+    background-color: black; /* Circle color */
+    border-radius: 50%; /* Make it a circle */
+    position: absolute; /* Position it relative to the box */
+    top: -8px; /* Position from the top */
+    left: -11px; /* Position from the left */
+}
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+h3 {
+    color: red;
+    text-align: center;
+}
+h4.text-danger {
+    color: red;
+}
+input[type="text"], input[type="email"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    background-color: #ffffff; /* White input fields */
+    color: black; /* Black text color in input fields */
+}
+input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: black; /* Black background for submit button */
+    color: white; /* White text color for submit button */
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+input[type="submit"]:hover {
+    background-color: #444; /* Darker shade of black on hover */
+}
+.remember-me {
+    display: flex;
+    align-items: center; /* Align checkbox and label vertically */
+    justify-content: space-between; /* Space between checkbox and link */
+    margin-bottom: 10px;
+}
+.remember-me label {
+    margin-left: 5px; /* Space between checkbox and label */
+    text-align: left; /* Aligns text to the left */
+}
+h5 {
+    text-align: center;
+}
+h6 {
+    text-align: center;
+    margin: 10px 0; /* Added margin for spacing */
+    color: black; /* Text color for the link */
+}
+h6 a {
+    text-decoration: none; /* Remove underline from the link */
+    color: red; /* Set link color to red */
+}
+h6 a:hover {
+    text-decoration: none; /* Keep no underline on hover */
+}

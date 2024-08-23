@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <style>
+        .profile-header {
+            margin-bottom: 2rem;
+        }
+        .address-list {
+            margin-top: 2rem;
+        }
+        .address-item {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/user/header') %>
+    <div class="container">
+        <div class="profile-header">
+            <h1 class="mb-4">Welcome, <%= user.username %></h1>
+            <p>Username: <%= user.username %></p>
+            <p>Email: <%= user.email %></p>
+            <p>Phone: <%= user.number %></p>
+            <a href="/add-address" class="btn btn-primary">Add Address</a>
+        </div>
+
+        <!-- Display Flash Messages -->
+        <% if (success_msg) { %>
+            <div class="alert alert-success">
+                <%= success_msg %>
+            </div>
+        <% } %>
+        <% if (error_msg) { %>
+            <div class="alert alert-danger">
+                <%= error_msg %>
+            </div>
+        <% } %>
+
+        <!-- Edit User Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                <form action="/update-profile" method="POST">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" name="number" value="<%= user.number %>" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Change Password</h4>
+            </div>
+            <div class="card-body">
+                <form action="/change-password" method="POST">
+                    <div class="mb-3">
+                        <label for="current-password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current-password" name="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new-password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new-password" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm-password" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm-password" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="address-list">
+            <h2>Your Addresses</h2>
+            <ul class="list-unstyled">
+                <% addresses.forEach(address => { %>
+                    <li class="address-item">
+                        <p><strong><%= address.fname %> <%= address.lname %></strong></p>
+                        <p><%= address.housename %>, <%= address.city %>, <%= address.state %>, <%= address.country %> - <%= address.pincode %></p>
+                        <p>Phone: <%= address.phone %></p>
+                        <a href="/edit-address/<%= address._id %>" class="btn btn-secondary">Edit</a>
+                        <a href="/delete-address/<%= address._id %>" class="btn btn-danger">Delete</a>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+    <%- include('../partials/user/footer') %>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

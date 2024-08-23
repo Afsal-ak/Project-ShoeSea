@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Home Decor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/maind134.css?v=3.4">
+    <link href="/assets/css/userstyle.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .header-area .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-area .logo img {
+            height: 2rem;
+            width: 2rem;
+        }
+
+        .header-area .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+
+        .header-nav ul li {
+            margin: 0 10px;
+        }
+
+        .header-nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        .dashboard-menu {
+            padding: 10px;
+            background-color: #f4f4f4;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dashboard-menu ul li {
+            margin-bottom: 10px;
+        }
+
+        .dashboard-menu ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .dashboard-menu ul li a:hover {
+            background-color: #e2e2e2;
+        }
+
+        .dashboard-content .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .dashboard-content .card-header {
+            padding: 15px;
+            background-color: #f4f4f4;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dashboard-content .card-body {
+            padding: 20px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .text-danger {
+            color: red;
+        }
+
+        .text-success {
+            color: green;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-fill-out {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-fill-out:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav ul {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-nav ul li {
+                margin: 5px 0;
+            }
+
+            .dashboard-menu {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .header-area .logo {
+                justify-content: center;
+            }
+
+            .header-nav {
+                display: none;
+            }
+
+            .dashboard-menu ul li a {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .dashboard-content .card-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header-area header-style-5">
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class="logo">
+                        <a href="/"><img src="/assets/images/blue-house-icon-isolated.jpg" alt="logo"></a>
+                        <p style="font-weight: bold;">Home Decor</p>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <nav>
+                            <ul>
+                                <li><a href="/">Home</a></li>
+                                <li><a href="/shop">Shop</a></li>
+                                <li><a href="/cart">Cart</a></li>
+                                <li><a href="/userAccount">Profile</a></li>
+                                <li><a href="/wishlist">Wishlist</a></li>
+                                <li><a href="/wallet">Wallet</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/" rel="nofollow">Home</a>
+                    <span></span> Account
+                </div>
+            </div>
+        </div>
+        <section class="pt-70 pb-170">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 m-auto">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="dashboard-menu">
+                                    <ul class="nav flex-column" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link1 active" id="dashboard-tab" href="#dashboard" role="tab"
+                                                aria-controls="dashboard" aria-selected="false">Dashboard</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" id="orders-tab" href="#orders" role="tab"
+                                                aria-controls="orders" aria-selected="false">Orders</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" id="track-orders-tab" href="#track-orders"
+                                                role="tab" aria-controls="track-orders" aria-selected="false">My
+                                                Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" href="#address">My Address</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" href="#account-detail" role="tab"
+                                                aria-controls="account-detail" aria-selected="true">Edit Account
+                                                details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" id="referalCode-tab" href="#referalCode"
+                                                role="tab" aria-controls="referalCode" aria-selected="false">Referral Code
+                                                </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link1" href="/logout">Logout</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="tab-content dashboard-content">
+                                    <div class="tab-pane fade active show" id="dashboard" role="tabpanel"
+                                        aria-labelledby="dashboard-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Hello User!</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <table>
+                                                    <tr>
+                                                        <td>Name:</td>
+                                                        <td>John Doe</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Phone:</td>
+                                                        <td>9876543210</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Email:</td>
+                                                        <td>johndoe@example.com</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Address:</td>
+                                                        <td>New York, NY, USA</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Pincode:</td>
+                                                        <td>10001</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Your Orders</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table" id="ordersTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Order ID</th>
+                                                                <th>Date</th>
+                                                                <th>Status</th>
+                                                                <th>Total</th>
+                                                                <th>Action</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>12345</td>
+                                                                <td>2023-08-19</td>
+                                                                <td><span class="text-success">Completed</span></td>
+                                                                <td>$150.00</td>
+                                                                <td><a href="#">View</a></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>67890</td>
+                                                                <td>2023-08-18</td>
+                                                                <td><span class="text-danger">Cancelled</span></td>
+                                                                <td>$200.00</td>
+                                                                <td><a href="#">View</a></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="track-orders" role="tabpanel"
+                                        aria-labelledby="track-orders-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">My Wallet</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>Your wallet balance is: <strong>$300.00</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Billing Address</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <address>
+                                                    John Doe<br>
+                                                    123 Main St<br>
+                                                    New York, NY 10001<br>
+                                                    USA
+                                                </address>
+                                                <a href="#" class="btn-small">Edit</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="account-detail" role="tabpanel"
+                                        aria-labelledby="account-detail-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Account Details</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <form action="#">
+                                                    <div class="row">
+                                                        <div class="form-group col-md-6">
+                                                            <label for="first-name">First Name <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control" name="first-name"
+                                                                id="first-name" type="text">
+                                                        </div>
+                                                        <div class="form-group col-md-6">
+                                                            <label for="last-name">Last Name <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control" name="last-name"
+                                                                id="last-name" type="text">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label for="display-name">Display Name <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control" name="display-name"
+                                                                id="display-name" type="text">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label for="email">Email Address <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control" name="email" id="email"
+                                                                type="email">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label for="current-password">Current Password
+                                                                <span class="required">*</span></label>
+                                                            <input required class="form-control" name="current-password"
+                                                                id="current-password" type="password">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label for="new-password">New Password <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control" name="new-password"
+                                                                id="new-password" type="password">
+                                                        </div>
+                                                        <div class="form-group col-md-12">
+                                                            <label for="confirm-password">Confirm Password <span
+                                                                    class="required">*</span></label>
+                                                            <input required class="form-control"
+                                                                name="confirm-password" id="confirm-password"
+                                                                type="password">
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <button type="submit"
+                                                                class="btn btn-fill-out submit">Save</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="referalCode" role="tabpanel"
+                                        aria-labelledby="referalCode-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Your Referral Code</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <p>Share this code with your friends: <strong>ABC123</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

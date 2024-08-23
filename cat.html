@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="User Profile Page">
+    <title>User Profile</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    /* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline-info {
+    border: 1px solid #17a2b8;
+    color: #17a2b8;
+    background-color: transparent;
+}
+
+.btn-outline-info:hover {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+.shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rounded {
+    border-radius: 5px;
+}
+
+.orangeTextColor {
+    color: #f57c00;
+}
+
+.position-fixed {
+    position: fixed;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-capitalize {
+    text-transform: capitalize;
+}
+
+/* Loader */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loader-inner {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* User Button Cards */
+.userBtnCard {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.userBtnCard .fa {
+    margin-right: 15px;
+}
+
+/* Suggestions */
+.scroll-button {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.scroll-button i {
+    font-size: 20px;
+}
+
+.cardStoke {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.cardStoke:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cardImage img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.priceTextColor {
+    color: #e74c3c;
+}
+
+</style>
+<body class="marginTopForBody">
+
+   
+    <!-- PreLoader Ends -->
+
+    <!-- Alert -->
+    <div class="position-fixed col-10 d-flex justify-content-center" style="z-index: 10;">
+        <div class="alert alert-info fade show w-auto d-none" role="alert" id="bsAlert"></div>
+    </div>
+    <!-- Alert end -->
+
+    <!-- Breadcrumbs -->
+    <div class="container">
+        <h3><span class="orangeTextColor">My Profile</span></h3>
+    </div>
+    <!-- End breadcrumbs -->
+
+    <!-- User Buttons -->
+    <div class="container d-sm-flex justify-content-center flex-sm-row flex-column col-12 my-5">
+        <section class="container d-flex justify-content-between flex-wrap align-items-start">
+
+            <a href="/profile/orders" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-box fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Your Orders</h5>
+                    <p class="fs-5 text-capitalize">Track, return or buy new things</p>
+                </div>
+            </a>
+
+            <a href="/profile/wishlist" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-heart fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Wishlist</h5>
+                    <p class="fs-5 text-capitalize">Your Wishlists</p>
+                </div>
+            </a>
+
+            <a href="/profile/address" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-location-dot fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Your Address</h5>
+                    <p class="fs-5 text-capitalize">Edit address for orders and gifts</p>
+                </div>
+            </a>
+
+            <a href="/profile/wallet" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-wallet fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Wallet</h5>
+                    <p class="fs-5 text-capitalize">Available amount ₹<span id="walletAmount">1000</span></p>
+                </div>
+            </a>
+
+            <a href="/profile/user" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-lock fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Login and Security</h5>
+                    <p class="fs-5 text-capitalize">Edit name and mobile number</p>
+                </div>
+            </a>
+
+            <a href="/profile/coupons" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-ticket fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Coupons</h5>
+                    <p class="fs-5 text-capitalize">Check coupons</p>
+                </div>
+            </a>
+
+            <a href="#" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-users fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">About Us</h5>
+                    <p class="fs-5 text-capitalize">Know more about us</p>
+                </div>
+            </a>
+
+            <a href="#" id="profileLogoutBtn" class="userBtnCard shadow rounded mb-5">
+                <div class="pr-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-right-from-bracket fa-4x orangeTextColor"></i>
+                </div>
+                <div class="col-9 py-2">
+                    <h5 class="btnTitle">Logout</h5>
+                </div>
+            </a>
+
+        </section>
+    </div>
+    <!-- User Buttons end -->
+
+    <!-- Suggestions -->
+    <div class="container">
+        <section class="mt-5 position-relative">
+            <h3><span class="orangeTextColor">Based on</span> browsing history</h3>
+
+            <div class="d-flex justify-content-between align-items-center my-3 suggestionsBtnContainer">
+                <button id="scroll-left" class="scroll-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="scroll-right" class="scroll-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="d-flex justify-content-between scrollContainer suggestionsContainer">
+                <!-- Sample Product Card -->
+                <div class="position-relative col-xl-2 col-lg-3 col-md-4 col-sm-5 m-1 mx-3 mb-3 text-center p-2 cardStoke">
+                    <div class="position-absolute top-0 start-0">
+                        <a class="addToWishlistBtn" data-id="1">
+                            <i class="fa-solid fa-heart fa-xl"></i>
+                        </a>
+                    </div>
+                    <div class="d-flex flex-column align-content-center">
+                        <div class="d-flex justify-content-center">
+                            <a class="cardImage" href="#">
+                                <img src="https://via.placeholder.com/150" alt="Product Image">
+                            </a>
+                        </div>
+                        <h6>Product Name</h6>
+                        <h5 class="priceTextColor">₹1000</h5>
+                        <div class="d-flex align-items-baseline">
+                            <div class="d-flex pb-3 px-3">
+                                <i class="fa-solid fa-star fa-lg text-warning"></i>
+                                <i class="fa-solid fa-star fa-lg text-warning"></i>
+                                <i class="fa-solid fa-star fa-lg text-warning"></i>
+                                <i class="fa-regular fa-star fa-lg text-warning"></i>
+                                <i class="fa-regular fa-star fa-lg text-warning"></i>
+                            </div>
+                            <span class="text-secondary">100 reviews</span>
+                        </div>
+                        <button class="btn btn-outline-info rounded-pill">
+                            <span>Add to Cart</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- End Sample Product Card -->
+            </div>
+        </section>
+    </div>
+    <!-- Suggestions end -->
+
+</body>
+
+</html>

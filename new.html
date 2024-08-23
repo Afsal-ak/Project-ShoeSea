@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Responsive Bootstrap4 Shop Template">
+    <title>Single Product</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-outline-primary {
+            border: 1px solid #007bff;
+            color: #007bff;
+            background-color: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .shadow {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .rounded-3 {
+            border-radius: 10px;
+        }
+
+        .orangeTextColor {
+            color: #f57c00;
+        }
+
+        .marginTopForBody {
+            margin-top: 20px;
+        }
+
+        .editUserCard {
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader-inner {
+            border: 8px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 8px solid #3498db;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .link-primary {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .link-primary:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body class="marginTopForBody">
+
+  >
+
+    <!-- Breadcrumbs -->
+    <div class="container">
+        <h3>My profile / <span class="orangeTextColor">Edit user</span></h3>
+    </div>
+    <!-- End Breadcrumbs -->
+
+    <!-- User Details -->
+    <div class="container d-sm-flex justify-content-center flex-sm-row flex-column col-12 my-5">
+        <section class="container">
+
+            <!-- User Details Card -->
+            <div class="col-8 p-2 px-4 shadow rounded-3 mb-3 col-12 editUserCard">
+                <div class="d-flex justify-content-end">
+                    <button id="editUserModalBtn" class="editAddressModelBtn btn btn-outline-primary">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                </div>
+                <div class="mt-5">
+                    <p>Name</p>
+                    <h5>John Doe</h5>
+                </div>
+                <hr />
+                <div class="">
+                    <p>Email</p>
+                    <h5>johndoe@example.com</h5>
+                </div>
+                <hr />
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable position-relative">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit user</h5>
+                            <button type="button" class="btn" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editForm" method="POST" onsubmit="return false">
+                                <div class="row d-flex flex-column align-content-center">
+                                    <div class="mb-3 col-10">
+                                        <label for="Name" class="form-label">Name</label>
+                                        <input class="form-control" type="text" id="Name" name="name" value="" autofocus />
+                                    </div>
+                                    <div class="mb-3 col-10">
+                                        <label for="username" class="form-label">Email</label>
+                                        <input class="form-control" type="text" id="username" name="username" value="" autofocus />
+                                    </div>
+                                    <hr />
+                                    <h5>Change Password</h5>
+                                    <div class="mb-3 col-10">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input class="form-control" type="password" id="password" name="password" value="" autofocus />
+                                    </div>
+                                    <div class="mb-3 col-10">
+                                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                        <input class="form-control" type="password" id="confirmPassword" name="confirmPassword" value="" autofocus />
+                                    </div>
+                                    <div class="d-flex justify-content-center">
+                                        <a id="viewPassword" class="link-primary">View Passwords</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button id="editUserBtn" type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Edit Modal -->
+
+        </section>
+    </div>
+    <!-- End User Details -->
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+    <!-- Add your custom scripts here -->
+</body>
+
+</html>

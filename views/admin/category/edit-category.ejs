@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .content-main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .content-header {
+            margin-bottom: 20px;
+        }
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        form input[type="text"],
+        form textarea {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 14px;
+        }
+        form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/admin/header') %>
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Edit Category</h2>
+        </div>
+
+        <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        
+        <% if (message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% } %>
+        
+        <!-- Category Edit Form -->
+        <form action="/admin/edit-category/<%= category._id %>" method="post">
+            <input type="hidden" name="id" value="<%= category._id %>">
+            <div>
+                <label for="categoryName">Category Name</label>
+                <input type="text" name="categoryName" id="categoryName" value="<%= category.categoryName %>" required>
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <textarea name="description" id="description" required><%= category.description %></textarea>
+            </div>
+            <button type="submit">Update Category</button>
+        </form>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+    <script>
+        // You can add custom JavaScript here if needed
+    </script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #007bff;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .nav a {
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+        }
+        .nav a:hover {
+            background-color: #0056b3;
+        }
+        .content {
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #007bff;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .address, .order, .cart {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            width: calc(50% - 30px);
+            box-sizing: border-box;
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>User Profile Management</h1>
+</header>
+
+<div class="container">
+    <div class="nav">
+        <a href="#profile">Profile</a>
+        <a href="#address">Addresses</a>
+        <a href="#orders">Orders</a>
+        <a href="#password">Forgot Password</a>
+    </div>
+    <div class="content">
+        <!-- Profile Section -->
+        <div class="section" id="profile">
+            <h2>User Details</h2>
+            <form>
+                <div class="form-group">
+                    <label for="fname">First Name:</label>
+                    <input type="text" id="fname" name="fname" value="John">
+                </div>
+                <div class="form-group">
+                    <label for="lname">Last Name:</label>
+                    <input type="text" id="lname" name="lname" value="Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="john.doe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone:</label>
+                    <input type="tel" id="phone" name="phone" value="123-456-7890">
+                </div>
+                <button class="btn" type="submit">Update Profile</button>
+            </form>
+        </div>
+
+        <!-- Address Section -->
+        <div class="section" id="address">
+            <h2>Address Management</h2>
+            <div class="address">
+                <div class="card">
+                    <h3>Home Address</h3>
+                    <p>John Doe</p>
+                    <p>123 Main Street, City, State, 12345</p>
+                    <p>Country: USA</p>
+                    <p>Email: john.doe@example.com</p>
+                    <p>Phone: 123-456-7890</p>
+                    <button class="btn">Edit</button>
+                    <button class="btn">Delete</button>
+                </div>
+                <div class="card">
+                    <h3>Work Address</h3>
+                    <p>John Doe</p>
+                    <p>456 Office Park, City, State, 67890</p>
+                    <p>Country: USA</p>
+                    <p>Email: john.doe@workmail.com</p>
+                    <p>Phone: 987-654-3210</p>
+                    <button class="btn">Edit</button>
+                    <button class="btn">Delete</button>
+                </div>
+            </div>
+            <button class="btn">Add New Address</button>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="section" id="orders">
+            <h2>Order History</h2>
+            <table>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>ORD12345</td>
+                    <td>2024-08-20</td>
+                    <td>Shipped</td>
+                    <td>$150.00</td>
+                    <td><button class="btn">Cancel</button></td>
+                </tr>
+                <tr>
+                    <td>ORD12346</td>
+                    <td>2024-08-18</td>
+                    <td>Delivered</td>
+                    <td>$200.00</td>
+                    <td><button class="btn">View</button></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Forgot Password Section -->
+        <div class="section" id="password">
+            <h2>Forgot Password</h2>
+            <form>
+                <div class="form-group">
+                    <label for="current-password">Current Password:</label>
+                    <input type="password" id="current-password" name="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password:</label>
+                    <input type="password" id="new-password" name="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password:</label>
+                    <input type="password" id="confirm-password" name="confirm-password">
+                </div>
+                <button class="btn" type="submit">Update Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
