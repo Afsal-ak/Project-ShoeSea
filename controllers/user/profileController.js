@@ -106,7 +106,7 @@ const getAddressForm = async (req, res) => {
 // Render user profile page with addresses
 const getUserProfile = async (req, res) => {
     try {
-        const userId = req.session.isAuth; // Assuming user ID is stored in session
+        const userId = req.session.isAuth; 
         const user = await User.findById(userId);
         const addresses = await Address.find({ userId });
 

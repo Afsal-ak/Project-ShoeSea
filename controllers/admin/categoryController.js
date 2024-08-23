@@ -42,12 +42,37 @@ const getCategory = async (req, res) => {
     }
 };
 
-// Add a new category and handle,error
+// // Add a new category and handle,error
+// const addCategory = async (req, res) => {
+//     try {
+//         const { categoryName, description } = req.body;
+
+//         let categoryCheck = await Category.findOne({ categoryName });
+//         if (categoryCheck) {
+//             req.flash('error', 'Category Name Already Exists');
+//             return res.redirect('/admin/category');
+//         }
+
+//         const categoryData = new Category({
+//             categoryName: categoryName,
+//             description: description
+//         });
+
+//         await categoryData.save();
+//         req.flash('message', 'Category Successfully Created');
+//         return res.redirect('/admin/category');
+//     } catch (error) {
+//         console.error(error.message);
+//         req.flash('error', 'Internal Server,essages');
+//         return res.redirect('/admin/category');
+//     }
+// };
 const addCategory = async (req, res) => {
     try {
         const { categoryName, description } = req.body;
 
-        let categoryCheck = await Category.findOne({ categoryName });
+        // Case-insensitive check for existing category
+        let categoryCheck = await Category.findOne({ categoryName: new RegExp('^' + categoryName + '$', 'i') });
         if (categoryCheck) {
             req.flash('error', 'Category Name Already Exists');
             return res.redirect('/admin/category');
@@ -63,7 +88,7 @@ const addCategory = async (req, res) => {
         return res.redirect('/admin/category');
     } catch (error) {
         console.error(error.message);
-        req.flash('error', 'Internal Server,essages');
+        req.flash('error', 'Internal Server Error');
         return res.redirect('/admin/category');
     }
 };
