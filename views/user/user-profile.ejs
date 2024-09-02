@@ -21,41 +21,63 @@
         .btn {
             margin-right: 0.5rem;
         }
+        .user-data-box {
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: #fff; /* White background */
+        }
+        .user-data-box h4 {
+            margin-bottom: 1rem;
+        }
+        .alert {
+            margin: 0; /* Remove margin */
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
     <%- include('../partials/user/header') %>
     <div class="container">
-        <div class="profile-header">
-            <h1 class="mb-4">Welcome, <%= user.username %></h1>
-            <p>Username: <%= user.username %></p>
-            <p>Email: <%= user.email %></p>
-            <p>Phone: <%= user.number %></p>
-            <a href="/add-address" class="btn btn-primary">Add Address</a>
+        <!-- User Data Section -->
+        <div class="user-data-box">
+            <h4>User Information</h4>
+            <p><strong>Username:</strong> <%= user.username %></p>
+            <p><strong>Email:</strong> <%= user.email %></p>
+            <p><strong>Phone:</strong> <%= user.number %></p>
         </div>
-
-        <!-- Display Flash Messages -->
-        <% if (success_msg) { %>
-            <div class="alert alert-success">
-                <%= success_msg %>
-            </div>
-        <% } %>
-        <% if (error_msg) { %>
-            <div class="alert alert-danger">
-                <%= error_msg %>
-            </div>
-        <% } %>
 
         <!-- Edit User Form -->
         <div class="card mb-4">
             <div class="card-header">
                 <h4>Edit Profile</h4>
+                <!-- Display Flash Messages Below the Edit Profile Form -->
+                <% if (success_msg) { %>
+                    <h5 style="text-align: center; color: #155724;   padding: 0.5rem; border-radius: 0.25rem;">
+                        <%= success_msg %>
+                    </h5>
+                <% } %>
+                
+                <% if (error_msg) { %>
+                 
+                    <h5 style="text-align: center"; class="text-danger">   <%= error_msg %></h5>
+                <% } %>
             </div>
             <div class="card-body">
                 <form action="/update-profile" method="POST">
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required>
+                        <input type="text" class="form-control" id="username" name="username" value="<%= user.username %>" required pattern="[A-Za-z]+" title="Only alphabetic characters are allowed">
                     </div>
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
@@ -94,6 +116,7 @@
             </div>
         </div>
 
+        <!-- Address List -->
         <div class="address-list">
             <h2>Your Addresses</h2>
             <ul class="list-unstyled">
@@ -107,6 +130,7 @@
                     </li>
                 <% }) %>
             </ul>
+            <a href="/add-address" class="btn btn-primary mt-3">Add Address</a>
         </div>
     </div>
     <%- include('../partials/user/footer') %>

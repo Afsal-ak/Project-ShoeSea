@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details | Homey</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .order-details-container {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-details-header {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+        }
+
+        .order-details-header img {
+            max-width: 100px;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .order-details-body {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .order-status {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .order-status.pending {
+            color: orange;
+        }
+
+        .order-status.shipped {
+            color: blue;
+        }
+
+        .order-status.delivered {
+            color: green;
+        }
+
+        .order-status.cancelled {
+            color: red;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-action {
+            margin-right: 10px;
+        }
+
+        .breadcrumb {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/home">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/orders">Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+            </ol>
+        </nav>
+
+        <div class="order-details-container">
+            <div class="order-details-header">
+                <h3>Order Details</h3>
+                <img src="/styles/images/truck.svg" alt="Order Icon">
+            </div>
+            <div class="order-details-body">
+                <p>Order Id: <strong><%= order._id %></strong></p>
+                <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
+                <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
+                <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
+                <p>User: <strong><%= order.userId.username %></strong></p>
+
+                <h4 class="order-status <%= order.status.toLowerCase().replace(/ /g, '-') %>">Order Status: <%= order.status %></h4>
+
+                <h4>Order Details</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.products.forEach(product => { %>
+                            <% if (product.productId) { %>
+                                <tr>
+                                    <td><%= product.productId.productName %></td>
+                                    <td><img src="/<%= product.productId.productImages[0] %>" alt="<%= product.productId.productName %>" style="max-width: 100px;"></td>
+                                    <td>₹<%= product.productId.salePrice.toFixed(2) %></td>
+                                    <td><%= product.quantity %></td>
+                                    <td>₹<%= (product.productId.salePrice * product.quantity).toFixed(2) %></td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+
+                <!-- Buttons for different actions based on order status -->
+                <% if (order.status === 'Pending') { %>
+                    <form id="shipForm" action="/admin/orders/ship/<%= order._id %>" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-primary btn-sm btn-action" onclick="confirmShip()">Mark as Shipped</button>
+                    </form>
+                    <form id="cancelForm" action="/admin/orders/cancel/<%= order._id %>" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-danger btn-sm btn-action" onclick="confirmCancel()">Cancel Order</button>
+                    </form>
+                <% } else if (order.status === 'Shipped') { %>
+                    <form id="deliverForm" action="/admin/orders/deliver/<%= order._id %>" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-success btn-sm btn-action" onclick="confirmDeliver()">Mark as Delivered</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/admin/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/custom.js"></script>
+    <script>
+        function confirmShip() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to mark this order as Shipped!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#007bff',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark as Shipped'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('shipForm').submit();
+                }
+            });
+        }
+
+        function confirmDeliver() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to mark this order as Delivered!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark as Delivered'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deliverForm').submit();
+                }
+            });
+        }
+
+        function confirmCancel() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to cancel this order!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, cancel order'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelForm').submit();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

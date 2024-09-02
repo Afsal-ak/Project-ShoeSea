@@ -18,9 +18,8 @@
     </style>
 </head>
 <body>
-    <header>
-        <%- include('../partials/user/header') %>
-    </header>
+
+    <%- include('../partials/user/header') %>
 
     <main class="container mt-4">
         <nav aria-label="breadcrumb">
@@ -53,7 +52,7 @@
                 <p>Price: <%= product.salePrice %> rupees</p>
                 <p>Stock: <%= product.quantity %> units</p>
                 <p>Discount: <%= product.productOffer || 'No discount' %>%</p>
-               
+
                 <div class="mb-3">
                     <label for="size" class="form-label">Size</label>
                     <select class="form-select" id="size" name="size">
@@ -74,18 +73,12 @@
                 <!-- Add to Cart Form -->
                 <form action="/cart/add" method="POST" class="d-inline">
                     <input type="hidden" name="productId" value="<%= product._id %>">
-                    <input type="number" name="quantity" value="1" min="1" class="form-control d-inline" style="width: 80px;">
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    <input type="number" name="quantity" value="1" min="1" id="cartQuantity" class="form-control d-inline" style="width: 80px;" <%= product.quantity > 0 ? '' : 'disabled' %>>
+                    <button type="submit" class="btn btn-primary" <%= product.quantity > 0 ? '' : 'disabled' %>>Add to Cart</button>
                 </form>
 
-               <!-- Buy Now Form -->
-<!-- Buy Now Form -->
-<form action="/checkout" method="POST" class="d-inline">
-    <input type="hidden" name="productId" value="<%= product._id %>">
-    <input type="hidden" name="quantity" value="1" id="buyNowQuantity">
-    <button type="submit" class="btn btn-success ms-2">Buy Now</button>
-</form>
-
+                <!-- Buy Now Button -->
+                <a href="/checkout?productId=<%= product._id %>&quantity=1" class="btn btn-success ms-2" <%= product.quantity > 0 ? '' : 'disabled' %>>Buy Now</a>
 
                 <div class="mt-4">
                     <h5>Highlights/Specs:</h5>
@@ -99,7 +92,8 @@
                 </div>
             </div>
         </div>
-    
+
+        <!-- Reviews Section -->
         <div class="row mt-5">
             <div class="col-12">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -128,11 +122,37 @@
                         <% } else { %>
                             <p>No reviews available.</p>
                         <% } %>
+                        <!-- Review Submission Form -->
+                        <div class="mt-4">
+                            <h5>Submit Your Review</h5>
+                            <form action="/products/<%= product._id %>/review" method="POST">
+                                <div class="mb-3">
+                                    <label for="reviewerName" class="form-label">Your Name</label>
+                                    <input type="text" class="form-control" id="reviewerName" name="user" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewRating" class="form-label">Rating</label>
+                                    <select class="form-select" id="reviewRating" name="rating" required>
+                                        <option value="1">1 - Poor</option>
+                                        <option value="2">2 - Fair</option>
+                                        <option value="3">3 - Good</option>
+                                        <option value="4">4 - Very Good</option>
+                                        <option value="5">5 - Excellent</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="reviewComment" class="form-label">Comment</label>
+                                    <textarea class="form-control" id="reviewComment" name="comment" rows="3" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Review</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Related Products Section -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>Related Products</h3>
@@ -151,9 +171,7 @@
         </div>
     </main>
 
-    <footer>
-        <%- include('../partials/user/footer') %>
-    </footer>
+    <%- include('../partials/user/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>

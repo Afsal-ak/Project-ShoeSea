@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management | Homey</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .stock-management-container {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stock-table {
+            margin-top: 20px;
+        }
+
+        .stock-table thead {
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        .low-stock {
+            color: red;
+            font-weight: bold;
+        }
+
+        .restock-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .restock-input {
+            max-width: 80px;
+            margin-right: 10px;
+        }
+
+        .btn-replenish {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container stock-management-container">
+        <h3>Stock Management</h3>
+        <table class="table table-hover stock-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Current Stock</th>
+                    <th>Restock</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through products -->
+                <% products.forEach(product => { %>
+                <tr>
+                    <td><%= product.productName %></td>
+                    <td>
+                        <span class="<%= product.availableStock < 10 ? 'low-stock' : '' %>">
+                            <%= product.availableStock %> 
+                        </span>
+                    </td>
+                    <td>
+                        <form class="restock-form" action="/admin/restock/<%= product._id %>" method="POST">
+                            <input type="number" name="restockQuantity" class="form-control restock-input" min="1" value="1">
+                            <button type="submit" class="btn btn-primary btn-sm">Replenish</button>
+                        </form>
+                    </td>
+                    <td>
+                        <% if (product.availableStock === 0) { %>
+                        <button class="btn btn-secondary btn-sm" disabled>Out of Stock</button>
+                        <% } else { %>
+                        <button class="btn btn-warning btn-sm">View Product</button>
+                        <% } %>
+                    </td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // SweetAlert for restocking confirmation
+        document.querySelectorAll('.restock-form').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const formElement = this;
+                Swal.fire({
+                    title: 'Confirm Restock',
+                    text: 'Are you sure you want to restock this product?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, restock it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formElement.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/custom.js"></script>
+</body>
+
+</html>

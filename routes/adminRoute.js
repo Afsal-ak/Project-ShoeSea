@@ -106,6 +106,8 @@ const authAdmin = require('../middlewares/adminAuth');
 const adminController = require('../controllers/admin/adminController');
 const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
+const orderController=require('../controllers/admin/orderController')
+const stockController=require('../controllers/admin/stockController')
 
 // Apply checkAuth middleware to all routes
 adminRoute.use(authAdmin.checkAuth);
@@ -167,6 +169,21 @@ adminRoute.get('/block-product', authAdmin.isLogin, productController.blockProdu
 adminRoute.get('/unblock-product', authAdmin.isLogin, productController.unblockProduct);
 adminRoute.get('/edit-product/:id', authAdmin.isLogin, productController.loadEditProduct);
 adminRoute.post('/edit-product/:id', authAdmin.isLogin, upload.array('images', 5), productController.editProduct);
+
+
+//order
+adminRoute.get('/orders',orderController.listOrder)
+
+adminRoute.get('/orders/:id',orderController.viewOrder)
+adminRoute.post('/orders/deliver/:id',orderController.orderDelivered)
+adminRoute.post('/orders/cancel/:id',orderController.orderCancel)
+adminRoute.post('/orders/ship/:id',orderController.orderShipped)
+
+
+//stock 
+adminRoute.get('/stocks',stockController.listStock)
+adminRoute.post('/stocks/add',stockController.addStocks)
+
 
 adminRoute.get('/logout', authAdmin.isLogin, adminController.logout);
 

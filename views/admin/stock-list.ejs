@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Management</title>
+    <link rel="stylesheet" href="/styles/styles.css">
+    <!-- Include SweetAlert CSS and JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
+</head>
+<style>
+    /* Basic styling for table and pagination */
+    .container {
+        width: 80%;
+        margin: auto;
+        padding-top: 20px;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .table th {
+        background-color: #f2f2f2;
+    }
+    .btn {
+        padding: 5px 10px;
+        margin: 5px;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+    .btn-light {
+        background-color: #f8f9fa;
+        color: black;
+    }
+    .pagination {
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+<body>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container">
+        <h1>Stock Management</h1>
+
+        <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+            <script>
+                swal("Success", "<%= successMessage %>", "success").then(() => {
+                    // Redirect to the stock page after showing success
+                    window.location.href = "/admin/stocks"; // Redirect to the stock page to remove the success message from history
+                });
+        
+                // Remove the query parameters from the URL after redirect
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.href.split("?")[0]);
+                }
+            </script>
+        <% } %>
+        
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Current Stock</th>
+                    <th>Status</th>
+                    <th>Stock Level</th>
+                    <th>Add Quantity</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><%= product.productName %></td>
+                        <td><%= product.quantity %></td>
+                        <td><%= product.quantity > 0 ? 'Available' : 'Out of Stock' %></td>
+                        <td style="color:<%= product.quantity < 100 ? 'red' : 'black' %>;">
+                            <%= product.quantity < 100 ? 'Low Stock' : 'Sufficient Stock' %>
+                        </td>
+                        <td>
+                            <form action="/admin/stocks/add" method="POST" onsubmit="return confirmAddStock(this);">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+                                <input type="number" name="quantity" min="1" required>
+                                <button type="submit" class="btn btn-primary">Add Stock</button>
+                            </form>
+                        </td>
+                        <td>
+                            <a href="/admin/edit-product/<%= product._id %>" class="btn btn-secondary">Edit</a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="btn btn-light">Previous</a>
+            <% } %>
+            <span>Page <%= currentPage %> of <%= totalPages %></span>
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="btn btn-light">Next</a>
+            <% } %>
+        </div>
+
+        <!-- JavaScript for SweetAlert confirmation -->
+        <script>
+            function confirmAddStock(form) {
+                swal({
+                    title: "Are you sure?",
+                    text: "Do you want to add stock for this product?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willAdd) => {
+                    if (willAdd) {
+                        form.submit();
+                    } else {
+                        swal("Stock addition cancelled.");
+                    }
+                });
+                return false; // Prevent form from submitting immediately
+            }
+        </script>
+    </div>
+</body>
+</html>

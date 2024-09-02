@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Orders | Homey</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .orders-container {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-action {
+            margin-right: 10px;
+        }
+
+        .breadcrumb {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .btn-disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/admin/dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/admin/orders">Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">All Orders</li>
+            </ol>
+        </nav>
+
+        <!-- Orders Container -->
+        <div class="orders-container">
+            <h3>All Orders</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Username</th> <!-- New column for Username -->
+                        <th>Date</th>
+                        <th>Total Amount</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order._id %></td>
+                            <td><%= order.userId.username %></td> <!-- Display username -->
+                            <td><%= order.orderDate.toDateString() %></td>
+                            <td>₹<%= order.totalAmount.toFixed(2) %></td>
+                            <td><%= order.paymentMethod %></td>
+                            <td><%= order.status %></td>
+                            <td>
+                                <!-- Always show the button but conditionally disable it -->
+                                <!-- <form action="/admin/orders/ship/<%= order._id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-primary btn-sm btn-action <%= (order.status !== 'Pending' && order.status !== 'Cancelled') ? 'btn-disabled' : '' %>" <%= (order.status !== 'Pending' && order.status !== 'Cancelled') ? 'disabled' : '' %>>Mark as Shipped</button>
+                                </form>
+
+                                <form action="/admin/orders/deliver/<%= order._id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-success btn-sm btn-action <%= (order.status !== 'Shipped') ? 'btn-disabled' : '' %>" <%= (order.status !== 'Shipped') ? 'disabled' : '' %>>Mark as Delivered</button>
+                                </form> -->
+
+                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info btn-sm btn-action">View Details</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <%- include('../partials/admin/footer') %>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/custom.js"></script>
+</body>
+
+</html>

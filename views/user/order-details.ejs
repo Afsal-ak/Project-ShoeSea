@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details | Homey</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .breadcrumb-container {
+            margin-top: 20px;
+        }
+
+        .order-details-container {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order-details-header {
+            background-color: #fff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 5px 5px 0 0;
+            position: relative;
+        }
+
+        .order-details-header img {
+            max-width: 100px;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+        }
+
+        .order-details-body {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .order-status {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .order-status.pending {
+            color: orange;
+        }
+
+        .order-status.shipped {
+            color: blue;
+        }
+
+        .order-status.delivered {
+            color: green;
+        }
+
+        .order-status.cancelled {
+            color: red;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-danger, .btn-warning {
+            margin-right: 10px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+        }
+
+        .product-image {
+            max-width: 80px;
+            max-height: 80px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('../partials/user/header') %>
+
+    <div class="container breadcrumb-container">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/order">Orders</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container order-details-container">
+        <div class="order-details-header">
+            <h3>Order Details</h3>
+            
+        </div>
+        <div class="order-details-body">
+            <p>Order Id: <strong><%= order._id %></strong></p>
+            <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
+            <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
+            <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
+
+            <h4 class="order-status <%= order.status.toLowerCase().replace(/ /g, '-') %>">Order Status: <%= order.status %></h4>
+
+            <h4>Order Details</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% order.products.forEach(product => { %>
+                        <% if (product.productId) { %>
+                            <tr>
+                                <td>
+                                    <% if (product.productId.productImages && product.productId.productImages.length > 0) { %>
+                                        <img src="/<%= product.productId.productImages[0] %>" alt="<%= product.productId.productName %>" class="product-image">
+                                    <% } %>
+                                </td>
+                                <td><%= product.productId.productName %></td>
+                                <td>₹<%= product.productId.salePrice.toFixed(2) %></td>
+                                <td><%= product.quantity %></td>
+                                <td>₹<%= (product.productId.salePrice * product.quantity).toFixed(2) %></td>
+                            </tr>
+                        <% } %>
+                    <% }) %>
+                </tbody>
+            </table>
+
+            <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
+                <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmCancel('<%= order._id %>')">Cancel</button>
+                </form>
+            <% } else if (order.status === 'Delivered') { %>
+                <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return</button>
+                </form>
+            <% } %>
+        </div>
+    </div>
+    <%- include('../partials/user/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmCancel(orderId) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`cancelOrderForm-${orderId}`).submit();
+                }
+            });
+        }
+
+        function confirmReturn(orderId) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f39c12',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, return it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`returnOrderForm-${orderId}`).submit();
+                }
+            });
+        }
+    </script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/custom.js"></script>
+</body>
+
+</html>

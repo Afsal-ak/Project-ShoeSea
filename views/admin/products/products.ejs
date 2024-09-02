@@ -236,28 +236,26 @@
             </form>
         </div>
 
-        <!-- Display Success or Error Messages -->
-        <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-        <% if (message) { %>
-            <div class="alert alert-success"><%= message %></div>
-        <% } %>
+        <% if (error && error.length > 0) { %>
+            <h5 style="color: red; text-align: center;" class="text-danger"><%= error[0] %></h5>
+          <% } %>
+        
+        <% if (message && message.length > 0) { %>
+            <h5 style="color: green; text-align: center;" class="text-danger"><%= message[0] %></h5>
+          <% } %>
 
         <!-- Product List -->
         <table>
             <thead>
                 <tr>
                     <th>Product Name</th>
-                    <th>Description</th>
                     <th>Brand</th>
                     <th>Category</th>
-                    <th>Regular Price</th>
                     <th>Sale Price</th>
                     <th>Offer</th>
                     <th>Status</th>
                     <th>Quantity</th>
-                    <th>Images</th>
+                    <th>Image</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -265,7 +263,6 @@
                 <% products.forEach(function(product) { %>
                     <tr>
                         <td><%= product.productName %></td>
-                        <td><%= product.description %></td>
                         <td><%= product.brand %></td>
                         <td>
                             <% if (product.categoryId) { %>
@@ -274,7 +271,6 @@
                                 No Category
                             <% } %>
                         </td>
-                        <td><%= product.regularPrice %></td>
                         <td><%= product.salePrice %></td>
                         <td><%= product.productOffer ? (product.productOffer + '%') : 'No offer' %></td>
                         <td>
@@ -287,11 +283,9 @@
                         <td><%= product.quantity %></td>
                         <td>
                             <% if (product.productImages.length > 0) { %>
-                                <% product.productImages.forEach(function(image) { %>
-                                    <img src="<%= image %>" alt="Product Image" class="thumbnail">
-                                <% }) %>
+                                <img src="<%= product.productImages[0] %>" alt="Product Image" class="thumbnail">
                             <% } else { %>
-                                No images
+                                No image
                             <% } %>
                         </td>
                         <td>

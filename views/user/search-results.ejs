@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .filter-section {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+        }
+        .filter-section h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .filter-form {
+            margin: 0;
+        }
+        .filter-form .row {
+            margin-bottom: 0;
+        }
+        .filter-form .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .products .product-item {
+            text-decoration: none;
+            color: #000;
+        }
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination a {
+            margin: 0 5px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            color: #007bff;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #dee2e6;
+        }
+        .no-results {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/user/header') %>
+
+    <!-- Filter Section with Header -->
+    <section class="filter-section">
+        <h2>Sort and Filter</h2>
+        <form method="GET" action="/products" class="filter-form">
+            <div class="row">
+                <!-- Sort Option -->
+                <div class="col-md-6 col-lg-3">
+                    <select name="sort" class="form-control" onchange="this.form.submit()">
+                        <option value="popularity" <%= sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                        <option value="price_low_to_high" <%= sort === 'price_low_to_high' ? 'selected' : '' %>>Price: Low to High</option>
+                        <option value="price_high_to_low" <%= sort === 'price_high_to_low' ? 'selected' : '' %>>Price: High to Low</option>
+                        <option value="average_rating" <%= sort === 'average_rating' ? 'selected' : '' %>>Average Ratings</option>
+                        <option value="featured" <%= sort === 'featured' ? 'selected' : '' %>>Featured</option>
+                        <option value="new_arrivals" <%= sort === 'new_arrivals' ? 'selected' : '' %>>New Arrivals</option>
+                        <option value="a_to_z" <%= sort === 'a_to_z' ? 'selected' : '' %>>A - Z</option>
+                        <option value="z_to_a" <%= sort === 'z_to_a' ? 'selected' : '' %>>Z - A</option>
+                    </select>
+                </div>
+                
+                <!-- Category Filter Option -->
+                <div class="col-md-6 col-lg-3">
+                    <select name="category" class="form-control" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        <% categories.forEach((category) => { %>
+                            <option value="<%= category._id %>" <%= category._id === selectedCategory ? 'selected' : '' %>><%= category.categoryName %></option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <!-- Product Listing Section -->
+    <section class="products untree_co-section product-section before-footer-section">
+        <div class="row">
+            <% if (searchResults.length > 0) { %>
+                <% searchResults.forEach((product) => { %>
+                    <div class="col-12 col-md-4 col-lg-3 mb-4">
+                        <a class="product-item" href="/product-details/<%= product._id %>">
+                            <% if (product.productImages && product.productImages.length > 0) { %>
+                                <img src="<%= product.productImages[0] %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
+                            <% } else { %>
+                                <img src="/path/to/default-image.jpg" class="img-fluid product-thumbnail" alt="No image available">
+                            <% } %>
+                            <h3 class="product-title"><%= product.productName %></h3>
+                            <strong class="product-price"><%= product.salePrice %> rupees</strong>
+                        </a>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="no-results">
+                    <p>No products found matching your criteria.</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <% if (searchResults.length > 0) { %>
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="/products?page=<%= currentPage - 1 %>&sort=<%= sort %>&category=<%= selectedCategory %>">Previous</a>
+            <% } %>
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/products?page=<%= i %>&sort=<%= sort %>&category=<%= selectedCategory %>"><%= i %></a>
+            <% } %>
+            <% if (currentPage < totalPages) { %>
+                <a href="/products?page=<%= currentPage + 1 %>&sort=<%= sort %>&category=<%= selectedCategory %>">Next</a>
+            <% } %>
+        </div>
+    <% } %>
+
+    <%- include('../partials/user/footer') %>
+</body>
+</html>

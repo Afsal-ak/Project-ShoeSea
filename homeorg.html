@@ -1,0 +1,98 @@
+<style>
+     
+    .icons a {
+        margin-right: 1rem;
+    }
+    .icons a:last-child {
+        margin-right: 0;
+    }
+    .footer {
+        background-color: #f8f9fa;
+        padding: 20px;
+        text-align: center;
+    }
+    .product-card img {
+        height: 200px; /* Adjust height to ensure uniform image length */
+        object-fit: cover; /* Ensures the image covers the area without distortion */
+    }
+</style>
+</head>
+<body>
+<%- include('../partials/user/header') %>
+
+
+    <section class="products mb-5">
+        <h2 class="mb-3">Trending Shoes</h2>
+        <div class="row">
+            <% products.forEach((product, index) => { %>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <a href="/product-details/<%= product._id %>" class="text-decoration-none">
+                    <div class="product-card card">
+                        <% if (product.productImages && product.productImages.length > 0) { %>
+                            <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                        <% } else { %>
+                            <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= product.productName %></h5>
+                            <p class="card-text"><%= product.salePrice %> rupees</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+    
+    <section class="products mb-5">
+        <h2 class="mb-3">Sports</h2>
+        <div class="row">
+            <% products.forEach((product, index) => { %>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <a href="/product-details/<%= product._id %>" class="text-decoration-none">
+                    <div class="product-card card">
+                        <% if (product.productImages && product.productImages.length > 0) { %>
+                            <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                        <% } else { %>
+                            <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= product.productName %></h5>
+                            <p class="card-text"><%= product.salePrice %> rupees</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+
+    <section class="products mb-5">
+        <h2 class="mb-3">New Collection</h2>
+        <div class="row">
+            <% products.forEach((product, index) => { %>
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <a href="/product-details/<%= product._id %>" class="text-decoration-none">
+                    <div class="product-card card">
+                        <% if (product.productImages && product.productImages.length > 0) { %>
+                            <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                        <% } else { %>
+                            <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
+                        <% } %>
+                        <div class="card-body">
+                            <h5 class="card-title"><%= product.productName %></h5>
+                            <p class="card-text"><%= product.salePrice %> rupees</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% }); %>
+        </div>
+    </section>
+</main>
+
+<%- include('../partials/user/footer') %>
+
+
+</body>
+</html>

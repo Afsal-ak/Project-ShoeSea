@@ -8,7 +8,7 @@ const orderSchema = new mongoose.Schema({
   },
   addressId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Address', // Adjust based on your address model
+    ref: 'Address',
     required: true
   },
   products: [{
@@ -33,19 +33,49 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
     default: 'Pending'
   },
   orderDate: {
     type: Date,
     default: Date.now
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  },
   totalAmount: {
     type: Number,
     required: true
+  },
+  totalQuantity: {
+    type: Number,
+    required: true
+  },
+  trackingNumber: {
+    type: String,
+    default: ''
+  },
+  shippingCost: {
+    type: Number,
+    default: 0
+  },
+  discount: {
+    type: Number,
+    default: 0
+  },
+  notes: {
+    type: String,
+    default: ''
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Completed', 'Failed'],
+    default: 'Pending'
   }
 });
 
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;
+

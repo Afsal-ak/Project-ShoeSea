@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Listing</title>
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <style>
+        .filter-form {
+            margin-bottom: 20px;
+        }
+        .products .product-item {
+            text-decoration: none;
+            color: #000;
+        }
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination a {
+            margin: 0 5px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #000;
+            text-decoration: none;
+        }
+        .pagination a:hover {
+            background-color: #e2e6ea;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/user/header') %>
+
+    <!-- Search and Sort Form -->
+    <form method="GET" action="/products" class="filter-form">
+        <div class="row">
+            <!-- Sort Option -->
+            <div class="col-md-3">
+                <select name="sort" class="form-control" onchange="this.form.submit()">
+                    <option value="popularity" <%= sortOption === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                    <option value="price_low_to_high" <%= sortOption === 'price_low_to_high' ? 'selected' : '' %>>Price: Low to High</option>
+                    <option value="price_high_to_low" <%= sortOption === 'price_high_to_low' ? 'selected' : '' %>>Price: High to Low</option>
+                    <option value="average_rating" <%= sortOption === 'average_rating' ? 'selected' : '' %>>Average Ratings</option>
+                    <option value="featured" <%= sortOption === 'featured' ? 'selected' : '' %>>Featured</option>
+                    <option value="new_arrivals" <%= sortOption === 'new_arrivals' ? 'selected' : '' %>>New Arrivals</option>
+                    <option value="a_to_z" <%= sortOption === 'a_to_z' ? 'selected' : '' %>>A - Z</option>
+                    <option value="z_to_a" <%= sortOption === 'z_to_a' ? 'selected' : '' %>>Z - A</option>
+                </select>
+            </div>
+            
+            <!-- Category Filter Option -->
+            <div class="col-md-3">
+                <select name="category" class="form-control" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    <% categories.forEach((category) => { %>
+                        <option value="<%= category._id %>" <%= selectedCategory === category._id ? 'selected' : '' %>><%= category.categoryName %></option>
+                    <% }); %>
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <!-- Product Listing Section -->
+    <section class="products untree_co-section product-section before-footer-section">
+        <div class="container">
+            <div class="row">
+                <% products.forEach((product) => { %>
+                    <div class="col-12 col-md-4 col-lg-3 mb-5">
+                        <a class="product-item" href="/product-details/<%= product._id %>">
+                            <% if (product.productImages && product.productImages.length > 0) { %>
+                                <img src="<%= product.productImages[0] %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
+                            <% } else { %>
+                                <img src="/path/to/default-image.jpg" class="img-fluid product-thumbnail" alt="No image available">
+                            <% } %>
+                            <h3 class="product-title"><%= product.productName %></h3>
+                            <strong class="product-price"><%= product.salePrice %> rupees</strong>
+
+                            <span class="icon-cross">
+                                <img src="/styles/images/cross.svg" class="img-fluid">
+                            </span>
+                        </a>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>">Previous</a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>">Next</a>
+        <% } %>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+</body>
+</html>

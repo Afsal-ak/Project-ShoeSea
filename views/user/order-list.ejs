@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            text-decoration: none;
+            border: 1px solid #007bff;
+            color: #007bff;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-cancel {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .btn-cancel:hover {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .no-orders {
+            text-align: center;
+            margin-top: 50px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .btn {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 10px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/user/header') %>
+
+    <% if (orders.length > 0) { %>
+        <h2>Your Orders</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Date</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Products</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% orders.forEach(order => { %>
+                    <tr>
+                        <td><%= order.orderDate.toDateString() %></td>
+                        <td>$<%= order.totalAmount.toFixed(2) %></td>
+                        <td><%= order.status %></td>
+                        <td>
+                            <ul>
+                                <% order.products.forEach(product => { %>
+                                    <% if (product.productId) { %>
+                                        <li>
+                                            <strong><%= product.productId.productName %></strong> (x<%= product.quantity %>)
+                                            - $<%= product.productId.salePrice.toFixed(2) %>
+                                        </li>
+                                    <% } %>
+                                <% }); %>
+                            </ul>
+                        </td>
+                        <td class="actions">
+                            <button onclick="window.location.href='/order-details/<%= order._id %>'" class="btn">View</button>
+                            <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                                <form action="/order/<%= order._id %>/cancel" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-cancel">Cancel</button>
+                                </form>
+                            <% } %>
+                        </td>
+                        
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p class="no-orders">You have no orders.</p>
+    <% } %>
+
+    <%- include('../partials/user/footer') %>
+</body>
+</html>

@@ -6,6 +6,170 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
+// const addNewProduct = async (req, res) => {
+//     try {
+//         // Calculate salePrice based on discount
+//         let salePrice = parseFloat(req.body.regularPrice.trim());
+//         if (req.body.discountType === 'percentage' && req.body.discountValue > 0) {
+//             salePrice -= (salePrice * parseFloat(req.body.discountValue.trim()) / 100);
+//         } else if (req.body.discountType === 'flat' && req.body.discountValue > 0) {
+//             salePrice -= parseFloat(req.body.discountValue.trim());
+//         }
+//         salePrice = salePrice < 0 ? 0 : salePrice; // Ensure sale price is not negative
+
+//         // Calculate tax
+//         const taxAmount = req.body.taxType === 'percentage'
+//             ? salePrice * parseFloat(req.body.taxValue.trim()) / 100
+//             : parseFloat(req.body.taxValue.trim());
+//         const finalPrice = salePrice + taxAmount;
+
+//         // Resize images and store paths
+//         const imagePromises = req.files.map(async (file) => {
+//             const imagePath = path.join('public', 'uploads', file.filename);
+//             const resizedImagePath = path.join('public', 'uploads', `resized_${file.filename}`);
+
+//             // Resize image
+//             await sharp(imagePath)
+//                 .resize({ width: 400, height: 400 })
+//                 .toFile(resizedImagePath);
+
+//             // Optionally remove original image
+//             fs.unlink(imagePath, (err) => {
+//                 if (err) {
+//                     console.error('Failed to delete original image', err);
+//                 } else {
+//                     console.log('Original image deleted successfully');
+//                 }
+//             });
+
+//             // Return the path relative to the public directory
+//             return resizedImagePath.replace('public/', '');
+//         });
+
+//         const resizedImageUrls = await Promise.all(imagePromises);
+
+//         // Determine status based on quantity
+//         let status = 'Available';
+//         if (parseInt(req.body.quantity.trim(), 10) === 0) {
+//             status = 'Out of Stock';
+//         }
+
+//         // Prepare product data
+//         const productData = {
+//             productName: req.body.title.trim(),
+//             description: req.body.description.trim(),
+//             brand: req.body.brand ? req.body.brand.trim() : '', // Optional
+//             categoryId: req.body.categoryId, // Ensure you have categoryId in the request
+//             regularPrice: parseFloat(req.body.regularPrice.trim()),
+//             salePrice: finalPrice,
+//             productOffer: parseFloat(req.body.discountValue.trim()) || 0,
+//             tax: parseFloat(req.body.taxValue.trim())||0 ,
+//             offerDescription: req.body.offerDescription || '', // Optional
+//             quantity: parseInt(req.body.quantity.trim(), 10),
+//             colour: req.body.color.trim(),
+//             productImages: resizedImageUrls,//.map(url => url.replace('uploads/', 'uploads/')),
+//             sizes: req.body.sizes || [], // Get sizes from the form
+//             status: status,
+//             // Add other fields as necessary
+//         };
+
+//         const product = new Product(productData);
+//         const savedProduct = await product.save();
+
+//         if (savedProduct) {
+//             res.redirect('/admin/products');
+//         } else {
+//             console.log('Error saving product');
+//             res.status(500).send('Error saving product');
+//         }
+//     } catch (error) {
+//         console.error(error.message);
+//         res.redirect('/500');
+//     }
+// };
+
+// const addNewProduct = async (req, res) => {
+//     try {
+//         // Calculate salePrice based on discount
+//         let salePrice = parseFloat(req.body.regularPrice.trim());
+//         if (req.body.discountType === 'percentage' && req.body.discountValue > 0) {
+//             salePrice -= (salePrice * parseFloat(req.body.discountValue.trim()) / 100);
+//         } else if (req.body.discountType === 'flat' && req.body.discountValue > 0) {
+//             salePrice -= parseFloat(req.body.discountValue.trim());
+//         }
+//         salePrice = Math.round(salePrice < 0 ? 0 : salePrice); // Ensure sale price is not negative and round to nearest whole number
+
+//         // Calculate tax
+//         const taxAmount = req.body.taxType === 'percentage'
+//             ? salePrice * parseFloat(req.body.taxValue.trim()) / 100
+//             : parseFloat(req.body.taxValue.trim());
+//         const finalPrice = Math.round(salePrice + taxAmount); // Round final price to nearest whole number
+
+//         // Resize images and store paths
+//         const imagePromises = req.files.map(async (file) => {
+//             const imagePath = path.join('public', 'uploads', file.filename);
+//             const resizedImagePath = path.join('public', 'uploads', `resized_${file.filename}`);
+
+//             // Resize image
+//             await sharp(imagePath)
+//                 .resize({ width: 400, height: 400 })
+//                 .toFile(resizedImagePath);
+
+//             // Optionally remove original image
+//             fs.unlink(imagePath, (err) => {
+//                 if (err) {
+//                     console.error('Failed to delete original image', err);
+//                 } else {
+//                     console.log('Original image deleted successfully');
+//                 }
+//             });
+
+//             // Return the path relative to the public directory
+//             return resizedImagePath.replace('public/', '');
+//         });
+
+//         const resizedImageUrls = await Promise.all(imagePromises);
+
+//         // Determine status based on quantity
+//         let status = 'Available';
+//         if (parseInt(req.body.quantity.trim(), 10) === 0) {
+//             status = 'Out of Stock';
+//         }
+
+//         // Prepare product data
+//         const productData = {
+//             productName: req.body.title.trim(),
+//             description: req.body.description.trim(),
+//             brand: req.body.brand ? req.body.brand.trim() : '', // Optional
+//             categoryId: req.body.categoryId, // Ensure you have categoryId in the request
+//             regularPrice: parseFloat(req.body.regularPrice.trim()),
+//             salePrice: finalPrice,
+//             productOffer: Math.round(parseFloat(req.body.discountValue.trim()) || 0), // Round discount value
+//             tax: Math.round(parseFloat(req.body.taxValue.trim()) || 0), // Round tax value
+//             offerDescription: req.body.offerDescription || '', // Optional
+//             quantity: parseInt(req.body.quantity.trim(), 10),
+//             colour: req.body.color.trim(),
+//             productImages: resizedImageUrls,
+//             sizes: req.body.sizes || [], // Get sizes from the form
+//             status: status,
+//             // Add other fields as necessary
+//         };
+
+//         const product = new Product(productData);
+//         const savedProduct = await product.save();
+
+//         if (savedProduct) {
+//             res.redirect('/admin/products');
+//         } else {
+//             console.log('Error saving product');
+//             res.status(500).send('Error saving product');
+//         }
+//     } catch (error) {
+//         console.error(error.message);
+//         res.redirect('/500');
+//     }
+// };
+
 const addNewProduct = async (req, res) => {
     try {
         // Calculate salePrice based on discount
@@ -15,35 +179,40 @@ const addNewProduct = async (req, res) => {
         } else if (req.body.discountType === 'flat' && req.body.discountValue > 0) {
             salePrice -= parseFloat(req.body.discountValue.trim());
         }
-        salePrice = salePrice < 0 ? 0 : salePrice; // Ensure sale price is not negative
+        salePrice = Math.round(salePrice < 0 ? 0 : salePrice); // Ensure sale price is not negative and round to nearest whole number
 
         // Calculate tax
         const taxAmount = req.body.taxType === 'percentage'
             ? salePrice * parseFloat(req.body.taxValue.trim()) / 100
             : parseFloat(req.body.taxValue.trim());
-        const finalPrice = salePrice + taxAmount;
+        const finalPrice = Math.round(salePrice + taxAmount); // Round final price to nearest whole number
 
         // Resize images and store paths
         const imagePromises = req.files.map(async (file) => {
             const imagePath = path.join('public', 'uploads', file.filename);
             const resizedImagePath = path.join('public', 'uploads', `resized_${file.filename}`);
 
-            // Resize image
-            await sharp(imagePath)
-                .resize({ width: 400, height: 400 })
-                .toFile(resizedImagePath);
+            try {
+                // Resize image
+                await sharp(imagePath)
+                    .resize({ width: 400, height: 400 })
+                    .toFile(resizedImagePath);
 
-            // Optionally remove original image
-            fs.unlink(imagePath, (err) => {
-                if (err) {
-                    console.error('Failed to delete original image', err);
-                } else {
-                    console.log('Original image deleted successfully');
-                }
-            });
+                // Remove original image
+                // fs.unlink(imagePath, (err) => {
+                //     if (err) {
+                //         console.error('Failed to delete original image', err);
+                //     } else {
+                //         console.log('Original image deleted successfully');
+                //     }
+                // });
 
-            // Return the path relative to the public directory
-            return resizedImagePath.replace('public/', '');
+                // Return the path relative to the public directory
+                return resizedImagePath.replace('public/', '');
+            } catch (error) {
+                console.error('Error processing image', error);
+                throw error;
+            }
         });
 
         const resizedImageUrls = await Promise.all(imagePromises);
@@ -62,12 +231,12 @@ const addNewProduct = async (req, res) => {
             categoryId: req.body.categoryId, // Ensure you have categoryId in the request
             regularPrice: parseFloat(req.body.regularPrice.trim()),
             salePrice: finalPrice,
-            productOffer: parseFloat(req.body.discountValue.trim()) || 0,
-            tax: parseFloat(req.body.taxValue.trim())||0 ,
+            productOffer: Math.round(parseFloat(req.body.discountValue.trim()) || 0), // Round discount value
+            tax: Math.round(parseFloat(req.body.taxValue.trim()) || 0), // Round tax value
             offerDescription: req.body.offerDescription || '', // Optional
             quantity: parseInt(req.body.quantity.trim(), 10),
             colour: req.body.color.trim(),
-            productImages: resizedImageUrls,//.map(url => url.replace('uploads/', 'uploads/')),
+            productImages: resizedImageUrls,
             sizes: req.body.sizes || [], // Get sizes from the form
             status: status,
             // Add other fields as necessary

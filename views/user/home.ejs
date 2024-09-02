@@ -1,98 +1,128 @@
-    <style>
-     
-        .icons a {
-            margin-right: 1rem;
-        }
-        .icons a:last-child {
-            margin-right: 0;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 20px;
-            text-align: center;
-        }
-        .product-card img {
-            height: 200px; /* Adjust height to ensure uniform image length */
-            object-fit: cover; /* Ensures the image covers the area without distortion */
-        }
-    </style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/styles/css/style.css">
 </head>
 <body>
     <%- include('../partials/user/header') %>
 
+<!-- Start Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Stylish Footwear <span class="d-block">For Every Occasion</span></h1>
+                    <p class="mb-4">Step up your style with our exclusive range of shoes, designed to offer comfort and elegance. Find the perfect pair for every moment.</p>
+                    <p>
+                        <a href="/products" class="btn btn-secondary me-2">Shop Now</a>
+                        <a href="/products" class="btn btn-white-outline">Explore</a>
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="hero-img-wrap">
+                    <img style="height: 450px;" src="/styles/images/cover.jpg" class="img-fluid" alt="Stylish Footwear">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Hero Section -->
 
-        <section class="products mb-5">
-            <h2 class="mb-3">Trending Shoes</h2>
-            <div class="row">
-                <% products.forEach((product, index) => { %>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <a href="/product-details/<%= product._id %>" class="text-decoration-none">
-                        <div class="product-card card">
-                            <% if (product.productImages && product.productImages.length > 0) { %>
-                                <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
-                            <% } else { %>
-                                <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
-                            <% } %>
-                            <div class="card-body">
-                                <h5 class="card-title"><%= product.productName %></h5>
-                                <p class="card-text"><%= product.salePrice %> rupees</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <% }); %>
-            </div>
-        </section>
-        
-        <section class="products mb-5">
-            <h2 class="mb-3">Sports</h2>
-            <div class="row">
-                <% products.forEach((product, index) => { %>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <a href="/product-details/<%= product._id %>" class="text-decoration-none">
-                        <div class="product-card card">
-                            <% if (product.productImages && product.productImages.length > 0) { %>
-                                <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
-                            <% } else { %>
-                                <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
-                            <% } %>
-                            <div class="card-body">
-                                <h5 class="card-title"><%= product.productName %></h5>
-                                <p class="card-text"><%= product.salePrice %> rupees</p>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <% }); %>
-            </div>
-        </section>
 
-        <section class="products mb-5">
-            <h2 class="mb-3">New Collection</h2>
+    <!-- Start Product Section -->
+    <div class="product-section">
+        <div class="container">
             <div class="row">
-                <% products.forEach((product, index) => { %>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <a href="/product-details/<%= product._id %>" class="text-decoration-none">
-                        <div class="product-card card">
-                            <% if (product.productImages && product.productImages.length > 0) { %>
-                                <img src="<%= product.productImages[0] %>" class="card-img-top" alt="<%= product.productName %>">
-                            <% } else { %>
-                                <img src="/path/to/default-image.jpg" class="card-img-top" alt="No image available">
-                            <% } %>
-                            <div class="card-body">
-                                <h5 class="card-title"><%= product.productName %></h5>
-                                <p class="card-text"><%= product.salePrice %> rupees</p>
-                            </div>
-                        </div>
+
+                <!-- Product Columns -->
+                <% trendingProducts.forEach((product) => { %>
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+                    <a class="product-item" href="/product-details/<%= product._id %>">
+                        <img src="<%= product.productImages.length > 0 ? product.productImages[0] : '/path/to/default-image.jpg' %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
+                        <h3 class="product-title"><%= product.productName %></h3>
+                        <strong class="product-price"><%= product.salePrice %> rupees</strong>
+                        <span class="icon-cross">
+                            <img src="/styles/images/cross.svg" class="img-fluid">
+                        </span>
                     </a>
                 </div>
                 <% }); %>
+
             </div>
-        </section>
-    </main>
-    
+        </div>
+    </div>
+    <!-- End Product Section -->
+
+    <!-- Start Why Choose Us Section -->
+    <div class="why-choose-section">
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg-6">
+                    <h2 class="section-title">Why Choose Us</h2>
+                    <p>We provide high-quality products that meet your needs and preferences. Shop with confidence and enjoy an exceptional shopping experience with us.</p>
+
+                    <div class="row my-5">
+                        <div class="col-6 col-md-6">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="/styles/images/truck.svg" alt="Fast & Free Shipping" class="img-fluid">
+                                </div>
+                                <h3>Fast & Free Shipping</h3>
+                                <p>Enjoy quick and free delivery on all your orders. We make sure your products reach you in no time.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="/styles/images/bag.svg" alt="Easy to Shop" class="img-fluid">
+                                </div>
+                                <h3>Easy to Shop</h3>
+                                <p>Our user-friendly platform ensures a seamless and easy shopping experience, from browsing to checkout.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="/styles/images/support.svg" alt="24/7 Support" class="img-fluid">
+                                </div>
+                                <h3>24/7 Support</h3>
+                                <p>We are here to help you at any time. Our dedicated support team is available 24/7 for any assistance.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="/styles/images/return.svg" alt="Hassle Free Returns" class="img-fluid">
+                                </div>
+                                <h3>Hassle Free Returns</h3>
+                                <p>If you're not satisfied with your purchase, enjoy hassle-free returns within our return policy period.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="img-wrap">
+                        <img src="/styles/images/shoe.webp" alt="Stylish Footwear" class="img-fluid">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- End Why Choose Us Section -->
+
+    <!-- Additional Sections as per the provided template -->
+
     <%- include('../partials/user/footer') %>
-
-   
 </body>
 </html>

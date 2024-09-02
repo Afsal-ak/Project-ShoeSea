@@ -24,6 +24,7 @@
             margin: 0;
             font-family: "Nunito Sans", sans-serif;
             overflow: hidden;
+            background: #f8f9fa;
         }
         .container {
             display: flex;
@@ -35,49 +36,59 @@
             width: 100%;
             max-width: 400px;
             padding: 20px;
-            border-radius: 5px;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            background: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .heading_s1 h3 {
             margin: 0;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 600;
             color: #333;
             text-align: center;
             margin-bottom: 30px;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            padding: 10px;
+            font-size: 16px;
         }
         .otp-timer {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             margin-left: 10px;
-            font-size: 14px;
+            font-size: 16px;
             position: relative;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            line-height: 60px;
+            width: 80px;
+            height: 40px;
+            border-radius: 20px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 40px;
             text-align: center;
-            background: #f2f2f2;
-            border: 2px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         #timerValue {
-            display: block;
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
-            color: #333;
-            line-height: 60px;
         }
         #timerValue.expired {
-            font-size: 14px;
-            color: red;
+            font-size: 16px;
+            color: #dc3545;
         }
         .btn-primary {
             background-color: #007bff;
             border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color: #fff;
+            font-size: 16px;
             width: 100%;
             margin-top: 10px;
             display: block;
@@ -86,9 +97,13 @@
             background-color: #0056b3;
         }
         .btn-secondary {
-            width: 100%;
+            border-radius: 5px;
+            padding: 10px;
+            color: #fff;
+            font-size: 16px;
             background-color: #6c757d;
             border: none;
+            width: 100%;
             margin-top: 10px;
             display: block;
         }
@@ -96,12 +111,12 @@
             background-color: #5a6268;
         }
         .alert-danger {
-            margin-top: 15px;
+            margin-top: 20px;
             text-align: center;
         }
         .text-center {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
         }
         .text-muted {
             color: #6c757d;
@@ -111,6 +126,7 @@
             padding-top: 25px;
         }
     </style>
+    
 </head>
 <body>
 <div class="container">
@@ -274,103 +290,6 @@
 document.querySelector('.btn-secondary').addEventListener('click', resendOTP);
 
 </script>
-<!-- <script>
-    document.getElementById("otp").focus();
-
-    let timer = 60;
-    let timerInterval;
-
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            timer--;
-            document.getElementById("timerValue").textContent = timer;
-            if (timer <= 0) {
-                clearInterval(timerInterval);
-                document.getElementById("timerValue").classList.add("expired");
-                document.getElementById("timerValue").textContent = "Expired";
-                document.getElementById("otp").disabled = true;
-            }
-        }, 1000);
-    }
-    startTimer();
-
-    function validateOTPForm(){
-        const otpInput = document.getElementById('otp').value;
-
-        $.ajax({
-            type: 'POST',
-            url: '/verify-otp',
-            data: { otp: otpInput },
-            success: function(response){
-                if(response.success){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'OTP verified successfully',
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(() => {
-                        window.location.href = response.redirectUrl;
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message,
-                    });
-                }
-            },
-            error: function(){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid OTP',
-                    text: 'Please try again',
-                });
-            }
-        });
-        return false;
-    }
-
-    function resendOTP(){
-        clearInterval(timerInterval);
-        timer = 60;
-        document.getElementById('otp').disabled = false;
-        document.getElementById('timerValue').classList.remove('expired');
-        startTimer();
-
-        $.ajax({
-            type: 'POST',
-            url: '/resend-otp',
-            success: function(response){
-                console.log(response); // Log the response to see what's coming from the server
-                if(response.success){
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'OTP Resent Successfully',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while resending OTP, please try again',
-                    });
-                }
-            },
-            error: function(){
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to resend OTP, please try again',
-                });
-            }
-        });
-        return false;
-    }
-
-    // Add the onClick event to the resend OTP button
-    document.querySelector('.btn-secondary').addEventListener('click', resendOTP);
-</script> -->
 
 
 </body>

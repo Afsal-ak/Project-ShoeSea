@@ -62,6 +62,14 @@ const Address = require('../../models/addressModel');
 const User = require('../../models/userModel');
 const bcrypt=require('bcrypt')
 
+const getAccount=async(req,res)=>{
+    try {
+        res.render('account')
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
 // Render the address form page
 const getAddressForm = async (req, res) => {
     try {
@@ -106,10 +114,12 @@ const getAddressForm = async (req, res) => {
 // Render user profile page with addresses
 const getUserProfile = async (req, res) => {
     try {
-        const userId = req.session.isAuth; 
+        const userId = req.session.userId; 
         const user = await User.findById(userId);
         const addresses = await Address.find({ userId });
-
+        if (!userId) {
+            return res.status(400).send('User ID is not set in session.');
+        }
         if (!user) {
             return res.status(404).send('User not found');
         }
@@ -323,7 +333,7 @@ const updateAddress = async (req, res) => {
 
         console.log('Address updated:', updatedAddress);
 
-        res.redirect('/home');  // Redirect to a relevant page after updating the address
+        res.redirect('/profile');  // Redirect to a relevant page after updating the address
     } catch (error) {
         console.error('Error updating address:', error.message);
         res.status(500).render('edit-address', { message: 'An error occurred while updating your address. Please try again.', address: req.body });
@@ -343,7 +353,7 @@ const deleteAddress=async(req,res)=>{
         console.log('Address deleted:', deletedAddress);
 
         // Redirect to a relevant page after deletion
-        res.redirect('/home')
+        res.redirect('/profile')
 
     } catch (error) {
         console.error('Error delteing address:', error.message);
@@ -352,6 +362,7 @@ const deleteAddress=async(req,res)=>{
 }
 
 module.exports = {
+    getAccount,
     getAddressForm,
     addAddress,
     getEditAddressForm,

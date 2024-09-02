@@ -164,13 +164,13 @@
         </div>
 
         <!-- Display Success or Error Messages -->
-        <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-        <% if (message) { %>
-            <div class="alert alert-success"><%= message %></div>
-        <% } %>
-
+        <% if (error && error.length > 0) { %>
+            <h5 style="color: red; text-align: center;" class="text-danger"><%= error[0] %></h5>
+          <% } %>
+        
+        <% if (message && message.length > 0) { %>
+            <h5 style="color: green; text-align: center;" class="text-danger"><%= message[0] %></h5>
+          <% } %>
         <!-- Category Form -->
         <form action="/admin/addCategory" method="post">
             <div>
