@@ -7,11 +7,27 @@
     <link rel="stylesheet" href="/styles/css/style.css">
     <style>
         .filter-form {
-            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            max-width: 500px;
+            margin-left: auto;
         }
-        .products .product-item {
-            text-decoration: none;
-            color: #000;
+        .filter-form h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #3b5d50;
+            text-align: center;
+        }
+        .filter-form .form-control {
+            font-size: 14px;
+        }
+        .filter-form .row {
+            display: flex;
+            justify-content: center;
+        }
+        .filter-form .col-md-6 {
+            max-width: 250px;
+            margin-bottom: 15px;
         }
         .pagination {
             text-align: center;
@@ -28,17 +44,36 @@
         .pagination a:hover {
             background-color: #e2e6ea;
         }
+        .search-button {
+            background-color: #3b5d50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .search-button:hover {
+            background-color: #2a4b3c;
+        }
+        .no-products-message {
+            text-align: center;
+            font-size: 16px;
+            color: #6c757d;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
     <%- include('../partials/user/header') %>
 
-    <!-- Search and Sort Form -->
+    <!-- Search, Sort, and Filter Form -->
     <form method="GET" action="/products" class="filter-form">
         <div class="row">
             <!-- Sort Option -->
-            <div class="col-md-3">
-                <select name="sort" class="form-control" onchange="this.form.submit()">
+            <div class="col-md-6">
+                <label for="sort" class="form-label">Sort By:</label>
+                <select name="sort" id="sort" class="form-control" onchange="this.form.submit()">
                     <option value="popularity" <%= sortOption === 'popularity' ? 'selected' : '' %>>Popularity</option>
                     <option value="price_low_to_high" <%= sortOption === 'price_low_to_high' ? 'selected' : '' %>>Price: Low to High</option>
                     <option value="price_high_to_low" <%= sortOption === 'price_high_to_low' ? 'selected' : '' %>>Price: High to Low</option>
@@ -49,13 +84,14 @@
                     <option value="z_to_a" <%= sortOption === 'z_to_a' ? 'selected' : '' %>>Z - A</option>
                 </select>
             </div>
-            
+
             <!-- Category Filter Option -->
-            <div class="col-md-3">
-                <select name="category" class="form-control" onchange="this.form.submit()">
-                    <option value="">All Categories</option>
+            <div class="col-md-6">
+                <label for="category" class="form-label">Category:</label>
+                <select name="category" id="category" class="form-control" onchange="this.form.submit()">
+                    <option value="" <%= !selectedCategory ? 'selected' : '' %>>All Categories</option>
                     <% categories.forEach((category) => { %>
-                        <option value="<%= category._id %>" <%= selectedCategory === category._id ? 'selected' : '' %>><%= category.categoryName %></option>
+                        <option value="<%= category._id %>" <%= selectedCategory === category._id.toString() ? 'selected' : '' %>><%= category.categoryName %></option>
                     <% }); %>
                 </select>
             </div>
@@ -65,35 +101,41 @@
     <!-- Product Listing Section -->
     <section class="products untree_co-section product-section before-footer-section">
         <div class="container">
-            <div class="row">
-                <% products.forEach((product) => { %>
-                    <div class="col-12 col-md-4 col-lg-3 mb-5">
-                        <a class="product-item" href="/product-details/<%= product._id %>">
-                            <% if (product.productImages && product.productImages.length > 0) { %>
-                                <img src="<%= product.productImages[0] %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
-                            <% } else { %>
-                                <img src="/path/to/default-image.jpg" class="img-fluid product-thumbnail" alt="No image available">
-                            <% } %>
-                            <h3 class="product-title"><%= product.productName %></h3>
-                            <strong class="product-price"><%= product.salePrice %> rupees</strong>
+            <% if (products.length === 0) { %>
+                <div class="no-products-message">
+                    <p>No products found matching your criteria.</p>
+                </div>
+            <% } else { %>
+                <div class="row">
+                    <% products.forEach((product) => { %>
+                        <div class="col-12 col-md-4 col-lg-3 mb-5">
+                            <a class="product-item" href="/product-details/<%= product._id %>">
+                                <% if (product.productImages && product.productImages.length > 0) { %>
+                                    <img src="<%= product.productImages[0] %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
+                                <% } else { %>
+                                    <img src="/path/to/default-image.jpg" class="img-fluid product-thumbnail" alt="No image available">
+                                <% } %>
+                                <h3 class="product-title"><%= product.productName %></h3>
+                                <strong class="product-price"><%= product.salePrice %> rupees</strong>
 
-                            <span class="icon-cross">
-                                <img src="/styles/images/cross.svg" class="img-fluid">
-                            </span>
-                        </a>
-                    </div>
-                <% }); %>
-            </div>
+                                <span class="icon-cross">
+                                    <img src="/styles/images/cross.svg" class="img-fluid">
+                                </span>
+                            </a>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
         </div>
     </section>
 
     <!-- Pagination -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>">Previous</a>
+            <a href="?page=<%= currentPage - 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>&search=<%= searchQuery %>">Previous</a>
         <% } %>
         <% if (currentPage < totalPages) { %>
-            <a href="?page=<%= currentPage + 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>">Next</a>
+            <a href="?page=<%= currentPage + 1 %>&sort=<%= sortOption %>&category=<%= selectedCategory %>&search=<%= searchQuery %>">Next</a>
         <% } %>
     </div>
 

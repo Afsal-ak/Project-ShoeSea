@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="author" content="Untree.co">
   <link rel="shortcut icon" href="favicon.png">
-
   <meta name="description" content="" />
   <meta name="keywords" content="bootstrap, bootstrap4" />
 
@@ -33,10 +32,12 @@
       color: #2f2f2f;
       text-decoration: underline;
     }
+
     a:hover {
       color: #2f2f2f;
       text-decoration: none;
     }
+
     a.more {
       font-weight: 600;
     }
@@ -46,24 +47,31 @@
       padding-top: 20px;
       padding-bottom: 20px;
     }
+
     .custom-navbar .navbar-brand {
       font-size: 32px;
       font-weight: 600;
     }
+
     .custom-navbar .navbar-brand > span {
       opacity: .4;
     }
+
     .custom-navbar .navbar-toggler {
       border-color: transparent;
     }
-    .custom-navbar .navbar-toggler:active, .custom-navbar .navbar-toggler:focus {
+
+    .custom-navbar .navbar-toggler:active,
+    .custom-navbar .navbar-toggler:focus {
       box-shadow: none;
       outline: none;
     }
+
     .custom-navbar .custom-navbar-nav li {
       margin-left: 15px;
       margin-right: 15px;
     }
+
     .custom-navbar .custom-navbar-nav li a {
       font-weight: 500;
       color: #ffffff !important;
@@ -71,27 +79,34 @@
       transition: .3s all ease;
       position: relative;
     }
+
     .custom-navbar .custom-navbar-nav li a:hover {
       opacity: 1;
     }
+
     .custom-navbar .custom-navbar-nav li.active a {
       opacity: 1;
     }
+
     .custom-navbar .custom-navbar-cta {
       margin-left: 0 !important;
       flex-direction: row;
     }
+
     .custom-navbar .custom-navbar-cta li {
       margin-left: 0px;
       margin-right: 0px;
     }
+
     .custom-navbar .custom-navbar-cta li:first-child {
       margin-right: 20px;
     }
+
     .search-form {
       display: flex;
       align-items: center;
     }
+
     .search-input {
       border: 2px solid #3b5d50;
       border-radius: 20px;
@@ -99,10 +114,12 @@
       color: #3b5d50;
       transition: border-color 0.3s ease;
     }
+
     .search-input:focus {
       outline: none;
       border-color: #3b5d50;
     }
+
     .search-button {
       background-color: #3b5d50;
       border: none;
@@ -113,6 +130,7 @@
       margin-left: 5px;
       transition: background-color 0.3s ease;
     }
+
     .search-button:hover {
       background-color: #2a4b3c;
     }
@@ -129,6 +147,7 @@
       text-decoration: none;
       transition: background-color 0.3s ease;
     }
+
     .login-btn:hover {
       background-color: #2a4b3c;
     }
@@ -138,7 +157,7 @@
 <body>
 
   <!-- Start Header/Navigation -->
-  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="ShoeSea navigation bar">
     <div class="container">
       <a class="navbar-brand" href="/home">ShoeSea<span>.</span></a>
 
@@ -152,24 +171,22 @@
             <a class="nav-link" href="/home">Home</a>
           </li>
           <li><a class="nav-link" href="/products">Shop</a></li>
-         
-          
-          
         </ul>
 
         <!-- Search Form -->
-        <!-- <form class="d-flex search-form ms-3" action="/search" method="GET">
-          <input class="form-control search-input" type="search" placeholder="Search" aria-label="Search" name="query">
+        <form class="d-flex search-form ms-3" method="GET" action="/products">
+          <input class="form-control search-input" type="search" placeholder="Search" aria-label="Search" name="search" value="<%= searchQuery || '' %>">
           <button class="btn search-button" type="submit">Search</button>
-        </form> -->
-<!-- Search Form in Navbar -->
-<form class="d-flex search-form ms-3" action="/search" method="GET">
-  <input class="form-control search-input" type="search" placeholder="Search" aria-label="Search" name="query">
-  <button class="btn search-button" type="submit">Search</button>
-</form>
+        </form>
 
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-          <li><a class="nav-link login-btn" href="/login">Login</a></li>
+          <ul class="nav">
+            <% if (!user) { %>
+              <li><a class="nav-link login-btn" href="/login">Login</a></li>
+            <% } else { %>
+              <li><a class="nav-link login-btn" href="/logout">Logout</a></li>
+            <% } %>
+          </ul>
           <li><a class="nav-link" href="/account"><img src="/styles/images/user.svg" alt="Profile"></a></li>
           <li><a class="nav-link" href="/cart"><img src="/styles/images/cart.svg" alt="Cart"></a></li>
         </ul>

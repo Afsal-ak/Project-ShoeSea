@@ -99,9 +99,9 @@
                 <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
                 <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
                 <p>User: <strong><%= order.userId.username %></strong></p>
-
+            
                 <h4 class="order-status <%= order.status.toLowerCase().replace(/ /g, '-') %>">Order Status: <%= order.status %></h4>
-
+            
                 <h4>Order Details</h4>
                 <table class="table table-striped">
                     <thead>
@@ -127,9 +127,9 @@
                         <% }) %>
                     </tbody>
                 </table>
-
+            
                 <!-- Buttons for different actions based on order status -->
-                <% if (order.status === 'Pending') { %>
+                <% if (order.status === 'Pending' || order.status === 'Processed') { %>
                     <form id="shipForm" action="/admin/orders/ship/<%= order._id %>" method="POST" style="display:inline;">
                         <button type="button" class="btn btn-primary btn-sm btn-action" onclick="confirmShip()">Mark as Shipped</button>
                     </form>
@@ -140,11 +140,13 @@
                     <form id="deliverForm" action="/admin/orders/deliver/<%= order._id %>" method="POST" style="display:inline;">
                         <button type="button" class="btn btn-success btn-sm btn-action" onclick="confirmDeliver()">Mark as Delivered</button>
                     </form>
+                    <!-- Cancel button for shipped orders but not delivered yet -->
+                    <form id="cancelForm" action="/admin/orders/cancel/<%= order._id %>" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-danger btn-sm btn-action" onclick="confirmCancel()">Cancel Order</button>
+                    </form>
                 <% } %>
             </div>
-        </div>
-    </div>
-
+            
     <%- include('../partials/admin/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

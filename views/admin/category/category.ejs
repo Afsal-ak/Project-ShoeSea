@@ -75,7 +75,9 @@
             font-weight: 500;
         }
         form input[type="text"],
-        form textarea {
+        form textarea,
+        form input[type="number"],
+        form input[type="date"] {
             padding: 8px;
             border: 1px solid #ced4da;
             border-radius: 4px;
@@ -171,6 +173,7 @@
         <% if (message && message.length > 0) { %>
             <h5 style="color: green; text-align: center;" class="text-danger"><%= message[0] %></h5>
           <% } %>
+          
         <!-- Category Form -->
         <form action="/admin/addCategory" method="post">
             <div>
@@ -181,7 +184,14 @@
                 <label for="description">Description</label>
                 <textarea name="description" id="description" required></textarea>
             </div>
-          
+            <div>
+                <label for="categoryOffer">Category Offer (%)</label>
+                <input type="number" name="categoryOffer" id="categoryOffer" min="0" max="100">
+            </div>
+            <div>
+                <label for="offerExpiry">Offer Expiry Date</label>
+                <input type="date" name="offerExpiry" id="offerExpiry">
+            </div>
             <button type="submit">Add Category</button>
         </form>
 
@@ -191,7 +201,7 @@
                 <tr>
                     <th>Category Name</th>
                     <th>Description</th>
-                  
+                    <th>Offer</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
@@ -201,7 +211,7 @@
                     <tr>
                         <td><%= category.categoryName %></td>
                         <td><%= category.description %></td>
-                      
+                        <td><%= category.categoryOffer || 'No Offer' %> %</td>
                         <td>
                             <% if (category.isListed) { %>
                                 <span class="badge badge-success">Listed</span>
@@ -212,10 +222,8 @@
                         <td>
                             <a href="/admin/edit-category/<%= category._id %>" class="btn btn-info">Edit</a>
                             <% if (category.isListed) { %>
-                                
                                 <a href="/admin/unlistCategory?id=<%= category._id %>" class="btn btn-danger unlist-category">Unlist</a>
                             <% } else { %>
-                               
                                 <a href="/admin/listCategory?id=<%= category._id %>" class="btn btn-success list-category">List</a>
                             <% } %>
                         </td>
@@ -234,46 +242,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
     <script>
-        document.querySelectorAll('.remove-offer').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const href = this.getAttribute('href');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will remove the offer from the category!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, remove it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = href;
-                    }
-                });
-            });
-        });
-
-        document.querySelectorAll('.add-offer').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const href = this.getAttribute('href');
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This will add an offer to the category!",
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, add it!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = href;
-                    }
-                });
-            });
-        });
-
         document.querySelectorAll('.list-category').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -301,7 +269,7 @@
 
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "This will unlist the category and make it invisible to users!",
+                    text: "This will unlist the category and hide it from users!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, unlist it!',

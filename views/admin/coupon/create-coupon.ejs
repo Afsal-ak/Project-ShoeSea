@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Coupon</title>
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('../../partials/admin/header') %>
+
+    <div class="container">
+        <h1>Create Coupon</h1>
+        
+        <!-- Display Success or Error Messages -->
+        <% if (error && Object.keys(error).length > 0) { %>
+            <% for (let key in error) { %>
+                <h5 style="color: red; text-align: center;" class="text-danger"><%= error[key][0] %></h5>
+            <% } %>
+        <% } %>
+        
+        <form action="/admin/coupons/create" method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Coupon Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="offerPrice" class="form-label">Offer Price</label>
+                <input type="number" class="form-control" id="offerPrice" name="offerPrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="expirationDate" class="form-label">Expiration Date</label>
+                <input type="date" class="form-control" id="expirationDate" name="expirationDate" required>
+            </div>
+            <div class="mb-3">
+                <label for="minimumPrice" class="form-label">Minimum Price</label>
+                <input type="number" class="form-control" id="minimumPrice" name="minimumPrice" required>
+            </div>
+            <div class="mb-3">
+                <label for="discountType" class="form-label">Discount Type</label>
+                <select class="form-control" id="discountType" name="discountType" required>
+                    <option value="flat">Flat Discount</option>
+                    <option value="percentage">Percentage Discount</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Coupon</button>
+        </form>
+    </div>
+    
+    <%- include('../../partials/admin/footer') %>
+    
+</body>
+</html>

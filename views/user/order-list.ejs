@@ -106,11 +106,37 @@
                 font-size: 16px;
             }
         }
+        .pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 5px;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+
+}
+
+.pagination .btn.active {
+    background-color: #0056b3;
+    
+}
+
+.pagination .btn:hover {
+    background-color: #0056b3;
+}
+
     </style>
 </head>
 <body>
     <%- include('../partials/user/header') %>
 
+   
     <% if (orders.length > 0) { %>
         <h2>Your Orders</h2>
         <table>
@@ -149,15 +175,29 @@
                                 </form>
                             <% } %>
                         </td>
-                        
                     </tr>
                 <% }); %>
             </tbody>
         </table>
+    
+        <!-- Pagination Controls -->
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="btn">Previous</a>
+            <% } %>
+    
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="btn <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+            <% } %>
+    
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="btn">Next</a>
+            <% } %>
+        </div>
     <% } else { %>
         <p class="no-orders">You have no orders.</p>
     <% } %>
-
+    
     <%- include('../partials/user/footer') %>
 </body>
 </html>

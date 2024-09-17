@@ -51,49 +51,61 @@
             </ol>
         </nav>
 
-        <!-- Orders Container -->
-        <div class="orders-container">
-            <h3>All Orders</h3>
+        <div class="container">
+            <h3>Order List</h3>
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>Username</th> <!-- New column for Username -->
+                        <th>Username</th>
                         <th>Date</th>
                         <th>Total Amount</th>
                         <th>Payment Method</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th>Action</th>
+
                     </tr>
                 </thead>
                 <tbody>
                     <% orders.forEach(order => { %>
                         <tr>
                             <td><%= order._id %></td>
-                            <td><%= order.userId.username %></td> <!-- Display username -->
+                            <td><%= order.userId.username %></td>
                             <td><%= order.orderDate.toDateString() %></td>
                             <td>₹<%= order.totalAmount.toFixed(2) %></td>
                             <td><%= order.paymentMethod %></td>
                             <td><%= order.status %></td>
                             <td>
-                                <!-- Always show the button but conditionally disable it -->
-                                <!-- <form action="/admin/orders/ship/<%= order._id %>" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-action <%= (order.status !== 'Pending' && order.status !== 'Cancelled') ? 'btn-disabled' : '' %>" <%= (order.status !== 'Pending' && order.status !== 'Cancelled') ? 'disabled' : '' %>>Mark as Shipped</button>
-                                </form>
-
-                                <form action="/admin/orders/deliver/<%= order._id %>" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-success btn-sm btn-action <%= (order.status !== 'Shipped') ? 'btn-disabled' : '' %>" <%= (order.status !== 'Shipped') ? 'disabled' : '' %>>Mark as Delivered</button>
-                                </form> -->
-
-                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info btn-sm btn-action">View Details</a>
-                            </td>
+                            <a href="/admin/orders/<%= order._id %>" class="btn btn-info btn-sm btn-action">View Details</a>
+</td>
                         </tr>
                     <% }) %>
                 </tbody>
             </table>
+        
+            <!-- Pagination -->
+            <nav aria-label="Orders pagination">
+                <ul class="pagination">
+                    <!-- Previous Page -->
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-disabled="<%= currentPage === 1 %>">Previous</a>
+                    </li>
+        
+                    <!-- Page Numbers -->
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+        
+                    <!-- Next Page -->
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-disabled="<%= currentPage === totalPages %>">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-    </div>
-
+        
     <%- include('../partials/admin/footer') %>
 
     <script src="/js/bootstrap.bundle.min.js"></script>

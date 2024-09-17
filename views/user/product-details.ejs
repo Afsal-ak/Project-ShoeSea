@@ -78,8 +78,21 @@
                 </form>
 
                 <!-- Buy Now Button -->
-                <a href="/checkout?productId=<%= product._id %>&quantity=1" class="btn btn-success ms-2" <%= product.quantity > 0 ? '' : 'disabled' %>>Buy Now</a>
-
+                <!-- <a href="/checkout?productId=<%= product._id %>&quantity=1" class="btn btn-success ms-2" <%= product.quantity > 0 ? '' : 'disabled' %>>Buy Now</a> -->
+                <!-- <form action="/buy-now" method="GET">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <input type="hidden" name="quantity" value="1"> 
+                    <button type="submit" class="btn btn-primary">Buy Now</button>
+                </form> -->
+                
+                
+                <!-- Wishlist Button -->
+<form action="/wishlist/add" method="POST" class="d-inline">
+    <input type="hidden" name="productId" value="<%= product._id %>">
+    <button  class="btn btn-primary"  type="submit" <%= product.quantity>0?'':'disabled'  %>>
+        <i class="bi bi-heart"></i> Add to Wishlist
+    </button>
+</form>
                 <div class="mt-4">
                     <h5>Highlights/Specs:</h5>
                     <p><%= product.highlights %></p>

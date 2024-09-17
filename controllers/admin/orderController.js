@@ -5,19 +5,42 @@ const Category = require('../../models/categoryModel');
 const User = require('../../models/userModel');
 const Address = require('../../models/addressModel');
 
-const listOrder=async(req,res)=>{
-    try {
-       const orders=await Order.find()
-       .populate('userId','username')
-       .populate('products.productId') 
+// const listOrder=async(req,res)=>{
+//     try {
+//        const orders=await Order.find()
+//        .populate('userId','username')
+//        .populate('products.productId') 
 
-       res.render('order-list', { orders });
+//        res.render('order-list', { orders });
+//     } catch (error) {
+//         console.error('Error fetching orders:', error);
+//         res.status(500).send('Server Error');
+//     }
+// }
+
+const listOrder = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1; // Get the current page, default to 1
+        const limit = 10; // Number of orders per page
+        const skip = (page - 1) * limit; // Calculate the skip value for pagination
+
+        // Fetch orders with pagination
+        const totalOrders = await Order.countDocuments(); // Total number of orders
+        const orders = await Order.find()
+            .populate('userId', 'username') // Populate username from the User model
+            .populate('products.productId') // Populate product details
+            .limit(limit)
+            .skip(skip)
+            .sort({ orderDate: -1 }); // Sort by most recent orders
+
+        const totalPages = Math.ceil(totalOrders / limit); // Calculate total number of pages
+
+        res.render('order-list', { orders, currentPage: page, totalPages });
     } catch (error) {
         console.error('Error fetching orders:', error);
         res.status(500).send('Server Error');
     }
-}
-
+};
 
 const viewOrder=async(req,res)=>{
     try {

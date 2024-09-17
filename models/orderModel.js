@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+  orderId:{
+    type:Number,
+    required:true
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -28,9 +32,14 @@ const orderSchema = new mongoose.Schema({
   }],
   paymentMethod: {
     type: String,
-    enum: ['Cash on Delivery', 'Credit Card', 'PayPal'],
+    enum: ['Cash on Delivery', 'Credit Card', 'PayPal','Razorpay'],
     default: 'Cash on Delivery'
   },
+  paymentStatus: {
+    type: String,
+    enum: ['Paid', 'Processing', 'Cancelled', 'Success', 'Failed'],
+    default: 'Processing'
+},
   status: {
     type: String,
     enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'],
@@ -68,6 +77,16 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  shippingAddress: {
+    fname: String,
+    lname: String,
+    housename: String,
+    city: String,
+    state: String,
+    country: String,
+    pincode: String,
+    phone: String,
+},
   paymentStatus: {
     type: String,
     enum: ['Pending', 'Completed', 'Failed'],

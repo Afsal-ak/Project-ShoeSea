@@ -134,7 +134,7 @@
 const User = require('../models/userModel');
 
 const isLogin = (req, res, next) => {
-  if (req.session.isAuth) {
+  if (req.session.userId) {
     console.log('User session is true');
     next();
   } else {
@@ -144,7 +144,7 @@ const isLogin = (req, res, next) => {
 };
 
 const isLogout = (req, res, next) => {
-  if (req.session.isAuth) {
+  if (req.session.userId) {
     console.log('User is logged in, redirecting to home');
     return res.redirect('/home');
   }
@@ -181,8 +181,30 @@ const checkUserStatus = async (req, res, next) => {
   }
 };
 
+
+const userMiddleware = async (req, res, next) => {
+  if (req.session.userId) {
+    try {
+      const user = await User.findById(req.session.userId);
+      if (user) {
+        res.locals.user = user;
+      } else {
+        res.locals.user = null;
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error.message);
+      res.locals.user = null;
+    }
+  } else {
+    res.locals.user = null;
+  }
+  next();
+};
+
+
 module.exports = {
   isLogin,
   isLogout,
-  checkUserStatus
+  checkUserStatus,
+  userMiddleware
 };

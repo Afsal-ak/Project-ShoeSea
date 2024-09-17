@@ -136,31 +136,31 @@ module.exports = {
 //       }
 //   },
 // Show the user's cart
-showCart: async (req, res) => {
-    try {
-        const email = req.session.email;
-        if (!email) {
-            return res.status(401).redirect('/login');
-        }
+// showCart: async (req, res) => {
+//     try {
+//         const email = req.session.email;
+//         if (!email) {
+//             return res.status(401).redirect('/login');
+//         }
 
-        const userData = await User.findOne({ email }).populate('cart.productId');
-        if (!userData) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+//         const userData = await User.findOne({ email }).populate('cart.productId');
+//         if (!userData) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
 
-        // Filter out out-of-stock products and those that are not available
-        userData.cart = userData.cart.filter(item => {
-            return item.productId && item.productId.status === 'Available' && item.productId.quantity > 0;
-        });
+//         // Filter out out-of-stock products and those that are not available
+//         userData.cart = userData.cart.filter(item => {
+//             return item.productId && item.productId.status === 'Available' && item.productId.quantity > 0;
+//         });
 
-        const message = req.query.message || '';
+//         const message = req.query.message || '';
 
-        res.render('cart', { user: userData, userCart: userData, message });
-    } catch (error) {
-        console.error('Error showing cart:', error.message);
-        res.redirect('/500');
-    }
-},
+//         res.render('cart', { user: userData, userCart: userData, message });
+//     } catch (error) {
+//         console.error('Error showing cart:', error.message);
+//         res.redirect('/500');
+//     }
+// },
 
 // Show the user's cart
 // Show the user's cart
@@ -290,12 +290,129 @@ showCart: async (req, res) => {
 //     }
 // },
 
+// deleteFromCart: async (req, res) => {
+//     try {
+//         const email = req.session.email;
+//         const productId = req.query.id;
+
+//         if (!email) {
+//             return res.status(401).redirect('/login');
+//         }
+
+//         if (!productId) {
+//             return res.status(400).send('Product ID is required');
+//         }
+
+//         const userData = await User.findOne({ email });
+//         if (!userData) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         // Ensure productId is properly referenced
+//         userData.cart = userData.cart.filter(item => item.productId && item.productId.toString() !== productId);
+//         await userData.save();
+
+//         res.redirect('/cart');
+//     } catch (error) {
+//         console.error('Error deleting from cart:', error.message);
+//         res.redirect('/500');
+//     }
+// }
+// ,
+// updateQuantity: async (req, res) => {
+//     try {
+//         const { productId, newQuantity } = req.body;
+
+//         // Validate the productId format
+//         if (!mongoose.Types.ObjectId.isValid(productId)) {
+//             return res.status(400).json({ message: 'Invalid product ID' });
+//         }
+
+//         // Validate the newQuantity
+//         const quantity = parseInt(newQuantity, 10);
+//         if (isNaN(quantity) || quantity < 1) {
+//             return res.status(400).json({ message: 'Invalid quantity' });
+//         }
+
+//         // Find the user cart from session data or by querying the database
+//         const email = req.session.email;
+//         if (!email) {
+//             return res.status(401).json({ message: 'User not authenticated' });
+//         }
+
+//         const userData = await User.findOne({ email }).populate('cart.productId');
+//         if (!userData) {
+//             return res.status(404).json({ message: 'User not found' });
+//         }
+
+//         // Find the cart item
+//         const cartItem = userData.cart.find(item => item.productId && item.productId._id.toString() === productId);
+//         if (!cartItem) {
+//             return res.status(404).json({ message: 'Cart item not found' });
+//         }
+
+//         // Check if the requested quantity is available in stock
+//         if (quantity > cartItem.productId.quantity) {
+//             return res.status(400).json({ message: 'Insufficient stock available' });
+//         }
+
+//         // Check if the quantity exceeds the maximum limit per product
+//         const maxLimit = 5; // Maximum quantity limit per product
+//         if (quantity > maxLimit) {
+//             return res.status(400).json({ message: `Cannot add more than ${maxLimit} items of this product` });
+//         }
+
+//         // Update the quantity
+//         cartItem.quantity = quantity;
+//         await userData.save();
+
+//         // Calculate the new subtotal for this item
+//         const newSubtotal = cartItem.productId.salePrice * quantity;
+
+//         // Calculate the new total and total items
+//         const newTotal = userData.cart.reduce((total, item) => {
+//             return item.productId ? total + (item.productId.salePrice * item.quantity) : total;
+//         }, 0);
+
+//         const totalItems = userData.cart.reduce((total, item) => total + (item.productId ? item.quantity : 0), 0);
+
+//         res.json({ newSubtotal, newTotal, totalItems });
+//     } catch (error) {
+//         console.error('Error updating cart quantity:', error.message);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// }
+
+showCart: async (req, res) => {
+    try {
+        const userId = req.session.userId; // Use userId from session
+        if (!userId) {
+            return res.status(401).redirect('/login');
+        }
+
+        const userData = await User.findById(userId).populate('cart.productId');
+        if (!userData) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Filter out out-of-stock products and those that are not available
+        userData.cart = userData.cart.filter(item => {
+            return item.productId && item.productId.status === 'Available' && item.productId.quantity > 0;
+        });
+
+        const message = req.query.message || '';
+        res.render('cart', { user: userData, userCart: userData, message });
+    } catch (error) {
+        console.error('Error showing cart:', error.message);
+        res.redirect('/500');
+    }
+},
 deleteFromCart: async (req, res) => {
     try {
-        const email = req.session.email;
+        const userId = req.session.userId; // Use userId from session
         const productId = req.query.id;
 
-        if (!email) {
+        if (!userId) {
             return res.status(401).redirect('/login');
         }
 
@@ -303,7 +420,7 @@ deleteFromCart: async (req, res) => {
             return res.status(400).send('Product ID is required');
         }
 
-        const userData = await User.findOne({ email });
+        const userData = await User.findById(userId);
         if (!userData) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -317,59 +434,48 @@ deleteFromCart: async (req, res) => {
         console.error('Error deleting from cart:', error.message);
         res.redirect('/500');
     }
-}
-,
+},
 updateQuantity: async (req, res) => {
     try {
         const { productId, newQuantity } = req.body;
 
-        // Validate the productId format
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({ message: 'Invalid product ID' });
         }
 
-        // Validate the newQuantity
         const quantity = parseInt(newQuantity, 10);
         if (isNaN(quantity) || quantity < 1) {
             return res.status(400).json({ message: 'Invalid quantity' });
         }
 
-        // Find the user cart from session data or by querying the database
-        const email = req.session.email;
-        if (!email) {
+        const userId = req.session.userId; // Use userId from session
+        if (!userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        const userData = await User.findOne({ email }).populate('cart.productId');
+        const userData = await User.findById(userId).populate('cart.productId');
         if (!userData) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Find the cart item
         const cartItem = userData.cart.find(item => item.productId && item.productId._id.toString() === productId);
         if (!cartItem) {
             return res.status(404).json({ message: 'Cart item not found' });
         }
 
-        // Check if the requested quantity is available in stock
         if (quantity > cartItem.productId.quantity) {
             return res.status(400).json({ message: 'Insufficient stock available' });
         }
 
-        // Check if the quantity exceeds the maximum limit per product
-        const maxLimit = 5; // Maximum quantity limit per product
+        const maxLimit = 5;
         if (quantity > maxLimit) {
             return res.status(400).json({ message: `Cannot add more than ${maxLimit} items of this product` });
         }
 
-        // Update the quantity
         cartItem.quantity = quantity;
         await userData.save();
 
-        // Calculate the new subtotal for this item
         const newSubtotal = cartItem.productId.salePrice * quantity;
-
-        // Calculate the new total and total items
         const newTotal = userData.cart.reduce((total, item) => {
             return item.productId ? total + (item.productId.salePrice * item.quantity) : total;
         }, 0);
@@ -384,5 +490,4 @@ updateQuantity: async (req, res) => {
 }
 
 
-
-}
+ }

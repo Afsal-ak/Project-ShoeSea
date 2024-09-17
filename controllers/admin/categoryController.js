@@ -67,20 +67,53 @@ const getCategory = async (req, res) => {
 //         return res.redirect('/admin/category');
 //     }
 // };
+
+
+// const addCategory = async (req, res) => {
+//     try {
+//         const { categoryName, description } = req.body;
+
+//         // Case-insensitive check for existing category
+//         let categoryCheck = await Category.findOne({ categoryName: new RegExp('^' + categoryName + '$', 'i') });
+//         if (categoryCheck) {
+//             req.flash('error', 'Category Name Already Exists');
+//             return res.redirect('/admin/category');
+//         }
+
+//         const categoryData = new Category({
+//             categoryName: categoryName,
+//             description: description,
+//             category
+//         });
+
+//         await categoryData.save();
+//         req.flash('message', 'Category Successfully Created');
+//         return res.redirect('/admin/category');
+//     } catch (error) {
+//         console.error(error.message);
+//         req.flash('error', 'Internal Server Error');
+//         return res.redirect('/admin/category');
+//     }
+// };
 const addCategory = async (req, res) => {
     try {
-        const { categoryName, description } = req.body;
+        const { categoryName, description, categoryOffer, offerExpiry } = req.body;
 
         // Case-insensitive check for existing category
         let categoryCheck = await Category.findOne({ categoryName: new RegExp('^' + categoryName + '$', 'i') });
+
         if (categoryCheck) {
             req.flash('error', 'Category Name Already Exists');
+            console.log('name already exists')
             return res.redirect('/admin/category');
         }
 
+        // Create new category
         const categoryData = new Category({
             categoryName: categoryName,
-            description: description
+            description: description,
+            categoryOffer: categoryOffer || 0, // Default to 0 if not provided
+            offerExpiry: offerExpiry || null  // Default to null if no expiry
         });
 
         await categoryData.save();
@@ -206,10 +239,43 @@ const getEditCategory = async (req, res) => {
 };
 
 
+// const updateCategory = async (req, res) => {
+//     try {
+//         const categoryId = req.params.id;
+//         const { categoryName, description } = req.body;
+
+//         // Check if another category with the same name exists
+//         const existingCategory = await Category.findOne({ categoryName });
+
+//         if (existingCategory && existingCategory._id.toString() !== categoryId) {
+//             req.flash('error', 'Category name must be unique');
+//             return res.redirect(`/admin/edit-category/${categoryId}`);
+//         }
+
+//         // Proceed with updating the category
+//         const updatedCategory = await Category.findByIdAndUpdate(
+//             categoryId,
+//             { categoryName, description },
+//             { new: true }
+//         );
+
+//         if (!updatedCategory) {
+//             req.flash('error', 'Failed to update category');
+//             return res.redirect('/admin/category');
+//         }
+
+//         req.flash('message', 'Category updated successfully');
+//         return res.redirect('/admin/category');
+//     } catch (error) {
+//         console.error(error.message);
+//         req.flash('error', 'Internal Server Error');
+//         return res.redirect('/admin/category');
+//     }
+// };
 const updateCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
-        const { categoryName, description } = req.body;
+        const { categoryName, description, categoryOffer, offerExpiry } = req.body;
 
         // Check if another category with the same name exists
         const existingCategory = await Category.findOne({ categoryName });
@@ -222,7 +288,12 @@ const updateCategory = async (req, res) => {
         // Proceed with updating the category
         const updatedCategory = await Category.findByIdAndUpdate(
             categoryId,
-            { categoryName, description },
+            {
+                categoryName,
+                description,
+                categoryOffer: categoryOffer || 0,  // Default to 0 if not provided
+                offerExpiry: offerExpiry || null     // Default to null if no expiry
+            },
             { new: true }
         );
 

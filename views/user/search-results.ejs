@@ -86,14 +86,18 @@
                 </div>
                 
                 <!-- Category Filter Option -->
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-3">
                     <select name="category" class="form-control" onchange="this.form.submit()">
-                        <option value="">All Categories</option>
+                        <!-- Placeholder option -->
+                        <option value="" disabled <%= !selectedCategory ? 'selected' : '' %>>Select a Category</option>
+                        
+                        <!-- Category options -->
                         <% categories.forEach((category) => { %>
-                            <option value="<%= category._id %>" <%= category._id === selectedCategory ? 'selected' : '' %>><%= category.categoryName %></option>
+                            <option value="<%= category._id %>" <%= selectedCategory === category._id.toString() ? 'selected' : '' %>><%= category.categoryName %></option>
                         <% }); %>
                     </select>
                 </div>
+                
             </div>
         </form>
     </section>

@@ -3,188 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Link your stylesheet -->
     <style>
-        .zoom-container {
-            position: relative;
-            overflow: hidden;
+      
+      
+
+        h2, h3, h4 {
+            color: #333;
         }
-        .zoom-wrapper {
-            position: relative;
+
+        table {
             width: 100%;
-            max-width: 600px;
-        }
-        .zoom-image {
-            width: 100%;
-            transition: transform 0.3s ease;
-        }
-        .thumbnail-images {
-            display: flex;
-            flex-wrap: wrap;
-        }
-        .thumbnail-images img {
-            width: 80px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            border: 2px solid transparent;
-            transition: border-color 0.3s ease;
-        }
-        .thumbnail-images img.active {
-            border-color: #007bff;
-        }
-        .product-details {
-            margin-top: 20px;
-        }
-        .status-available {
-            color: green;
-        }
-        .status-unavailable {
-            color: red;
-        }
-        .breadcrumb {
-            background: none;
-            padding: 0;
-            margin-bottom: 1rem;
-        }
-        .related-products {
-            margin-top: 40px;
-        }
-        .related-product {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            border-collapse: collapse;
             margin-bottom: 20px;
         }
-        .related-product img {
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f8f8f8;
+        }
+
+        table td {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .coupon-section, .total-amount, .shipping-section, .payment-method {
+            margin: 20px 0;
+        }
+
+        .coupon-section input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .coupon-section button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .coupon-section button:hover {
+            background-color: #218838;
+        }
+
+        .total-amount h3 {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .total-amount p {
+            color: #28a745;
+            font-size: 16px;
+        }
+
+        .shipping-section p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #0069d9;
+        }
+
+        .payment-method label {
+            display: block;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .payment-options {
+            margin-bottom: 20px;
+        }
+
+        .btn {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
-            margin-bottom: 10px;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .success {
+            color: #28a745;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .coupon-section input[type="text"] {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <%- include('../partials/user/header') %>
-    </header>
+    <%- include('../partials/user/header') %>
 
-    <main class="container mt-4">
-        <!-- Breadcrumb Navigation -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/home">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
-            </ol>
-        </nav>
+    <div class="container">
+        <h2>Checkout</h2>
 
-        <section class="product-details">
-            <div class="row">
-                <div class="col-md-6 zoom-container">
-                    <div class="zoom-wrapper">
-                        <img id="mainImage" src="/<%= product.productImages[0] %>" class="zoom-image" alt="<%= product.productName %>">
-                    </div>
-                    <div class="thumbnail-images mt-2">
-                        <% product.productImages.forEach((image, index) => { %>
-                            <img src="/<%= image %>" 
-                                 onclick="changeImage('<%= image %>','<%= index %>' )" 
-                                 alt="<%= product.productName %>"
-                                 class="<%= index === 0 ? 'active' : '' %>">
-                        <% }) %>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h2><%= product.productName %></h2>
-                    <p><strong>Status:</strong> <span class="<%= product.stock > 0 ? 'status-available' : 'status-unavailable' %>">
-                        <%= product.quantity > 0 ? 'Available' : 'Sold Out' %></span>
-                    </p>
-                    <p><strong>Price:</strong> <%= product.salePrice %> rupees</p>
-                    <p><strong>Stock:</strong> <%= product.quantity %> units</p>
-                    <p><strong>Discount:</strong> <%= product.productOffer || 'No discount' %>%</p>
-                    <p><strong>Ratings:</strong> <%= product.ratings %> 4.5 stars</p>
-                    <% if (product.stock === 0) { %>
-                        <p class="text-danger">Sold out</p>
-                    <% } else if (product.isBlocked) { %>
-                        <p class="text-danger">Unavailable</p>
+        <!-- Cart Summary -->
+        <div class="cart-summary">
+            <h3>Order Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (userCart.cart && userCart.cart.length > 0) { %>
+                        <% userCart.cart.forEach(item => { %>
+                            <tr>
+                                <td><%= item.productId.productName %></td>
+                                <td><%= item.quantity %></td>
+                                <td>$<%= item.productId.salePrice %></td>
+                                <td>$<%= item.productId.salePrice * item.quantity %></td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="4">Your cart is empty.</td>
+                        </tr>
                     <% } %>
-                    <p><strong>Reviews:</strong></p>
-                    <ul>
-                        <% if (product.reviews && product.reviews.length > 0) { %>
-                            <% product.reviews.forEach((review) => { %>
-                                <li><strong><%= review.user %>:</strong> <%= review.comment %> (Rating: <%= review.rating %>)</li>
-                            <% }) %>
-                        <% } else { %>
-                            <li>No reviews available.</li>
-                        <% } %>
-                    </ul>
-                    <p><strong>Sizes:</strong> <%= product.sizes %></p>
-                    <p><strong>Highlights/Specs:</strong> <%= product.highlights %></p>
-                    <li><strong>Colour:</strong> <%= product.colour %></li>
-                    <li>Item Weight: 600 g
-                        Item Dimensions: LxWxH 45 x 30 x 3 Centimeters
-                        Generic Name: Running Shoes</li>
+                </tbody>
+            </table>
+        </div>
+<!-- Coupon Application -->
+<div class="coupon-section">
+    <h4>Have a Coupon?</h4>
+
+    <!-- If no coupon is applied, show the "Apply Coupon" form -->
+    <% if (!coupon) { %>
+        <form action="/apply-coupon" method="POST">
+            <input type="text" name="couponCode" placeholder="Enter coupon code" required>
+            <button type="submit" class="apply-btn">Apply Coupon</button>
+        </form>
+    <% } else { %>
+        <!-- If a coupon is applied, show the applied coupon message and "Remove Coupon" button -->
+        <p class="success">Coupon "<%= coupon.code %>" applied! Discount: $<%= coupon.discountAmount %></p>
+        <form action="/remove-coupon" method="POST">
+            <button type="submit" class="apply-btn">Remove Coupon</button>
+        </form>
+    <% } %>
+
+    <!-- Display any error message -->
+    <% if (error_msg) { %>
+        <h6 style="color: red;"><%= error_msg %></h6>
+    <% } %>
+</div>
+
+
+<!-- Total Amount -->
+<div class="total-amount">
+    <h3>Total Amount: $<%= totalAmount %></h3>
+    <% if (coupon) { %>
+        <p>Discounted Total: $<%= discountedTotal %></p>
+    <% } %>
+</div>
+<!-- Shipping Address -->
+<div class="shipping-section">
+    <h4>Shipping Address</h4>
+    <% if (userAddress && userAddress.length > 0) { %>
+        <p><%= userAddress[0].housename %>, <%= userAddress[0].city %>, <%= userAddress[0].state %>, <%= userAddress[0].pincode %>, <%= userAddress[0].country %></p>
+        <a href="/change-address" class="btn">Change Address</a>
+        <input type="hidden" name="addressId" value="<%= userAddress[0]._id %>"> <!-- Ensure address ID is passed -->
+    <% } else { %>
+        <p>No address available. Please add an address.</p>
+        <a href="/add-address" class="btn">Add Address</a>
+    <% } %>
+</div>
+
+
+        <!-- Payment Method Selection -->
+        <div class="payment-method">
+            <h4>Select Payment Method</h4>
+            <form action="/checkout" method="POST">
+                <div class="payment-options">
+                    <label>
+                        <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
+                        Cash on Delivery
+                    </label>
+                    <label>
+                        <input type="radio" name="paymentMethod" value="online">
+                        Online Payment
+                    </label>
                 </div>
-            </div>
-        </section>
 
-        <section class="related-products">
-            <h3>Related Products</h3>
-            <div class="row">
-                <% relatedProducts.forEach((related, index) => { %>
-                    <% if (index % 4 === 0) { %>
-                        <div class="w-100"></div>
-                    <% } %>
-                    <div class="col-md-3 related-product">
-                        <a href="/product-details/<%= related._id %>" class="text-decoration-none">
-                            <img src="/<%= related.productImages[0] %>" alt="<%= related.productName %>">
-                            <h5><%= related.productName %></h5>
-                            <p><%= related.salePrice %> rupees</p>
-                        </a>
-                    </div>
-                <% }) %>
-            </div>
-        </section>
-    </main>
+                <!-- Hidden Inputs for Cart Data -->
+                <input type="hidden" name="userId" value="<%= user._id %>">
+                <input type="hidden" name="totalAmount" value="<%= totalAmount - (coupon ? coupon.offerPrice : 0) %>">
+                <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>"> <!-- Calculate total quantity -->
+                <input type="hidden" name="addressId" value="<%= userAddress[0]._id %>"> <!-- Ensure address ID is passed -->
 
-    <footer>
-        <%- include('../partials/user/footer') %>
-    </footer>
+                <button type="submit" class="btn">Place Order</button>
+            </form>
+        </div>
+    </div>
 
-    <script>
-        function changeImage(src, index) {
-            const mainImage = document.getElementById('mainImage');
-            mainImage.src = src;
-
-            document.querySelectorAll('.thumbnail-images img').forEach(img => img.classList.remove('active'));
-            document.querySelectorAll('.thumbnail-images img')[index].classList.add('active');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const thumbnails = document.querySelectorAll('.thumbnail-images img');
-            if (thumbnails.length > 0) {
-                changeImage(thumbnails[0].src, 0);
-            }
-        });
-
-        const zoomImage = document.getElementById('mainImage');
-        const zoomWrapper = document.querySelector('.zoom-wrapper');
-
-        zoomWrapper.addEventListener('mousemove', function(e) {
-            const rect = zoomWrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const xPercent = x / zoomWrapper.offsetWidth * 100;
-            const yPercent = y / zoomWrapper.offsetHeight * 100;
-            zoomImage.style.transform = `scale(2)`;
-            zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-        });
-
-        zoomWrapper.addEventListener('mouseleave', function() {
-            zoomImage.style.transform = `scale(1)`;
-            zoomImage.style.transformOrigin = `center center`;
-        });
-    </script>
+    <%- include('../partials/user/footer') %>
 </body>
 </html>

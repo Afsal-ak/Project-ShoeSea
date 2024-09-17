@@ -8,281 +8,305 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <style>
         .form-container {
-            max-width: 900px;
-            margin: 0 auto;
+            margin-top: 20px;
         }
-        .form-wrapper {
-            background-color: #ffffff; /* White background */
-            padding: 20px; /* Padding around the form */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-            margin-top: 20px; /* Margin from the top */
-            margin-bottom: 20px; /* Margin from the bottom */
+        .error-message {
+            color: red;
         }
-        .img-preview {
-            margin: 10px 0;
+        .thumbnails-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .img-preview img {
-            max-width: 100px;
-            max-height: 100px;
-            margin-right: 10px;
+        .thumbnail {
+            position: relative;
         }
-        .crop-button {
+        .thumbnail img {
+            max-width: 200px;
+            max-height: 150px;
+        }
+        .image-preview {
+            max-width: 300px;
+            max-height: 200px;
             margin-top: 10px;
         }
         .crop-container {
-            margin-bottom: 20px;
+            display: none;
+            margin-top: 10px;
         }
-        .crop-container img {
-            max-width: 100%;
-        }
-        .is-invalid {
-            border-color: #dc3545;
-        }
-        .invalid-feedback {
-            display: block;
+        .delete-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <%- include('../../partials/admin/header') %>
-    
+
     <div class="container form-container">
-        <div class="form-wrapper">
-            <h2 class="my-4">Edit Product</h2>
-            <form id="productForm" enctype="multipart/form-data" method="post" action="/admin/edit-product/<%= product._id %>">
-                <!-- Product Name -->
-                <div class="form-group">
-                    <label for="title">Product Name</label>
-                    <input type="text" class="form-control" id="title" name="title" value="<%= product.productName %>" required>
-                    <div class="invalid-feedback">Product Name is required and cannot be empty.</div>
-                </div>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="productForm" method="post" action="/admin/edit-product/<%= product._id %>" enctype="multipart/form-data" onsubmit="return validateForm()">
+                            <!-- Product Name -->
+                            <div class="mb-4">
+                                <label for="title" class="form-label">Product Name</label>
+                                <input type="text" placeholder="Type here" name="title" class="form-control border" id="title" value="<%= product.productName %>">
+                                <div id="productName-error" class="error-message"></div>
+                            </div>
 
-                <!-- Description -->
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" id="description" name="description" rows="3" required><%= product.description %></textarea>
-                    <div class="invalid-feedback">Description is required and cannot be empty.</div>
-                </div>
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+                                <textarea placeholder="Type here" id="description" name="description" class="form-control border" rows="4"><%= product.description %></textarea>
+                                <div id="description-error" class="error-message"></div>
+                            </div>
 
-                <!-- Brand -->
-                <div class="form-group">
-                    <label for="brand">Brand</label>
-                    <input type="text" class="form-control" id="brand" name="brand" value="<%= product.brand %>">
-                    <div class="invalid-feedback">Brand cannot be empty if provided.</div>
-                </div>
+                            <!-- Prices and Quantity -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Regular price</label>
+                                        <input placeholder="$" name="regularPrice" type="text" class="form-control border" value="<%= product.regularPrice %>">
+                                        <div id="regularPrice-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Sale price</label>
+                                        <input placeholder="$" name="salePrice" type="text" class="form-control border" value="<%= product.salePrice %>">
+                                        <div id="salePrice-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Quantity</label>
+                                        <input placeholder="" name="quantity" type="text" class="form-control border" value="<%= product.quantity %>">
+                                        <div id="quantity-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Category -->
-                <div class="form-group">
-                    <label for="category">Category</label>
-                    <select class="form-control" id="category" name="categoryId" required>
-                        <% category.forEach(c => { %>
-                            <option value="<%= c._id %>" <%= c._id.equals(product.categoryId) ? 'selected' : '' %>><%= c.categoryName %></option>
-                        <% }) %>
-                    </select>
-                    <div class="invalid-feedback">Category is required.</div>
-                </div>
+                            <!-- Color -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Color</label>
+                                        <input name="color" type="text" class="form-control border" value="<%= product.colour %>">
+                                        <div id="color-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Regular Price -->
-                <div class="form-group">
-                    <label for="regularPrice">Regular Price</label>
-                    <input type="number" class="form-control" id="regularPrice" name="regularPrice" step="0.01" value="<%= product.regularPrice %>" required>
-                    <div class="invalid-feedback">Regular Price is required and must be a valid number.</div>
-                </div>
+                            <!-- Category -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row gx-2">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select border" style="width: 150px;" name="categoryId">
+                                                <% cat.forEach(category => { %>
+                                                    <option value="<%= category._id %>" <%= product.categoryId === category._id ? 'selected' : '' %>><%= category.categoryName %></option>
+                                                <% }); %>
+                                            </select>
+                                            <div id="category-error" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <!-- Sale Price -->
-                <!-- <div class="form-group">
-                    <label for="salePrice">Sale Price</label>
-                    <input type="number" class="form-control" id="salePrice" name="salePrice" step="0.01" value="<%= product.salePrice %>" required>
-                    <div class="invalid-feedback">Sale Price is required and must be a valid number.</div>
-                </div> -->
+                     <!-- Discount Type -->
+<div class="mb-4">
+    <label class="form-label">Discount Type</label>
+    <select class="form-select border" name="discountType">
+        <option value="">Select discount type</option>
+        <option value="percentage">Percentage</option>
+        <option value="flat">Flat</option>
+    </select>
+    <div id="discountType-error" class="error-message"></div>
+</div>
 
-                <!-- Discount -->
-                <div class="form-group">
-                    <label for="discountType">Discount Type</label>
-                    <select class="form-control" id="discountType" name="discountType" required>
-                        <option value="percentage" <%= product.productOffer === 'percentage' ? 'selected' : '' %>>Percentage</option>
-                        <option value="flat" <%= product.productOffer === 'flat' ? 'selected' : '' %>>Flat</option>
-                    </select>
-                    <div class="invalid-feedback">Discount Type is required.</div>
-                </div>
-                <div class="form-group">
-                    <label for="discountValue">Discount Value</label>
-                    <input type="number" class="form-control" id="discountValue" name="discountValue" step="0.01" value="<%= product.productOffer %>" required>
-                    <div class="invalid-feedback">Discount Value is required and must be a valid number.</div>
-                </div>
+<!-- Discount Value -->
+<div class="mb-4">
+    <label class="form-label">Discount Value</label>
+    <input placeholder="Discount Value" name="discountValue" type="text" class="form-control border" value="<%= product.productOffer %>">
+    <div id="discountValue-error" class="error-message"></div>
+</div>
 
-                <!-- Tax -->
-                <div class="form-group">
-                    <label for="taxType">Tax Type</label>
-                    <select class="form-control" id="taxType" name="taxType" required>
-                        <option value="percentage" <%= product.taxType === 'percentage' ? 'selected' : '' %>>Percentage</option>
-                        <option value="flat" <%= product.tax === 'flat' ? 'selected' : '' %>>Flat</option>
-                    </select>
-                    <div class="invalid-feedback">Tax Type is required.</div>
-                </div>
-                <div class="form-group">
-                    <label for="taxValue">Tax Value</label>
-                    <input type="number" class="form-control" id="taxValue" name="taxValue" step="0.01" value="<%= product.tax %>" required>
-                    <div class="invalid-feedback">Tax Value is required and must be a valid number.</div>
-                </div>
+<!-- Tax Type -->
+<div class="mb-4">
+    <label class="form-label">Tax Type</label>
+    <select class="form-select border" name="taxType">
+        <option value="">Select tax type</option>
+        <option value="percentage">Percentage</option>
+        <option value="flat">Flat</option>
+    </select>
+    <div id="taxType-error" class="error-message"></div>
+</div>
 
-                <!-- Quantity -->
-                <div class="form-group">
-                    <label for="quantity">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" name="quantity" value="<%= product.quantity %>" required>
-                    <div class="invalid-feedback">Quantity is required and must be a valid number.</div>
-                </div>
+<!-- Tax Value -->
+<div class="mb-4">
+    <label class="form-label">Tax Value</label>
+    <input placeholder="Tax Value" name="taxValue" type="text" class="form-control border" value="<%= product.tax %>">
+    <div id="taxValue-error" class="error-message"></div>
+</div>
 
-                <!-- Color -->
-                <div class="form-group">
-                    <label for="color">Color</label>
-                    <input type="text" class="form-control" id="color" name="color" value="<%= product.colour %>" required>
-                    <div class="invalid-feedback">Color is required and cannot be empty.</div>
-                </div>
+<!-- Offer Description -->
+<div class="mb-4">
+    <label class="form-label">Offer Description</label>
+    <textarea placeholder="Offer Description" name="offerDescription" class="form-control border" rows="2" value="<%= product.offerDescription %>"></textarea>
+</div>
 
-                <!-- Sizes -->
-                <div class="form-group">
-                    <label for="sizes">Sizes</label>
-                    <select class="form-control" id="sizes" name="sizes" multiple required>
-                        <% [5, 6, 7, 8, 9].forEach(size => { %>
-                            <option value="<%= size %>" <%= product.sizes.includes(size) ? 'selected' : '' %>><%= size %></option>
-                        <% }) %>
-                    </select>
-                    <div class="invalid-feedback">At least one size must be selected.</div>
+<!-- Sizes -->
+<div class="mb-4">
+    <label class="form-label">Sizes</label>
+    <input placeholder="Sizes (comma separated)" name="sizes" type="text" class="form-control border" value="<%= product.sizes %>">
+</div>
+<form action="/admin/products/<%= product._id %>/update" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+    <input type="hidden" id="productId" name="productId" value="<%= product._id %>">
+    
+        <!-- Existing Images -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Current Images</h4>
+            </div>
+            <div class="card-body">
+                <div id="currentImagesContainer" class="thumbnails-container">
+                    <% product.productImages.forEach((image, index) => { %>
+                        <div class="thumbnail" id="image-<%= index %>">
+                            <img src="/<%= image %>" alt="Product Image" class="image-preview">
+                            <button type="button" class="delete-image-btn" onclick="deleteImage('<%= product._id %>', '<%= image %>', <%= index %>)">X</button>
+                        </div>
+                    <% }); %>
                 </div>
+            </div>
+        </div>
 
-                <!-- Product Images -->
-                <div class="form-group">
-                    <label for="images">Product Images</label>
-                    <input type="file" class="form-control-file" id="images" name="images" accept="image/*" multiple>
-                    <div id="imagePreview" class="img-preview">
-                        <% product.productImages.forEach(image => { %>
-                            <img src="/<%= image %>" class="img-thumbnail">
-                        <% }) %>
+    <!-- New Image Upload -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Upload New Images</h4>
+        </div>
+        <div class="card-body">
+            <div id="addedImagesContainer" class="thumbnails-container"></div>
+            <% for(let i = 1; i <= 4; i++) { %>
+                <div class="image-input-container">
+                    <input class="form-control" type="file" name="images" id="input<%= i %>" accept="image/*" onchange="handleImageSelect(event, <%= i %>)">
+                    <img src="" alt="" id="imgView<%= i %>" class="image-preview">
+                    <div class="crop-container" id="cropContainer<%= i %>">
+                        <img src="" id="croppedImg<%= i %>" alt="">
+                        <button type="button" id="saveButton<%= i %>" class="btn btn-primary mt-2">Save Cropped Image</button>
                     </div>
                 </div>
-
-                <!-- Status -->
-                <div class="form-group">
-                    <label for="status">Status</label>
-                    <select class="form-control" id="status" name="status" required>
-                        <option value="Available" <%= product.status === 'Available' ? 'selected' : '' %>>Available</option>
-                        <option value="Out of Stock" <%= product.status === 'Out of Stock' ? 'selected' : '' %>>Out of Stock</option>
-                        <option value="Discontinued" <%= product.status === 'Discontinued' ? 'selected' : '' %>>Discontinued</option>
-                    </select>
-                    <div class="invalid-feedback">Status is required.</div>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Update Product</button>
-            </form>
+            <% } %>
+            <div id="images-error" class="error-message"></div>
         </div>
     </div>
 
-    <!-- Include necessary scripts -->
+    <button type="submit" class="btn btn-primary">Update Product</button>
+</form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
     <script>
-        $(document).ready(function() {
-            const $imagePreview = $('#imagePreview');
-            const cropperInstances = [];
-            let currentCropperIndex = null;
-
-            $('#images').on('change', function(event) {
-                const files = event.target.files;
-                $imagePreview.empty();
-                cropperInstances.length = 0;
-
-                Array.from(files).forEach((file, index) => {
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const imgContainer = $(`
-                                <div class="crop-container" id="cropContainer${index}">
-                                    <img src="${e.target.result}" class="img-fluid">
-                                    <button type="button" class="btn btn-secondary crop-button" data-index="${index}">Crop Image</button>
-                                </div>
-                            `);
-                            $imagePreview.append(imgContainer);
-
-                            const imgElement = imgContainer.find('img')[0];
-                            const cropper = new Cropper(imgElement, {
-                                aspectRatio: 1,
-                                viewMode: 1,
-                                crop(event) {
-                                    // Optional: Crop event handler
-                                }
-                            });
-
-                            cropperInstances.push(cropper);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            });
-
-            $(document).on('click', '.crop-button', function() {
-                const index = $(this).data('index');
-                currentCropperIndex = index;
-                const cropper = cropperInstances[index];
-                if (cropper) {
-                    const croppedCanvas = cropper.getCroppedCanvas();
-                    const croppedImage = croppedCanvas.toDataURL('image/jpeg');
-
-                    // Remove any previous cropped images for this index
-                    $(`#cropContainer${index}`).find('img.cropped').remove();
-
-                    // Create and append cropped image
-                    const croppedImgElement = $('<img>')
-                        .attr('src', croppedImage)
-                        .addClass('img-fluid cropped');
+        let croppers = [];
+    
+        function handleImageSelect(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgView = document.getElementById(`imgView${index}`);
+                    imgView.src = e.target.result;
                     
-                    $(`#cropContainer${index}`).append(croppedImgElement);
-                }
-            });
-
-            // Form Validation
-            $('#productForm').on('submit', function(event) {
-                let isValid = true;
-                const inputs = this.querySelectorAll('input, textarea, select');
-                
-                inputs.forEach(input => {
-                    // Remove previous invalid class
-                    input.classList.remove('is-invalid');
-                    
-                    // Check for empty values or invalid inputs
-                    if (input.required) {
-                        if (input.type === 'text' || input.type === 'textarea') {
-                            if (input.value.trim() === '') {
-                                input.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        } else if (input.type === 'number') {
-                            if (isNaN(input.value) || input.value.trim() === '') {
-                                input.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                        } else if (input.tagName === 'SELECT') {
-                            if (input.value === '') {
-                                input.classList.add('is-invalid');
-                                isValid = false;
-                            }
-                            // Check if multiple select has at least one option selected
-                            if (input.multiple) {
-                                if (input.selectedOptions.length === 0) {
-                                    input.classList.add('is-invalid');
-                                    isValid = false;
-                                }
-                            }
-                        }
+                    if (croppers[index]) {
+                        croppers[index].destroy();
                     }
+                    
+                    croppers[index] = new Cropper(imgView, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        guides: true,
+                        background: false,
+                        autoCropArea: 1,
+                        zoomable: true
+                    });
+    
+                    const cropContainer = document.getElementById(`cropContainer${index}`);
+                    cropContainer.style.display = 'block';
+    
+                    const saveButton = document.getElementById(`saveButton${index}`);
+                    saveButton.onclick = function() {
+                        const croppedCanvas = croppers[index].getCroppedCanvas();
+                        const croppedImage = document.getElementById(`croppedImg${index}`);
+                        croppedImage.src = croppedCanvas.toDataURL('image/png');
+                        
+                        // Save cropped image data to a hidden input field or send it to the server
+                        // ...
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    
+        function validateForm() {
+            let isValid = true;
+    
+            // Add validation logic here, e.g., check for empty fields
+            const productName = document.getElementById('title').value.trim();
+            if (!productName) {
+                document.getElementById('productName-error').innerText = 'Product name is required';
+                isValid = false;
+            } else {
+                document.getElementById('productName-error').innerText = '';
+            }
+    
+            // Add other validation rules here...
+    
+            return isValid;
+        }
+        function deleteImage(productId, imageUrl, index) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                fetch(`/admin/products/${productId}/delete-image`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ imageUrl: imageUrl }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the image from the DOM
+                        document.getElementById(`image-${index}`).remove();
+                    } else {
+                        alert('Failed to delete image. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the image.');
                 });
-
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            });
-        });
+            }
+        }
+    
     </script>
+    
 </body>
 </html>

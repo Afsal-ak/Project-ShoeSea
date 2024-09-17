@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Coupons</title>
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+        .table .action-btn {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+        .table .block-btn {
+            color: red;
+        }
+        .table .block-btn:hover {
+            color: darkred;
+        }
+        .table .unblock-btn {
+            color: green;
+        }
+        .table .unblock-btn:hover {
+            color: darkgreen;
+        }
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/admin/header') %> <!-- Include the admin header -->
+    <div class="container my-5">
+        <a href="/admin/coupons/create" class="btn btn-primary btn-create-coupon">Create Coupon</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="container">
+        <h1>Manage Coupons</h1>
+   
+        <% if (coupons && coupons.length > 0) { %>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Offer Price</th>
+                        <th>Discount Type</th> <!-- New column -->
+                        <th>Expiration Date</th>
+                        <th>Minimum Price</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% coupons.forEach(coupon => { %>
+                        <tr>
+                            <td><%= coupon.name %></td>
+                            <td><%= coupon.offerPrice %> rupees</td>
+                            <td><%= coupon.discountType === 'percentage' ? 'Percentage' : 'Flat' %></td> <!-- Show discount type -->
+                            <td><%= coupon.expirationDate.toDateString() %></td>
+                            <td><%= coupon.minimumPrice %> rupees</td>
+                            <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
+                            <td>
+                                <% if (coupon.isActive) { %>
+                                    <button class="action-btn block-btn" onclick="confirmBlock('<%= coupon._id %>')">Block</button>
+                                    <form id="block-form-<%= coupon._id %>" action="/admin/coupons/block/<%= coupon._id %>" method="POST" style="display: none;"></form>
+                                <% } else { %>
+                                    <button class="action-btn unblock-btn" onclick="confirmUnblock('<%= coupon._id %>')">Unblock</button>
+                                    <form id="unblock-form-<%= coupon._id %>" action="/admin/coupons/unblock/<%= coupon._id %>" method="POST" style="display: none;"></form>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+                
+            </table>
+
+            <!-- Pagination Controls -->
+            <nav aria-label="Coupon pagination">
+                <ul class="pagination">
+                    <% if (currentPage > 1) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+                        </li>
+                    <% } else { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">Previous</span>
+                        </li>
+                    <% } %>
+
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+                        </li>
+                    <% } else { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">Next</span>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        <% } else { %>
+            <p>No coupons available. <a href="/admin/coupons/create">Create a new coupon</a></p>
+        <% } %>
+    </div>
+
+    <%- include('../../partials/admin/footer') %> <!-- Include the admin footer -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function confirmBlock(couponId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to block this coupon.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, block it!',
+                cancelButtonText: 'No, keep it!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('block-form-' + couponId).submit();
+                }
+            });
+        }
+
+        function confirmUnblock(couponId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to unblock this coupon.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, unblock it!',
+                cancelButtonText: 'No, keep it!',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('unblock-form-' + couponId).submit();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

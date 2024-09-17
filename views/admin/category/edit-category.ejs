@@ -96,6 +96,14 @@
                 <label for="description">Description</label>
                 <textarea name="description" id="description" required><%= category.description %></textarea>
             </div>
+            <div>
+                <label for="categoryOffer">Category Offer (%)</label>
+                <input type="number" name="categoryOffer" id="categoryOffer" min="0" step="0.01" value="<%= category.categoryOffer %>" required>
+            </div>
+            <div>
+                <label for="offerExpiry">Offer Expiry Date</label>
+                <input type="date" name="offerExpiry" id="offerExpiry"  value="<%= category.offerExpiry %>" required>
+            </div>
             <button type="submit">Update Category</button>
         </form>
     </section>

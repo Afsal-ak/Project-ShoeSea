@@ -18,6 +18,10 @@ const categorySchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    offerExpiry: {
+        type: Date,  // Expiry date for the category offer
+        default: null
+    },
     createdAt:{
         type:Date,
         dafault:Date.now

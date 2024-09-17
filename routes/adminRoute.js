@@ -96,6 +96,7 @@ adminRoute.use(session({
 }));
 
 adminRoute.use(flash());
+adminRoute.set('views', path.join(__dirname, 'views')); // Ensure this path is correct
 
 adminRoute.use(express.static(path.join(__dirname, '../public/uploads')));
 adminRoute.use('/public', express.static(path.join(__dirname, '../public')));
@@ -108,7 +109,9 @@ const categoryController = require('../controllers/admin/categoryController');
 const productController = require('../controllers/admin/productController');
 const orderController=require('../controllers/admin/orderController')
 const stockController=require('../controllers/admin/stockController')
-
+const couponController=require('../controllers/admin/couponController')
+const salesController=require('../controllers/admin/salesController')
+const offerController=require('../controllers/admin/offerController')
 // Apply checkAuth middleware to all routes
 adminRoute.use(authAdmin.checkAuth);
 
@@ -163,13 +166,15 @@ adminRoute.post('/edit-category/:id', authAdmin.isLogin, categoryController.upda
 
 // Product routes
 adminRoute.get('/add-products', authAdmin.isLogin, productController.loadAddProduct);
-adminRoute.post('/add-products', authAdmin.isLogin, upload.array('images', 5), productController.addNewProduct);
+//adminRoute.get('/add-products', authAdmin.isLogin, productController.getAddProduct);
+
+adminRoute.post('/add-products', authAdmin.isLogin, upload.array('images', 4), productController.addNewProduct);
 adminRoute.get('/products', authAdmin.isLogin, productController.productsList);
 adminRoute.get('/block-product', authAdmin.isLogin, productController.blockProduct);
 adminRoute.get('/unblock-product', authAdmin.isLogin, productController.unblockProduct);
 adminRoute.get('/edit-product/:id', authAdmin.isLogin, productController.loadEditProduct);
-adminRoute.post('/edit-product/:id', authAdmin.isLogin, upload.array('images', 5), productController.editProduct);
-
+adminRoute.post('/edit-product/:id', authAdmin.isLogin, upload.array('images', 4), productController.editProduct);
+adminRoute.post('/products/:productId/delete-image', productController.deleteProductImage);
 
 //order
 adminRoute.get('/orders',orderController.listOrder)
@@ -184,6 +189,23 @@ adminRoute.post('/orders/ship/:id',orderController.orderShipped)
 adminRoute.get('/stocks',stockController.listStock)
 adminRoute.post('/stocks/add',stockController.addStocks)
 
+//coupon
+adminRoute.get('/coupons',couponController.getCouponList)
+adminRoute.get('/coupons/create',couponController.getCreateCoupon)
+adminRoute.post('/coupons/create',couponController.postCreateCoupon)
+adminRoute.post('/coupons/block/:id',couponController.blockCoupon)
+adminRoute.post('/coupons/unblock/:id',couponController.unBlockCoupon)
+
+
+
+//sales
+adminRoute.get('/sales-report', salesController.getSalesReport);
+//adminRoute.get('/download-report', salesController.downloadReport);
+adminRoute.get('/download-report-pdf', salesController.downloadPdf);
+adminRoute.get('/download-report-excel', salesController.downloadExcel);
+
+//offer
+adminRoute.get('/offers',offerController.listOffers)
 
 adminRoute.get('/logout', authAdmin.isLogin, adminController.logout);
 

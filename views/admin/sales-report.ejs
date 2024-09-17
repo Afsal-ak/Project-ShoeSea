@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        h1 {
+            color: #007bff;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .filter-section, .date-filter-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .table th {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+        }
+
+        .btn-filter {
+            margin: 0 5px;
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+
+        .btn-filter-small {
+            font-size: 14px;
+            padding: 5px 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            margin: 20px 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container my-5">
+        <h1 class="mb-4"><%= title %></h1>
+
+        <!-- Filter Section -->
+        <div class="d-flex justify-content-center mb-4">
+            <button class="btn btn-primary btn-filter" onclick="applyFilter('daily')">Daily</button>
+            <button class="btn btn-primary btn-filter" onclick="applyFilter('weekly')">Weekly</button>
+            <button class="btn btn-primary btn-filter" onclick="applyFilter('monthly')">Monthly</button>
+            <button class="btn btn-primary btn-filter" onclick="applyFilter('yearly')">Yearly</button>
+        </div>
+
+        <!-- Date Range Filter -->
+        <div class="d-flex justify-content-center mb-4">
+            <div class="form-group mx-2">
+                <label for="startDate">Start Date:</label>
+                <input type="date" class="form-control" id="startDate" value="<%= startDate %>">
+            </div>
+            <div class="form-group mx-2">
+                <label for="endDate">End Date:</label>
+                <input type="date" class="form-control" id="endDate" value="<%= endDate %>">
+            </div>
+            <button style="height: fit-content;margin-top: 28px;" class="btn btn-primary btn-filter btn-filter-small" onclick="applyFilter('custom')">Apply Custom Dates</button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Product(s)</th>
+                        <th>Total Amount</th>
+                        <th>Discount</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody id="salesReportBody">
+                    <% reportData.orders.forEach(order => { %>
+                        <tr>
+                            <td><%= order.orderId %></td>
+                            <td><%= order.userId.username %></td>
+                            <td>
+                                <ul>
+                                    <% order.products.forEach(product => { %>
+                                        <li><%= product.productId.productName %></li>
+                                    <% }) %>
+                                </ul>
+                            </td>
+                            <td>$<%= order.totalAmount %></td>
+                            <td>$<%= order.discount %></td>
+                            <td><%= new Date(order.orderDate).toLocaleDateString() %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+                
+                <tfoot>
+                    <tr>
+                        <td>Total Sales Count:</td>
+                        <td><%= reportData.salesCount %></td>
+                        <td></td>
+                        <td>$<%= reportData.totalAmount %></td>
+                        <td>$<%= reportData.totalDiscount %></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <!-- Pagination Links -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>&startDate=<%= startDate %>&endDate=<%= endDate %>&filter=<%= filter %>">Previous</a>
+                    </li>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>&limit=<%= limit %>&startDate=<%= startDate %>&endDate=<%= endDate %>&filter=<%= filter %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>&startDate=<%= startDate %>&endDate=<%= endDate %>&filter=<%= filter %>">Next</a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+
+        <!-- Download Links -->
+        <div class="text-center mb-4">
+            <a href="/admin/download-report-pdf?format=pdf&startDate=<%= startDate %>&endDate=<%= endDate %>&filter=<%= filter %>" class="btn btn-success">Download PDF</a>
+            <a href="/admin/download-report-excel?startDate=<%= startDate %>&endDate=<%= endDate %>&filter=<%= filter %>" class="btn btn-success">Download Excel</a>
+        </div>
+    </div>
+    <%- include('../partials/admin/footer') %>
+
+    <script>
+    function applyFilter(filterType) {
+        let startDate = document.getElementById('startDate').value;
+        let endDate = document.getElementById('endDate').value;
+
+        let url = `/admin/sales-report?filter=${filterType}`;
+
+        if (filterType === 'custom' && startDate && endDate) {
+            // Format dates to ISO format and encode them
+            let startDateISO = new Date(startDate).toISOString();
+            let endDateISO = new Date(endDate).toISOString();
+            url += `&startDate=${encodeURIComponent(startDateISO)}&endDate=${encodeURIComponent(endDateISO)}`;
+        }
+
+        // Redirect to the URL to fetch the filtered data
+        window.location.href = url;
+    }
+    </script>
+
+</body>
+</html>
