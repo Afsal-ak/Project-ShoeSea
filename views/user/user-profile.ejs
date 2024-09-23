@@ -56,7 +56,11 @@
             <p><strong>Email:</strong> <%= user.email %></p>
             <p><strong>Phone:</strong> <%= user.number %></p>
         </div>
-
+        <div class="user-data-box">
+            <h2>Your Referral Code: <strong><%= user.referralCode %></strong></h2>
+            <p>Share this code with friends to earn credits!</p>
+        </div>
+        
         <!-- Edit User Form -->
         <div class="card mb-4">
             <div class="card-header">
@@ -116,22 +120,7 @@
             </div>
         </div>
 
-        <!-- Address List -->
-        <div class="address-list">
-            <h2>Your Addresses</h2>
-            <ul class="list-unstyled">
-                <% addresses.forEach(address => { %>
-                    <li class="address-item">
-                        <p><strong><%= address.fname %> <%= address.lname %></strong></p>
-                        <p><%= address.housename %>, <%= address.city %>, <%= address.state %>, <%= address.country %> - <%= address.pincode %></p>
-                        <p>Phone: <%= address.phone %></p>
-                        <a href="/edit-address/<%= address._id %>" class="btn btn-secondary">Edit</a>
-                        <a href="/delete-address/<%= address._id %>" class="btn btn-danger">Delete</a>
-                    </li>
-                <% }) %>
-            </ul>
-            <a href="/add-address" class="btn btn-primary mt-3">Add Address</a>
-        </div>
+      
     </div>
     <%- include('../partials/user/footer') %>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

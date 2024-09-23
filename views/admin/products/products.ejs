@@ -260,45 +260,61 @@
                 </tr>
             </thead>
             <tbody>
-                <% products.forEach(function(product) { %>
-                    <tr>
-                        <td><%= product.productName %></td>
-                        <td><%= product.brand %></td>
-                        <td>
-                            <% if (product.categoryId) { %>
-                                <%= product.categoryId.categoryName || 'No Category' %>
-                            <% } else { %>
-                                No Category
-                            <% } %>
-                        </td>
-                        <td><%= product.salePrice %></td>
-                        <td><%= product.productOffer ? (product.productOffer + '%') : 'No offer' %></td>
-                        <td>
-                            <% if (product.is_blocked) { %>
-                                <span class="badge badge-danger">Blocked</span>
-                            <% } else { %>
-                                <span class="badge badge-warning">Listed</span>
-                            <% } %>
-                        </td>
-                        <td><%= product.quantity %></td>
-                        <td>
-                            <% if (product.productImages.length > 0) { %>
-                                <img src="<%= product.productImages[0] %>" alt="Product Image" class="thumbnail">
-                            <% } else { %>
-                                No image
-                            <% } %>
-                        </td>
-                        <td>
-                            <a href="/admin/edit-product/<%= product._id %>" data-id="<%= product._id %>" class="btn btn-info edit-product">Edit</a>
-                            <% if (product.is_blocked) { %>
-                                <a href="/admin/unblock-product?id=<%= product._id  %>" data-id="<%= product._id %>" class="btn btn-success unblock-product">Unblock</a>
-                            <% } else { %>
-                                <a href="/admin/block-product?id=<%= product._id  %>" data-id="<%= product._id %>" class="btn btn-danger block-product">Block</a>
-                            <% } %>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
+                <tbody>
+                    <% products.forEach(function(product) { %>
+                        <tr>
+                            <td><%= product.productName %></td>
+                            <td><%= product.brand %></td>
+                            <td>
+                                <% if (product.categoryId) { %>
+                                    <%= product.categoryId.categoryName || 'No Category' %>
+                                <% } else { %>
+                                    No Category
+                                <% } %>
+                            </td>
+                            <td><%= product.salePrice %></td>
+                            <td>
+                                <% 
+                                    const productOffer = product.productOffer || 0;
+                                    const categoryOffer = product.categoryId ? product.categoryId.categoryOffer : 0;
+                                    const highestOffer = Math.max(productOffer, categoryOffer);
+                
+                                    if (highestOffer > 0) { %>
+                                         (Available)
+                                    <% } else { %>
+                                        No offer
+                                    <% } 
+                                %>
+                            </td>
+                            <td>
+                                <% if (product.is_blocked) { %>
+                                    <span class="badge badge-danger">Blocked</span>
+                                <% } else { %>
+                                    <span class="badge badge-warning">Listed</span>
+                                <% } %>
+                            </td>
+                            <td><%= product.quantity %></td>
+                            <td>
+                                <% if (product.productImages.length > 0) { %>
+                                    <img src="<%= product.productImages[0] %>" alt="Product Image" class="thumbnail"     
+                                     onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                                    
+                                <% } else { %>
+                                    <img src="/styles/images/no_images.jpg" alt="No Product Image" class="thumbnail">
+                                <% } %>
+                            </td>
+                            <td>
+                                <a href="/admin/edit-product/<%= product._id %>" data-id="<%= product._id %>" class="btn btn-info edit-product">Edit</a>
+                                <% if (product.is_blocked) { %>
+                                    <a href="/admin/unblock-product?id=<%= product._id %>" data-id="<%= product._id %>" class="btn btn-success unblock-product">Unblock</a>
+                                <% } else { %>
+                                    <a href="/admin/block-product?id=<%= product._id %>" data-id="<%= product._id %>" class="btn btn-danger block-product">Block</a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+                
         </table>
 
         <!-- Pagination -->

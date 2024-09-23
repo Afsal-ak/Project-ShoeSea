@@ -35,7 +35,10 @@ const getUserProfile = async (req, res) => {
             return res.status(404).send('User not found');
         }
 
-        res.render('user-profile', { user, addresses });
+        res.render('user-profile', {
+             user,
+             addresses,
+          });
     } catch (error) {
         console.error('Error fetching user profile:', error.message);
         res.status(500).send('Server Error');
@@ -85,7 +88,7 @@ const editProfile = async (req, res) => {
   
         if (!userId) {
             req.flash('error_msg', 'Unauthorized');
-            return res.redirect('/profile');
+            return res.redirect('/logout');
         }
   
         const user = await User.findById(userId);
@@ -292,6 +295,27 @@ const changePassword = async (req, res) => {
     }
   };
   
+ const getAddress=async(req,res)=>{
+
+    try {
+        const userId = req.session.userId; 
+        const user = await User.findById(userId);
+        const addresses = await Address.find({ userId });
+        if (!userId) {
+            return res.redirect('/login')
+        }
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        res.render('address',{addresses})
+
+
+    } catch (error) {
+        console.error(error.message)
+    }
+
+ }
 
 const addAddress = async (req, res) => {
     try {
@@ -317,7 +341,7 @@ const addAddress = async (req, res) => {
         await newAddress.save();
         console.log(newAddress);
 
-        res.redirect('/checkout'); // Redirect to a relevant page after saving the address
+        res.redirect('/address'); // Redirect to a relevant page after saving the address
     } catch (error) {
         console.error('Error saving address:', error);
         res.status(500).send('Server Error');
@@ -358,7 +382,7 @@ const updateAddress = async (req, res) => {
 
         console.log('Address updated:', updatedAddress);
 
-        res.redirect('/profile');  // Redirect to a relevant page after updating the address
+        res.redirect('/address');  // Redirect to a relevant page after updating the address
     } catch (error) {
         console.error('Error updating address:', error.message);
         res.status(500).render('edit-address', { message: 'An error occurred while updating your address. Please try again.', address: req.body });
@@ -378,7 +402,7 @@ const deleteAddress=async(req,res)=>{
         console.log('Address deleted:', deletedAddress);
 
         // Redirect to a relevant page after deletion
-        res.redirect('/profile')
+        res.redirect('/address')
 
     } catch (error) {
         console.error('Error delteing address:', error.message);
@@ -388,6 +412,7 @@ const deleteAddress=async(req,res)=>{
 
 module.exports = {
     getAccount,
+    getAddress,
     getAddressForm,
     addAddress,
     getEditAddressForm,

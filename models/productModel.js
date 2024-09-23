@@ -32,9 +32,14 @@ const productSchema = new Schema({
     },
     productOffer: {
         type: Number,
-        default: 0 // Default should likely be a numeric value, not true
+        default: 0 // Offer default value
     },
-    offerDescription: { // Optional field to describe the offer
+    discountType: { // Store the discount type in the product schema
+        type: String,
+        enum: ['percentage', 'flat'],
+        default: null
+    },
+    offerDescription: { 
         type: String,
         default: ''
      },
@@ -57,7 +62,11 @@ const productSchema = new Schema({
         type: Boolean,
         default: false
     },
-    sizes: [String] ,
+    
+    sizes: [{
+        size: String,
+        quantity: Number
+      }],
     status: {
         type: String,
         enum: ['Available', 'Out of Stock', 'Discontinued'], 

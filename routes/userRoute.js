@@ -87,6 +87,7 @@ userRoute.post('/verify-email-otp', authUser.isLogin, profileController.verifyEm
 userRoute.post('/verify-email-otp/resend', authUser.isLogin, profileController.resendEmailOtp);
 
 // Address routes
+userRoute.get('/address',authUser.isLogin,profileController.getAddress)
 userRoute.get('/add-address', authUser.isLogin, profileController.getAddressForm);
 userRoute.post('/add-address', authUser.isLogin, profileController.addAddress);
 userRoute.get('/edit-address/:id', authUser.isLogin, profileController.getEditAddressForm);
@@ -150,5 +151,36 @@ userRoute.post('/wishlist/remove',authUser.isLogin,wishlistController.removeWish
 //coupon
 userRoute.get('/coupons',authUser.isLogin,orderController.getCoupons)
 userRoute.post('/coupons/apply',authUser.isLogin,orderController.applyCoupon)
+
+//wallet
+userRoute.get('/wallet',authUser.isLogin,userController.getWallet)
+
+
+userRoute.use(express.json()); // Add this if not already present
+
+// Simulated in-memory data
+let products = [
+  { id: 1, name: 'Product 1', quantity: 5 },
+  { id: 2, name: 'Product 2', quantity: 10 }
+];
+
+// Route to serve the HTML page
+userRoute.get('/carts', (req, res) => {
+  res.render('fetch.ejs')
+});
+
+// Route to handle quantity update via fetch
+userRoute.post('/update-quantity/:id', (req, res) => {
+  const productId = parseInt(req.params.id);
+  const { quantity } = req.body;
+
+  const product = products.find(p => p.id === productId);
+  if (product) {
+    product.quantity = parseInt(quantity, 10);
+    res.json({ message: 'Quantity updated', product });
+  } else {
+    res.status(404).json({ message: 'Product not found' });
+  }
+});
 
 module.exports = userRoute;

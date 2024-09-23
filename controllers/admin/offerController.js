@@ -1,5 +1,7 @@
 const Product = require('../../models/productModel');
 const Category = require('../../models/categoryModel');
+const User=require('../../models/userModel')
+const Referral=require('../../models/referralModel')
 
 const listOffers = async (req, res) => {
     try {
@@ -40,6 +42,78 @@ const listOffers = async (req, res) => {
     }
 };
 
+
+const getReferralOffer=async(req,res)=>{
+    try {
+        const referral=await Referral.find()
+        res.render('referral-manage',{referral})
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+
+const addReferralCode=async(req,res)=>{
+    try {
+        res.render('addReferralOffer')
+    } catch (error) {
+        consoe.error(error.message)
+    }
+}
+
+const postAddReferralCode=async(req,res)=>{
+    try {
+        const referralAmount=req.body.referralAmount.trim()
+        const referralDescription=req.body.referralDescription.trim()
+
+        let offer=await Referral.findOne();
+        if(offer){
+            offer.referralAmount=referralAmount
+            offer.referralDescription = referralDescription;
+            await offer.save();
+        } else {
+            // Create a new referral offer
+            offer = new Referral({ referralAmount,referralDescription });
+            await offer.save();
+        }
+
+        res.redirect('/admin/referral')
+
+            console.log('referral succes')
+
+    } catch (error) {
+        console.error(error.message)
+    }
+}
+const blockReferral = async (req, res) => {
+    try {
+        const referralId = req.params.id;
+        await Referral.findByIdAndUpdate(referralId, { isActive: false });
+        console.log(`Referral blocked successfully.`);
+        res.redirect('/admin/referral');
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error blocking referral' });
+    }
+};
+const unBlockReferral = async (req, res) => {
+    try {
+        const referralId = req.params.id;
+        await Referral.findByIdAndUpdate(referralId, { isActive: true });
+        console.log(`Referral = unblocked successfully.`);
+        res.redirect('/admin/referral');
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Error unblocking referral' });
+    }
+};
+
+
 module.exports = {
-    listOffers
+    listOffers,
+    getReferralOffer,
+    addReferralCode,
+    postAddReferralCode,
+    blockReferral,
+    unBlockReferral
+
 };

@@ -51,6 +51,7 @@ module.exports = {
     //         res.redirect('/500');
     //     }
     // },
+   
     addToCart: async (req, res) => {
         try {
             const productId = req.body.productId;

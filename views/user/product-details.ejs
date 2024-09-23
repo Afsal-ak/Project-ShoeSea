@@ -30,18 +30,33 @@
         </nav>
 
         <div class="row">
+            
             <div class="col-md-6 zoom-container">
                 <div class="zoom-wrapper">
-                    <img id="mainImage" src="/<%= product.productImages[0] %>" alt="<%= product.productName %>" class="zoom-image">
+                    <img id="mainImage" 
+                         src="/<%= product.productImages && product.productImages.length > 0 ? product.productImages[0] : 'styles/images/no_images.jpg' %>" 
+                         alt="<%= product.productName %>" 
+                         class="zoom-image"
+                         onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
                 </div>
                 <div class="d-flex flex-wrap mt-3">
-                    <% product.productImages.forEach((image, index) => { %>
-                        <img src="/<%= image %>" 
-                             onclick="changeImage('<%= image %>', '<%= index %>')" 
-                             alt="Thumbnail <%= index + 1 %>"
-                             class="thumbnail <%= index === 0 ? 'active' : '' %>">
-                    <% }) %>
+                    <% if (product.productImages && product.productImages.length > 0) { %>
+                        <% product.productImages.forEach((image, index) => { %>
+                            <img src="/<%= image %>" 
+                                 onclick="changeImage('<%= image %>', '<%= index %>')" 
+                                 alt="Thumbnail <%= index + 1 %>"
+                                 class="thumbnail <%= index === 0 ? 'active' : '' %>"
+                                 onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                        <% }) %>
+                    <% } else { %>
+                        <img src="/styles/images/no_images.jpg" alt="No Image Available" class="thumbnail active" >
+                    <% } %>
                 </div>
+            
+            
+            
+           
+            
             </div>
             <div class="col-md-6">
                 <h1><%= product.productName %></h1>
@@ -62,13 +77,17 @@
                             <% }) %>
                         <% } else if (Array.isArray(product.sizes)) { %>
                             <% product.sizes.forEach(size => { %>
-                                <option value="<%= size %>"><%= size %></option>
+                                <% const stock = size.quantity; // Assuming size is an object with quantity %>
+                                <option value="<%= size.size %>" <%= stock === 0 ? 'disabled' : '' %> >
+                                    <%= size.size %> <%= stock === 0 ? '(Out of Stock)' : '' %>
+                                </option>
                             <% }) %>
                         <% } else { %>
                             <option>Size not available</option>
                         <% } %>
                     </select>
                 </div>
+                
 
                 <!-- Add to Cart Form -->
                 <form action="/cart/add" method="POST" class="d-inline">

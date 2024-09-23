@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart</title>
+</head>
+<body>
+
+  <h1>Cart Items</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Update Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Product 1 -->
+      <tr>
+        <td>Product 1</td>
+        <td id="quantity-1">55</td>
+        <td>
+          <button onclick="updateQuantity(1, -1)">-</button>
+          <button onclick="updateQuantity(1, 1)">+</button>
+        </td>
+      </tr>
+      <!-- Product 2 -->
+      <tr>
+        <td>Product 2</td>
+        <td id="quantity-2">10</td>
+        <td>
+          <button onclick="updateQuantity(2, -1)">-</button>
+          <button onclick="updateQuantity(2, 1)">+</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<!-- 
+  <script>
+    async function updateQuantity(productId, change) {
+      const quantityElement = document.getElementById(`quantity-${productId}`);
+      let currentQuantity = parseInt(quantityElement.textContent);
+      let newQuantity = currentQuantity + change;
+
+      // Prevent quantity from going below 1
+      if (newQuantity < 1) newQuantity = 1;
+
+      // Send the updated quantity to the server using fetch
+      const response = await fetch(`/update-quantity/${productId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ quantity: newQuantity })
+      });
+
+      // Check if the response is successful
+      if (response.ok) {
+        const data = await response.json();
+        quantityElement.textContent = data.product.quantity; // Update the UI
+      } else {
+        console.error('Failed to update quantity');
+      }
+    }
+  </script>
+<script>
+    -->
+  <script>
+  //  const response=await fetch(`/update-quantity/${productId} `,{
+  //   method:"POST",
+  //   headers:{
+  //     'Content-Type':'application/json'
+
+  //   },
+  //   body:JSON.stringify({quantity:newQuantity})
+  //  })
+
+
+
+
+
+  async function updateQuantity(productId,change){
+    quantity=document.getElementById(`quantity-${productId}`)
+    currentQuantity=parseInt(quantity.textContent)
+    newQuantity=currentQuantity+change
+
+    if (newQuantity < 1) newQuantity = 1;
+
+    const response=await fetch(`/update-quantity/${productId}`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({quantity:newQuantity})
+    })
+if(response.ok){
+  const data=await response.json()
+  quantity.textContent = data.product.quantity; // Update the UI
+
+}   else {
+        console.error('Failed to update quantity');
+      }
+  }
+
+
+</script>
+</body>
+</html>

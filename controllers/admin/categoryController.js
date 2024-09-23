@@ -1,7 +1,7 @@
 
 
 const Category = require('../../models/categoryModel');
-
+const Product=require('../../models/productModel');
 
 // Fetch and display categories with pagination
 const getCategory = async (req, res) => {
@@ -42,48 +42,25 @@ const getCategory = async (req, res) => {
     }
 };
 
-// // Add a new category and handle,error
 // const addCategory = async (req, res) => {
 //     try {
-//         const { categoryName, description } = req.body;
-
-//         let categoryCheck = await Category.findOne({ categoryName });
-//         if (categoryCheck) {
-//             req.flash('error', 'Category Name Already Exists');
-//             return res.redirect('/admin/category');
-//         }
-
-//         const categoryData = new Category({
-//             categoryName: categoryName,
-//             description: description
-//         });
-
-//         await categoryData.save();
-//         req.flash('message', 'Category Successfully Created');
-//         return res.redirect('/admin/category');
-//     } catch (error) {
-//         console.error(error.message);
-//         req.flash('error', 'Internal Server,essages');
-//         return res.redirect('/admin/category');
-//     }
-// };
-
-
-// const addCategory = async (req, res) => {
-//     try {
-//         const { categoryName, description } = req.body;
+//         const { categoryName, description, categoryOffer, offerExpiry } = req.body;
 
 //         // Case-insensitive check for existing category
 //         let categoryCheck = await Category.findOne({ categoryName: new RegExp('^' + categoryName + '$', 'i') });
+
 //         if (categoryCheck) {
 //             req.flash('error', 'Category Name Already Exists');
+//             console.log('name already exists')
 //             return res.redirect('/admin/category');
 //         }
 
+//         // Create new category
 //         const categoryData = new Category({
 //             categoryName: categoryName,
 //             description: description,
-//             category
+//             categoryOffer: categoryOffer || 0, // Default to 0 if not provided
+//             offerExpiry: offerExpiry || null  // Default to null if no expiry
 //         });
 
 //         await categoryData.save();
@@ -104,7 +81,7 @@ const addCategory = async (req, res) => {
 
         if (categoryCheck) {
             req.flash('error', 'Category Name Already Exists');
-            console.log('name already exists')
+            console.log('name already exists');
             return res.redirect('/admin/category');
         }
 
@@ -113,7 +90,7 @@ const addCategory = async (req, res) => {
             categoryName: categoryName,
             description: description,
             categoryOffer: categoryOffer || 0, // Default to 0 if not provided
-            offerExpiry: offerExpiry || null  // Default to null if no expiry
+            offerExpiry: offerExpiry || null     // Default to null if no expiry
         });
 
         await categoryData.save();
@@ -155,67 +132,6 @@ const listCategory = async (req, res) => {
 };
 
 
-
-// const getEditCategory=async(req,res)=>{
-//     const id =req.query.id
-//     try {
-//         const category=await Category.findById({_id:id})
-      
-//         if (!category) {
-//             return res.status(404).render('edit-category', { error: 'Category not found' });
-//         }
-//         res.render('editCategory', { category });
-     
-//     } catch (error) {
-//         console.log(error.message)
-//         res.status(500).render('edit-category', { error: 'Server error' });
-//     }
-
-// }
-
-// const updateCategory=async(req,res)=>{
-//     try {
-//         const id=req.params.id
-//         const {categoryName,description}=req.body
-//         const existingCategory=await Category.findOne({name:categoryName})
-
-//         if(existingCategory){
-//             return res.status(400).josn({error:'category alreday exist'})
-//         }
-//         const updateCategory=await Category.findByIdAndUpdate(id,{
-//             name:categoryName,
-//             description:description,
-//         },{new:true})
-//         if(updateCategory){
-//             res.redirect('/admin/category')
-//         }
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
-
-// // Display the edit form
-// const getEditCategory = async (req, res) => {
-//     try {
-//         const categoryId = req.params.id;
-//         const category = await Category.findById(categoryId);
-
-//         if (!category) {
-//             req.flash('error', 'Category not found');
-//             return res.redirect('/admin/category');
-//         }
-
-//         res.render('edit-category', {
-//             category: category
-//         });
-//     } catch (error) {
-//         console.error(error.message);
-//         req.flash('error', 'Internal Server Error');
-//         return res.redirect('/admin/category');
-//     }
-// };
-
-
 const getEditCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
@@ -242,7 +158,7 @@ const getEditCategory = async (req, res) => {
 // const updateCategory = async (req, res) => {
 //     try {
 //         const categoryId = req.params.id;
-//         const { categoryName, description } = req.body;
+//         const { categoryName, description, categoryOffer, offerExpiry } = req.body;
 
 //         // Check if another category with the same name exists
 //         const existingCategory = await Category.findOne({ categoryName });
@@ -255,7 +171,12 @@ const getEditCategory = async (req, res) => {
 //         // Proceed with updating the category
 //         const updatedCategory = await Category.findByIdAndUpdate(
 //             categoryId,
-//             { categoryName, description },
+//             {
+//                 categoryName,
+//                 description,
+//                 categoryOffer: categoryOffer || 0,  // Default to 0 if not provided
+//                 offerExpiry: offerExpiry || null     // Default to null if no expiry
+//             },
 //             { new: true }
 //         );
 
@@ -291,7 +212,7 @@ const updateCategory = async (req, res) => {
             {
                 categoryName,
                 description,
-                categoryOffer: categoryOffer || 0,  // Default to 0 if not provided
+                categoryOffer: categoryOffer || 0,  // Ensure this is set properly
                 offerExpiry: offerExpiry || null     // Default to null if no expiry
             },
             { new: true }
@@ -302,7 +223,31 @@ const updateCategory = async (req, res) => {
             return res.redirect('/admin/category');
         }
 
-        req.flash('message', 'Category updated successfully');
+        // Fetch all products in this category to update their sale prices
+        const products = await Product.find({ categoryId });
+
+        for (const product of products) {
+            const productOffer = product.productOffer || 0;
+            const newCategoryOffer = updatedCategory.categoryOffer || 0;
+
+            // Calculate the new sale price if the category offer is higher
+            const highestOffer = Math.max(productOffer, newCategoryOffer);
+            let salePrice = product.regularPrice;
+
+            // Assuming sale price calculation is similar to what you have
+            if (product.discountType === 'percentage') {
+                salePrice -= (salePrice * highestOffer / 100);
+            } else {
+                salePrice -= highestOffer;
+            }
+            salePrice = Math.max(0, Math.round(salePrice)); 
+
+            // Update the product's sale price
+            product.salePrice = salePrice;
+            await product.save();
+        }
+
+        req.flash('message', 'Category and associated products updated successfully');
         return res.redirect('/admin/category');
     } catch (error) {
         console.error(error.message);
@@ -310,6 +255,7 @@ const updateCategory = async (req, res) => {
         return res.redirect('/admin/category');
     }
 };
+
 
 
 module.exports = {

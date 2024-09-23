@@ -94,7 +94,7 @@
                 <img src="/styles/images/truck.svg" alt="Order Icon">
             </div>
             <div class="order-details-body">
-                <p>Order Id: <strong><%= order._id %></strong></p>
+                <p>Order Id: <strong><%= order.orderId %></strong></p>
                 <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
                 <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
                 <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>

@@ -8,7 +8,6 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
             background-color: #f4f4f4;
         }
 
@@ -153,7 +152,7 @@
                 <% orders.forEach(order => { %>
                     <tr>
                         <td><%= order.orderDate.toDateString() %></td>
-                        <td>$<%= order.totalAmount.toFixed(2) %></td>
+                        <td>₹<%= order.totalAmount.toFixed(2) %></td>
                         <td><%= order.status %></td>
                         <td>
                             <ul>
@@ -161,7 +160,7 @@
                                     <% if (product.productId) { %>
                                         <li>
                                             <strong><%= product.productId.productName %></strong> (x<%= product.quantity %>)
-                                            - $<%= product.productId.salePrice.toFixed(2) %>
+                                            - ₹<%= product.productId.salePrice.toFixed(2) %>
                                         </li>
                                     <% } %>
                                 <% }); %>
@@ -169,11 +168,11 @@
                         </td>
                         <td class="actions">
                             <button onclick="window.location.href='/order-details/<%= order._id %>'" class="btn">View</button>
-                            <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                            <!-- <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
                                 <form action="/order/<%= order._id %>/cancel" method="POST" style="display: inline;">
                                     <button type="submit" class="btn btn-cancel">Cancel</button>
                                 </form>
-                            <% } %>
+                            <% } %> -->
                         </td>
                     </tr>
                 <% }); %>

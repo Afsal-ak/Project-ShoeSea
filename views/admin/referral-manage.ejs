@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../partials/admin/header') %>
+
+    <div class="container">
+        <h4 class="mb-4">Referral Management</h4>
+
+        <% if (referral.length === 0) { %>
+            <div class="alert alert-warning" role="alert">
+                No referrals found. You can add a new referral offer.
+            </div>
+            <a href="/admin/add-referral" class="btn btn-primary mb-4">Add Referral Offer</a>
+        <% } else { %>
+            <table class="table table-bordered">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Referral Amount</th>
+                        <th>Referral Description</th>
+                        <th>Referral Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% referral.forEach(referral => { %>
+                        <tr>
+                            <td><%= referral.referralAmount %></td>
+                            <td><%= referral.referralDescription %></td>
+                            <td><%= referral.isActive ? 'Active' : 'Inactive' %></td>
+                            <td>
+                                <% if (referral.isActive) { %>
+                                    <a href="/admin/block-referral/<%= referral._id %>" class="btn btn-success">Block</a>
+                                <% } else { %>
+                                    <a href="/admin/unblock-referral/<%= referral._id %>" class="btn btn-danger">Unblock</a>
+                                <% } %>
+                                <a href="/admin/add-referral" class="btn btn-info">Edit</a>
+                            </td>
+                            
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

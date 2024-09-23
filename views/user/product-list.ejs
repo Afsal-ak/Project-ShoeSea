@@ -106,25 +106,31 @@
                     <p>No products found matching your criteria.</p>
                 </div>
             <% } else { %>
-                <div class="row">
-                    <% products.forEach((product) => { %>
-                        <div class="col-12 col-md-4 col-lg-3 mb-5">
-                            <a class="product-item" href="/product-details/<%= product._id %>">
-                                <% if (product.productImages && product.productImages.length > 0) { %>
-                                    <img src="<%= product.productImages[0] %>" class="img-fluid product-thumbnail" alt="<%= product.productName %>">
-                                <% } else { %>
-                                    <img src="/path/to/default-image.jpg" class="img-fluid product-thumbnail" alt="No image available">
-                                <% } %>
-                                <h3 class="product-title"><%= product.productName %></h3>
-                                <strong class="product-price"><%= product.salePrice %> rupees</strong>
+               <div class="row">
+    <% products.forEach((product) => { %>
+        <div class="col-12 col-md-4 col-lg-3 mb-5">
+            <a class="product-item" href="/product-details/<%= product._id %>">
+                <% if (product.productImages && product.productImages.length > 0) { %>
+                    <img src="<%= product.productImages[0] %>" 
+                         class="img-fluid product-thumbnail" 
+                         alt="<%= product.productName %>" 
+                         onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                <% } else { %>
+                    <img src="/styles/images/no_images.jpg" 
+                         class="img-fluid product-thumbnail" 
+                         alt="No image available">
+                <% } %>
+                <h3 class="product-title"><%= product.productName %></h3>
+                <strong class="product-price"><%= product.salePrice %> rupees</strong>
 
-                                <span class="icon-cross">
-                                    <img src="/styles/images/cross.svg" class="img-fluid">
-                                </span>
-                            </a>
-                        </div>
-                    <% }); %>
-                </div>
+                <span class="icon-cross">
+                    <img src="/styles/images/cross.svg" class="img-fluid">
+                </span>
+            </a>
+        </div>
+    <% }); %>
+</div>
+
             <% } %>
         </div>
     </section>

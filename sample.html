@@ -3,533 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        /* ... (Keep the existing styles) ... */
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h2, h3, h4 {
-            color: #2c3e50;
-        }
-
-        .checkout-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .checkout-section {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        table th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-        }
-
-        input[type="text"], input[type="email"], input[type="number"], select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-secondary {
-            background-color: #95a5a6;
-        }
-
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-
-        .address-card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            position: relative;
-        }
-
-        .address-card h4 {
-            margin: 0;
-            font-weight: bold;
-        }
-
-        .address-card p {
-            margin: 5px 0;
-        }
-
-        .address-actions {
-            margin-top: 10px;
-        }
-
-        .edit-btn, .delete-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .edit-btn {
-            background-color: #f39c12;
-            color: #fff;
-        }
-
-        .edit-btn:hover {
-            background-color: #e67e22;
-        }
-
-        .delete-btn {
-            background-color: #c0392b;
-            color: #fff;
-        }
-
-        .delete-btn:hover {
-            background-color: #e74c3c;
-        }
-
-        .coupon-section input[type="text"] {
-            width: 70%;
-            display: inline-block;
-        }
-
-        .coupon-section .btn {
-            width: 28%;
-        }
-
-        .success {
-            color: #27ae60;
-            font-weight: bold;
-        }
-
-        .error {
-            color: #c0392b;
-            font-weight: bold;
-        }
-
-        .payment-options label {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .address-card.selected {
-            border-color: #3498db;
-            background-color: #ebf5fb;
-        }
-
-        .address-card input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .add-address-btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: #2ecc71;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .add-address-btn:hover {
-            background-color: #27ae60;
-        }
-
-        #addressForm {
-            display: none;
-        }
-        .coupon-message {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-        }
-        .coupon-message.success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .coupon-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-    </style>
+    <title>User Wallet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-<%- include('../partials/user/header') %>
+<style>
+    body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+    padding: 20px;
+}
 
-<div class="container">
-    <h2><i class="fas fa-shopping-cart"></i> Checkout</h2>
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
 
-    <div class="checkout-grid">
-        <div class="checkout-section">
-            <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
+.wallet-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-            <!-- Add Address Button -->
-            <button class="add-address-btn" onclick="toggleAddressForm()">
-                <i class="fas fa-plus"></i> Add New Address
-            </button>
+.wallet-header h1 {
+    margin: 0;
+    color: #333;
+}
 
-            <!-- Address Form for Adding New Address -->
-            <form id="addressForm" action="/add-address" method="POST">
-                <input type="text" name="fname" placeholder="First Name" required>
-                <input type="text" name="lname" placeholder="Last Name" required>
-                <input type="text" name="housename" placeholder="House Name/Number" required>
-                <input type="text" name="city" placeholder="City" required>
-                <input type="text" name="state" placeholder="State" required>
-                <input type="text" name="country" placeholder="Country" required>
-                <input type="number" name="pincode" placeholder="Pincode" required>
-                <input type="number" name="phone" placeholder="Phone" required>
-                <button type="submit" class="btn">Save Address</button>
-            </form>
+.wallet-header h2 {
+    color: #28a745;
+}
 
-            <!-- Existing Addresses -->
-            <% if (userAddress && userAddress.length > 0) { %>
-                <% userAddress.forEach((address, index) => { %>
-                    <div class="address-card">
-                        <input type="radio" name="selectedAddress" value="<%= address._id %>" onchange="updateSelectedAddress(this.value)">
-                        <h4><%= address.fname %> <%= address.lname %></h4>
-                        <p><%= address.housename %>, <%= address.city %>, <%= address.state %>, <%= address.country %> - <%= address.pincode %></p>
-                        <p>Phone: <%= address.phone %></p>
-                        <div class="address-actions">
-                            <button class="edit-btn" onclick="window.location.href='/edit-address/<%= address._id %>'">Edit</button>
-                            <button class="delete-btn" onclick="window.location.href='/delete-address/<%= address._id %>'">Delete</button>
-                        </div>
-                    </div>
-                <% }); %>
-            <% } else { %>
-                <p>No addresses found. Please add a new address.</p>
-            <% } %>
-        </div>
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
 
-        <div class="checkout-section">
-            <h3><i class="fas fa-file-invoice-dollar"></i> Order Summary</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (userCart.cart && userCart.cart.length > 0) { %>
-                        <% userCart.cart.forEach(item => { %>
-                            <tr>
-                                <td><%= item.productId.productName %></td>
-                                <td><%= item.quantity %></td>
-                                <td>$<%= item.productId.salePrice.toFixed(2) %></td>
-                                <td>$<%= (item.productId.salePrice * item.quantity).toFixed(2) %></td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="4">Your cart is empty.</td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
 
-            <div class="coupon-section">
-                <h4><i class="fas fa-tag"></i> Have a Coupon?</h4>
-                <form id="applyCouponForm">
-                    <input type="text" id="couponCode" placeholder="Enter coupon code" required>
-                    <button type="submit" class="btn">Apply</button>
-                </form>
-                <div id="couponMessage" class="coupon-message"></div>
-                <form id="removeCouponForm" style="display: none;">
-                    <button type="submit" class="btn btn-secondary">Remove Coupon</button>
-                </form>
-            </div>
+.btn:hover {
+    background-color: #0056b3;
+}
 
-            <div class="payment-method">
-                <h4><i class="fas fa-credit-card"></i> Select Payment Method</h4>
-                <form id="checkoutForm" method="POST" onsubmit="return validateAddressSelection()">
-                    <div class="payment-options">
-                        <label>
-                            <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
-                            Cash on Delivery
-                        </label>
-                        <label>
-                            <input type="radio" name="paymentMethod" value="Razorpay">
-                            Online Payment
-                        </label>
-                    </div>
-                
-                    <input type="hidden" name="userId" value="<%= user._id %>">
-                    <input type="hidden" name="totalAmount" id="totalAmount" value="<%= totalAmount %>">
-                    <input type="hidden" name="discountAmount" id="discountAmount" value="0">
-                    <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>">
-                    <input type="hidden" name="addressId" id="selectedAddressId" value="">
-                    <button type="submit" class="btn">Place Order</button>
-                </form>
-            </div>
-        </div>
+.transaction-history {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+.transaction-history h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+#transactionList {
+    list-style: none;
+    padding: 0;
+}
+
+#transactionList li {
+    padding: 10px;
+    border-bottom: 1px solid #f1f1f1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#transactionList li i {
+    margin-right: 10px;
+}
+
+#transactionList li span {
+    color: #888;
+}
+
+</style>
+<body>
+    <div class="container">
+        <header class="wallet-header">
+            <h1>Your Wallet</h1>
+            <h2>Balance: <span id="balance">₹5000</span></h2>
+        </header>
+
+        <section class="actions">
+            <button class="btn" id="addFundsBtn">Add Funds</button>
+            <button class="btn" id="viewTransactionsBtn">View Transactions</button>
+        </section>
+
+        <section class="transaction-history">
+            <h3>Transaction History</h3>
+            <ul id="transactionList">
+                <li><i class="fas fa-plus-circle"></i> Credit: ₹1000 <span>on Sep 20, 2024</span></li>
+                <li><i class="fas fa-minus-circle"></i> Debit: ₹500 <span>on Sep 21, 2024</span></li>
+                <li><i class="fas fa-plus-circle"></i> Credit: ₹2000 <span>on Sep 22, 2024</span></li>
+                <li><i class="fas fa-minus-circle"></i> Debit: ₹300 <span>on Sep 23, 2024</span></li>
+            </ul>
+        </section>
     </div>
-</div>
-<script>
-    document.getElementById('applyCouponForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-
-        const couponCode = document.getElementById('couponCode').value;
-        const response = await fetch('/apply-coupon', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ couponCode })
-        });
-
-        const result = await response.json();
-        const couponMessage = document.getElementById('couponMessage');
-        const removeCouponForm = document.getElementById('removeCouponForm');
-
-        if (result.success) {
-            // Show success message with discount amount
-            couponMessage.innerHTML = `Coupon "${result.couponCode}" applied successfully! Discount: $${result.discountAmount.toFixed(2)}`;
-            couponMessage.className = 'coupon-message success';
-            
-            // Show the remove coupon button
-            removeCouponForm.style.display = 'block';
-            
-            // Update total amount
-            const totalAmountInput = document.getElementById('totalAmount');
-            const discountAmountInput = document.getElementById('discountAmount');
-            const currentTotal = parseFloat(totalAmountInput.value);
-            const newTotal = currentTotal - result.discountAmount;
-            totalAmountInput.value = newTotal.toFixed(2);
-            discountAmountInput.value = result.discountAmount.toFixed(2);
-
-            // Update the displayed total (if you have an element showing the total)
-            const displayedTotal = document.getElementById('displayedTotal');
-            if (displayedTotal) {
-                displayedTotal.textContent = `$${newTotal.toFixed(2)}`;
-            }
-
-            // Clear the coupon input
-            document.getElementById('couponCode').value = '';
-        } else {
-            couponMessage.innerHTML = `Error: ${result.message}`;
-            couponMessage.className = 'coupon-message error';
-            removeCouponForm.style.display = 'none';
-        }
-    });
-
-    document.getElementById('removeCouponForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        
-        try {
-            const response = await fetch('/remove-coupon', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            const result = await response.json();
-            const couponMessage = document.getElementById('couponMessage');
-            const removeCouponForm = document.getElementById('removeCouponForm');
-
-            if (result.success) {
-                couponMessage.innerHTML = result.message;
-                couponMessage.className = 'coupon-message success';
-                removeCouponForm.style.display = 'none';
-                
-                // Reset total amount
-                const totalAmountInput = document.getElementById('totalAmount');
-                const discountAmountInput = document.getElementById('discountAmount');
-                const currentTotal = parseFloat(totalAmountInput.value);
-                const discountAmount = parseFloat(discountAmountInput.value);
-                totalAmountInput.value = (currentTotal + discountAmount).toFixed(2);
-                discountAmountInput.value = '0';
-
-                // Update the displayed total (if you have an element showing the total)
-                const displayedTotal = document.getElementById('displayedTotal');
-                if (displayedTotal) {
-                    displayedTotal.textContent = `$${(currentTotal + discountAmount).toFixed(2)}`;
-                }
-            } else {
-                couponMessage.innerHTML = `Error: ${result.message}`;
-                couponMessage.className = 'coupon-message error';
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            document.getElementById('couponMessage').innerHTML = 'Failed to remove coupon.';
-            document.getElementById('couponMessage').className = 'coupon-message error';
-        }
-    });
-</script>
-<%- include('../partials/user/footer') %>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-    function toggleAddressForm() {
-        const form = document.getElementById('addressForm');
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function updateSelectedAddress(addressId) {
-        document.getElementById('selectedAddressId').value = addressId;
-        document.querySelectorAll('.address-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-        document.querySelector(`input[value="${addressId}"]`).closest('.address-card').classList.add('selected');
-    }
-
-    async function handleRazorpayPayment(totalAmount) {
-        try {
-            console.log('Total Amount for Razorpay:', totalAmount);
-
-            const response = await fetch('/create-razorpay-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ totalAmount })
-            });
-
-            const data = await response.json();
-            console.log('Razorpay Order Response:', data);
-
-            if (!data.success) throw new Error(data.message || 'Failed to create Razorpay order');
-
-            const options = {
-                key: data.key,
-                amount: data.amount,
-                currency: data.currency,
-                name: 'ShoeSe',
-                description: 'Order Payment',
-                order_id: data.order_id,
-                handler: async function (response) {
-                    try {
-                        const verifyResponse = await fetch('/verify-razorpay-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature
-                            })
-                        });
-
-                        const verifyData = await verifyResponse.json();
-                        console.log('Payment Verification Response:', verifyData);
-
-                        if (!verifyData.success) throw new Error(verifyData.message || 'Payment verification failed');
-
-                        const checkoutResponse = await fetch('/checkout/online-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature,
-                                addressId: document.getElementById('selectedAddressId').value
-                            })
-                        });
-
-                        const checkoutData = await checkoutResponse.json();
-                        console.log('Checkout Response:', checkoutData);
-
-                        if (checkoutData.success) {
-                            window.location.href = `/order-success?orderId=${checkoutData.orderId}`;
-                        } else {
-                            throw new Error(checkoutData.message || 'Checkout process failed');
-                        }
-                    } catch (error) {
-                        console.error('Error processing payment:', error);
-                        alert('Payment failed: ' + error.message);
-                    }
-                },
-                prefill: {
-                    name: 'Customer Name',
-                    email: 'customer@example.com',
-                    contact: '9999999999'
-                },
-                theme: {
-                    color: '#F37254'
-                }
-            };
-
-            const paymentObject = new Razorpay(options);
-            paymentObject.open();
-        } catch (error) {
-            console.error('Error initializing Razorpay:', error);
-            alert('Failed to initiate payment: ' + error.message);
-        }
-    }
-
-    function validateAddressSelection() {
-        const selectedAddressId = document.getElementById('selectedAddressId').value;
-        if (!selectedAddressId) {
-            alert('Please select an address before placing the order.');
-            return false;
-        }
-
-        const form = document.getElementById('checkoutForm');
-        const paymentMethod = form.querySelector('input[name="paymentMethod"]:checked').value;
-        
-        if (paymentMethod === 'Cash on Delivery') {
-            form.action = '/checkout/cod';
-            return true;
-        } else if (paymentMethod === 'Razorpay') {
-            handleRazorpayPayment(form.querySelector('input[name="totalAmount"]').value);
-            return false;
-        }
-
-        return false;
-    }
-
-  
-</script>
 </body>
 </html>

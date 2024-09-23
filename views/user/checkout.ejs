@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* ... (Keep the existing styles) ... */
         body {
@@ -195,6 +197,22 @@
         #addressForm {
             display: none;
         }
+        .coupon-link {
+        display: inline-block;
+        margin-bottom: 15px;
+        background-color: #f37254; /* Matches the Razorpay color theme */
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Hover effect for the coupon link */
+    .coupon-link:hover {
+        background-color: #c94b30; /* Darker shade on hover */
+    }
     </style>
 </head>
 <body>
@@ -202,8 +220,9 @@
 
     <div class="container">
         <h2><i class="fas fa-shopping-cart"></i> Checkout</h2>
-
-        <div class="checkout-grid">
+<!-- Coupon Link -->
+<a href="/coupons" class="coupon-link">see coupons</a>
+<div class="checkout-grid">
             <div class="checkout-section">
                 <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
 
@@ -243,7 +262,6 @@
                     <p>No addresses found. Please add a new address.</p>
                 <% } %>
             </div>
-
             <div class="checkout-section">
                 <h3><i class="fas fa-file-invoice-dollar"></i> Order Summary</h3>
                 <table>
@@ -261,10 +279,24 @@
                                 <tr>
                                     <td><%= item.productId.productName %></td>
                                     <td><%= item.quantity %></td>
-                                    <td>$<%= item.productId.salePrice.toFixed(2) %></td>
-                                    <td>$<%= (item.productId.salePrice * item.quantity).toFixed(2) %></td>
+                                    <td>₹<%= item.productId.salePrice.toFixed(2) %></td>
+                                    <td>₹<%= (item.productId.salePrice * item.quantity).toFixed(2) %></td>
                                 </tr>
                             <% }); %>
+                            <tr>
+                                <td colspan="3">Total</td>
+                                <td>₹<%= coupon ? coupon.cartTotal.toFixed(2) : userCart.cart.reduce((total, item) => total + (item.productId.salePrice * item.quantity), 0).toFixed(2) %></td>
+                            </tr>
+                            <% if (coupon) { %>
+                                <tr>
+                                    <td colspan="3">Coupon Discount</td>
+                                    <td>-₹<%= coupon.discountAmount.toFixed(2) %></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3"><strong>New Total</strong></td>
+                                    <td><strong>₹<%= coupon.discountedTotal.toFixed(2) %></strong></td>
+                                </tr>
+                            <% } %>
                         <% } else { %>
                             <tr>
                                 <td colspan="4">Your cart is empty.</td>
@@ -272,7 +304,9 @@
                         <% } %>
                     </tbody>
                 </table>
-
+            </div>
+            
+            
                 <div class="coupon-section">
                     <h4><i class="fas fa-tag"></i> Have a Coupon?</h4>
                     <% if (!coupon) { %>
@@ -281,7 +315,7 @@
                             <button type="submit" class="btn">Apply</button>
                         </form>
                     <% } else { %>
-                        <p class="success">Coupon "<%= coupon.code %>" applied! Discount: $<%= coupon.discountAmount.toFixed(2) %></p>
+                        <p class="success">Coupon "<%= coupon.code %>" applied! Discount: ₹<%= coupon.discountAmount.toFixed(2) %></p>
                         <form action="/remove-coupon" method="POST">
                             <button type="submit" class="btn btn-secondary">Remove Coupon</button>
                         </form>
@@ -320,6 +354,8 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function toggleAddressForm() {
             const form = document.getElementById('addressForm');
@@ -334,155 +370,116 @@
             document.querySelector(`input[value="${addressId}"]`).closest('.address-card').classList.add('selected');
         }
     
-        // async function handleRazorpayPayment(totalAmount) {
-        //     const response = await fetch('/create-razorpay-order', {
-        //         method: 'POST',
-        //         headers: { 'Content-Type': 'application/json' },
-        //         body: JSON.stringify({ totalAmount })
-        //     });
-        //     const { order_id } = await response.json();
+        function validateAddressSelection() {
+            const selectedAddressId = document.getElementById('selectedAddressId').value;
+            const availableAddresses = document.querySelectorAll('.address-card input[type="radio"]');
     
-        //     const options = {
-        //         key: 'YOUR_RAZORPAY_KEY', // Your Razorpay key
-        //         amount: totalAmount * 100, // Amount in paise
-        //         currency: 'INR',
-        //         name: 'Your Shop Name',
-        //         description: 'Order Payment',
-        //         order_id: order_id,
-        //         handler: async function (response) {
-        //             await fetch('/verify-razorpay-payment', {
-        //                 method: 'POST',
-        //                 headers: { 'Content-Type': 'application/json' },
-        //                 body: JSON.stringify({
-        //                     razorpay_payment_id: response.razorpay_payment_id,
-        //                     razorpay_order_id: response.razorpay_order_id,
-        //                     razorpay_signature: response.razorpay_signature
-        //                 })
-        //             });
-                    
-        //             await fetch('/checkout/online-payment', {
-        //                 method: 'POST',
-        //                 headers: { 'Content-Type': 'application/json' },
-        //                 body: JSON.stringify({
-        //                     razorpay_payment_id: response.razorpay_payment_id,
-        //                     razorpay_order_id: response.razorpay_order_id,
-        //                     razorpay_signature: response.razorpay_signature,
-        //                     addressId: document.getElementById('selectedAddressId').value
-        //                 })
-        //             });
-
-        //             window.location.href = '/order-success';
-        //         },
-        //         prefill: {
-        //             name: 'Customer Name',
-        //             email: 'customer@example.com',
-        //             contact: '9999999999'
-        //         },
-        //         theme: {
-        //             color: '#F37254'
-        //         }
-        //     };
-    
-        //     const paymentObject = new Razorpay(options);
-        //     paymentObject.open();
-        // }
-        async function handleRazorpayPayment(totalAmount) {
-    try {
-        const response = await fetch('/create-razorpay-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ totalAmount })
-        });
-        const data = await response.json();
-        
-        if (!data.success) {
-            throw new Error(data.message || 'Failed to create Razorpay order');
-        }
-
-        const options = {
-            key: data.key,
-            amount: data.amount,
-            currency: data.currency,
-            name: 'shoesea',
-            description: 'Order Payment',
-            order_id: data.order_id,
-            handler: async function (response) {
-                try {
-                    const verifyResponse = await fetch('/verify-razorpay-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature
-                        })
-                    });
-                    const verifyData = await verifyResponse.json();
-                    
-                    if (!verifyData.success) {
-                        throw new Error(verifyData.message || 'Payment verification failed');
-                    }
-
-                    const checkoutResponse = await fetch('/checkout/online-payment', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            razorpay_payment_id: response.razorpay_payment_id,
-                            razorpay_order_id: response.razorpay_order_id,
-                            razorpay_signature: response.razorpay_signature,
-                            addressId: document.getElementById('selectedAddressId').value
-                        })
-                    });
-                    const checkoutData = await checkoutResponse.json();
-
-                    if (checkoutData.success) {
-                        window.location.href = `/order-success?orderId=${checkoutData.orderId}`;
-                    } else {
-                        throw new Error(checkoutData.message || 'Checkout process failed');
-                    }
-                } catch (error) {
-                    console.error('Error processing payment:', error);
-                    alert('Payment failed: ' + error.message);
-                }
-            },
-            prefill: {
-                name: 'Customer Name',
-                email: 'customer@example.com',
-                contact: '9999999999'
-            },
-            theme: {
-                color: '#F37254'
+            if (!selectedAddressId && availableAddresses.length > 0) {
+                // Automatically select the first address if none is selected
+                availableAddresses[0].checked = true;
+                updateSelectedAddress(availableAddresses[0].value);
+            } else if (availableAddresses.length === 0) {
+                // Show SweetAlert if no addresses are available
+                Swal.fire({
+                    title: 'No Address Found',
+                    text: 'Please add a shipping address to proceed.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK'
+                });
+                return false;
             }
-        };
-
-        const paymentObject = new Razorpay(options);
-        paymentObject.open();
-    } catch (error) {
-        console.error('Error initializing Razorpay:', error);
-        alert('Failed to initiate payment: ' + error.message);
-    }
-}
-
-function validateAddressSelection() {
-    const selectedAddressId = document.getElementById('selectedAddressId').value;
-    if (!selectedAddressId) {
-        alert('Please select an address before placing the order.');
-        return false;
-    }
-
-    const form = document.getElementById('checkoutForm');
-    const paymentMethod = form.querySelector('input[name="paymentMethod"]:checked').value;
     
-    if (paymentMethod === 'Cash on Delivery') {
-        form.action = '/checkout/cod';
-    } else if (paymentMethod === 'Razorpay') {
-        form.action = '#';
-        handleRazorpayPayment(form.querySelector('input[name="totalAmount"]').value);
-        return false;
-    }
-
-    return true;
-}
+            const form = document.getElementById('checkoutForm');
+            const paymentMethod = form.querySelector('input[name="paymentMethod"]:checked').value;
+    
+            if (paymentMethod === 'Cash on Delivery') {
+                form.action = '/checkout/cod';
+            } else if (paymentMethod === 'Razorpay') {
+                form.action = '#';
+                handleRazorpayPayment(form.querySelector('input[name="totalAmount"]').value);
+                return false;
+            }
+    
+            return true;
+        }
+    
+        async function handleRazorpayPayment(totalAmount) {
+            try {
+                const response = await fetch('/create-razorpay-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ totalAmount })
+                });
+                const data = await response.json();
+    
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to create Razorpay order');
+                }
+    
+                const options = {
+                    key: data.key,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: 'shoesea',
+                    description: 'Order Payment',
+                    order_id: data.order_id,
+                    handler: async function (response) {
+                        try {
+                            const verifyResponse = await fetch('/verify-razorpay-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature
+                                })
+                            });
+                            const verifyData = await verifyResponse.json();
+    
+                            if (!verifyData.success) {
+                                throw new Error(verifyData.message || 'Payment verification failed');
+                            }
+    
+                            const checkoutResponse = await fetch('/checkout/online-payment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                    addressId: document.getElementById('selectedAddressId').value
+                                })
+                            });
+                            const checkoutData = await checkoutResponse.json();
+    
+                            if (checkoutData.success) {
+                                window.location.href = `/order-success?orderId=${checkoutData.orderId}`;
+                            } else {
+                                throw new Error(checkoutData.message || 'Checkout process failed');
+                            }
+                        } catch (error) {
+                            console.error('Error processing payment:', error);
+                            alert('Payment failed: ' + error.message);
+                        }
+                    },
+                    prefill: {
+                        name: 'Customer Name',
+                        email: 'customer@example.com',
+                        contact: '9999999999'
+                    },
+                    theme: {
+                        color: '#F37254'
+                    }
+                };
+    
+                const paymentObject = new Razorpay(options);
+                paymentObject.open();
+            } catch (error) {
+                console.error('Error initializing Razorpay:', error);
+                alert('Failed to initiate payment: ' + error.message);
+            }
+        }
     </script>
+    
 </body>
 </html>

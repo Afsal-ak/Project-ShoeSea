@@ -99,7 +99,7 @@
             <h3>Order Details</h3>
         </div>
         <div class="order-details-body">
-            <p>Order Id: <strong><%= order._id %></strong></p>
+            <p>Order Id: <strong><%= order.orderId %></strong></p>
             <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
             <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
             <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
@@ -142,57 +142,73 @@
                 </tbody>
             </table>
         </div>
+        <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
+            <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmCancel('<%= order._id %>')">Cancel</button>
+            </form>
+        <% } else if (order.status === 'Delivered') { %>
+            <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
+                <input type="hidden" name="reason" id="reason-<%= order._id %>"> 
+                <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return</button>
+            </form>
+        <% } %>
+        
+        
+        
+        </div>
     </div>
     
-            <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
-                <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm" onclick="confirmCancel('<%= order._id %>')">Cancel</button>
-                </form>
-            <% } else if (order.status === 'Delivered') { %>
-                <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return</button>
-                </form>
-            <% } %>
-        </div>
+            
     </div>
     <%- include('../partials/user/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function confirmCancel(orderId) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, cancel it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(`cancelOrderForm-${orderId}`).submit();
-                }
-            });
+function confirmReturn(orderId) {
+    event.preventDefault(); // Prevent the default form submission
+    Swal.fire({
+        title: 'Are you sure you want to return this order?',
+        text: "Please provide a reason for the return:",
+        input: 'text', // This adds an input field for the return reason
+        inputPlaceholder: 'Enter return reason...',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#f39c12',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, return it!',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to provide a reason for returning the order!';
+            }
         }
+    }).then((result) => {
+        if (result.isConfirmed && result.value) {
+            // Set the reason in a hidden input field in the form
+            document.getElementById(`reason-${orderId}`).value = result.value;
+            // Submit the form
+            document.getElementById(`returnOrderForm-${orderId}`).submit();
+        }
+    });
+}
 
-        function confirmReturn(orderId) {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#f39c12',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, return it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(`returnOrderForm-${orderId}`).submit();
-                }
-            });
+function confirmCancel(orderId) {
+    event.preventDefault(); // Prevent the default form submission
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, cancel it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Submit the form if confirmed
+            document.getElementById(`cancelOrderForm-${orderId}`).submit();
         }
-    </script>
+    });
+}
+</script>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/custom.js"></script>
 </body>

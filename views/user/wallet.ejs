@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Wallet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    /* Wallet specific styles */
+    .wallet-container {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin: 0 auto;
+        padding: 20px;
+        max-width: 800px;
+    }
+
+    .wallet-box {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .wallet-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .wallet-header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        color: #333;
+    }
+
+    .wallet-balance-card {
+        background: #2a6931;
+        color: white;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .wallet-balance-card .wallet-logo {
+        font-size: 3rem;
+        margin-right: 15px;
+    }
+
+    .wallet-balance-card .balance {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .wallet-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .wallet-btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        background-color: #28a745;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .wallet-btn:hover {
+        background-color: #218838;
+    }
+
+    .transaction-container {
+        margin-bottom: 5%;
+    }
+
+    .transaction-container h2 {
+        margin-bottom: 3%;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    /* DataTables Styling */
+    table.dataTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    table.dataTable thead {
+        background-color: #f1f1f1;
+    }
+
+    table.dataTable thead th {
+        padding: 10px;
+        text-align: left;
+        font-size: 1rem;
+        color: #555;
+    }
+
+    table.dataTable tbody td {
+        padding: 10px;
+        font-size: 0.9rem;
+        border-bottom: 1px solid #ddd;
+    }
+</style>
+<body>
+    <%- include('../partials/user/header') %>
+
+    <div class="wallet-container">
+        <div class="wallet-box">
+            <!-- Wallet Header with Balance -->
+            <header class="wallet-header">
+                <h1>Your Wallet</h1>
+            </header>
+
+            <div class="wallet-balance-card">
+                <div class="wallet-logo">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="balance">
+                    ₹<span id="balance"><%= user.walletBalance %></span>
+                </div>
+            </div>
+
+            <!-- Wallet Actions -->
+            <!-- <section class="wallet-actions">
+                <button class="wallet-btn" id="addFundsBtn">Add Funds</button>
+                <button class="wallet-btn" id="viewTransactionsBtn">View Transactions</button>
+            </section> -->
+
+            <!-- Transaction History with Pagination -->
+            <div class="container transaction-container">
+                <section class="wallet-transactions">
+                    <h2>Transaction History</h2>
+                    <table id="transactionsTable" class="display">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Debited/Credited</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (wallet && wallet.length > 0) { %>
+                                <% wallet.forEach(transaction => { %>
+                                    <tr>
+                                        <td><%= new Date(transaction.date).toLocaleDateString('en-GB') %></td>
+                                        <td><%= transaction.type === 'credit' ? 'Credit' : 'Debit' %></td>
+                                        <td>₹<%= transaction.amount.toFixed(2) %></td>
+                                        <td><%= transaction.description %></td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4">No transactions available</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                        
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/user/footer') %>
+
+    <!-- jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        // Initialize DataTables for transaction history
+        $(document).ready(function() {
+            $('#transactionsTable').DataTable({
+                "paging": true,
+                "pageLength": 5,
+                "lengthChange": false,
+                "searching": false, // Disable search functionality
+
+                "ordering": true,
+                "info": false
+            });
+        });
+    </script>
+</body>
+</html>

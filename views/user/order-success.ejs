@@ -74,11 +74,11 @@
                             <strong><%= item.productId.productName %></strong> <br>
                             Quantity: <%= item.quantity %>
                         </div>
-                        <span class="fw-bold">$<%= (item.price * item.quantity).toFixed(2) %></span>
+                        <span class="fw-bold">₹<%= (item.price * item.quantity).toFixed(2) %></span>
                     </li>
                 <% }) %>
             </ul>
-            <h5 class="total-amount mt-4">Total Amount: $<strong><%= order.totalAmount.toFixed(2) %></strong></h5>
+            <h5 class="total-amount mt-4">Total Amount: ₹<strong><%= order.totalAmount.toFixed(2) %></strong></h5>
         </div>
 
         <!-- Back to Home Button -->

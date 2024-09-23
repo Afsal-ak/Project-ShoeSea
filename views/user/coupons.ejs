@@ -69,7 +69,6 @@
                         <th>Discount</th>
                         <th>Minimum Purchase</th>
                         <th>Expires On</th>
-                        <th>Usage Count</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -80,12 +79,11 @@
                                 <% if (coupon.discountType === 'percentage') { %>
                                     <%= coupon.offerPrice %>% off
                                 <% } else { %>
-                                    $<%= coupon.offerPrice.toFixed(2) %> off
+                                    ₹<%= coupon.offerPrice.toFixed(2) %> off
                                 <% } %>
                             </td>
-                            <td>$<%= coupon.minimumPrice.toFixed(2) %></td>
+                            <td>₹<%= coupon.minimumPrice.toFixed(2) %></td>
                             <td><%= coupon.expirationDate.toDateString() %></td>
-                            <td><%= coupon.usageCount %></td>
                         </tr>
                     <% }); %>
                 </tbody>

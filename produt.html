@@ -3,243 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Link your stylesheet -->
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <style>
-      
-      
-
-        h2, h3, h4 {
-            color: #333;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        table th {
-            background-color: #f8f8f8;
-        }
-
-        table td {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .coupon-section, .total-amount, .shipping-section, .payment-method {
-            margin: 20px 0;
-        }
-
-        .coupon-section input[type="text"] {
-            width: 60%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .coupon-section button {
-            padding: 10px 15px;
-            background-color: #28a745;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .coupon-section button:hover {
-            background-color: #218838;
-        }
-
-        .total-amount h3 {
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .total-amount p {
-            color: #28a745;
-            font-size: 16px;
-        }
-
-        .shipping-section p {
-            font-size: 14px;
-            color: #555;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #0069d9;
-        }
-
-        .payment-method label {
-            display: block;
-            font-size: 14px;
-            margin: 10px 0;
-        }
-
-        .payment-options {
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
+        .form-container { margin-top: 20px; }
+        .error-message { color: red; }
+        .thumbnails-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .thumbnail { position: relative; }
+        .thumbnail img { max-width: 200px; max-height: 150px; }
+        .image-preview { max-width: 300px; max-height: 200px; margin-top: 10px; }
+        .crop-container { display: none; margin-top: 10px; }
+        .delete-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7);
             color: white;
-            font-size: 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .success {
-            color: #28a745;
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                width: 100%;
-                padding: 10px;
-            }
-
-            .coupon-section input[type="text"] {
-                width: 100%;
-            }
         }
     </style>
 </head>
 <body>
-    <%- include('../partials/user/header') %>
+    <%- include('../../partials/admin/header') %>
 
-    <div class="container">
-        <h2>Checkout</h2>
+    <div class="container form-container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="productForm" method="post" action="/admin/edit-product/<%= product._id %>" enctype="multipart/form-data">
+                            <!-- Product Name -->
+                            <div class="mb-4">
+                                <label for="title" class="form-label">Product Name</label>
+                                <input type="text" placeholder="Type here" name="title" class="form-control border" id="title" value="<%= product.productName %>">
+                                <div id="productName-error" class="error-message"></div>
+                            </div>
 
-        <!-- Cart Summary -->
-        <div class="cart-summary">
-            <h3>Order Summary</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (userCart.cart && userCart.cart.length > 0) { %>
-                        <% userCart.cart.forEach(item => { %>
-                            <tr>
-                                <td><%= item.productId.productName %></td>
-                                <td><%= item.quantity %></td>
-                                <td>$<%= item.productId.salePrice %></td>
-                                <td>$<%= item.productId.salePrice * item.quantity %></td>
-                            </tr>
-                        <% }); %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="4">Your cart is empty.</td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
-        </div>
-<!-- Coupon Application -->
-<div class="coupon-section">
-    <h4>Have a Coupon?</h4>
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+                                <textarea placeholder="Type here" id="description" name="description" class="form-control border" rows="4"><%= product.description %></textarea>
+                                <div id="description-error" class="error-message"></div>
+                            </div>
 
-    <!-- If no coupon is applied, show the "Apply Coupon" form -->
-    <% if (!coupon) { %>
-        <form action="/apply-coupon" method="POST">
-            <input type="text" name="couponCode" placeholder="Enter coupon code" required>
-            <button type="submit" class="apply-btn">Apply Coupon</button>
-        </form>
-    <% } else { %>
-        <!-- If a coupon is applied, show the applied coupon message and "Remove Coupon" button -->
-        <p class="success">Coupon "<%= coupon.code %>" applied! Discount: $<%= coupon.discountAmount %></p>
-        <form action="/remove-coupon" method="POST">
-            <button type="submit" class="apply-btn">Remove Coupon</button>
-        </form>
-    <% } %>
+                            <!-- Prices and Quantity -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Regular price</label>
+                                        <input placeholder="$" name="regularPrice" type="text" class="form-control border" value="<%= product.regularPrice %>">
+                                        <div id="regularPrice-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Sale price</label>
+                                        <input placeholder="$" name="salePrice" type="text" class="form-control border" value="<%= product.salePrice %>">
+                                        <div id="salePrice-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Quantity</label>
+                                        <input placeholder="" name="quantity" type="text" class="form-control border" value="<%= product.quantity %>">
+                                        <div id="quantity-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
 
-    <!-- Display any error message -->
-    <% if (error_msg) { %>
-        <h6 style="color: red;"><%= error_msg %></h6>
-    <% } %>
-</div>
+                            <!-- Color -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Color</label>
+                                        <input name="color" type="text" class="form-control border" value="<%= product.colour %>">
+                                        <div id="color-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <!-- Category -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row gx-2">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select border" style="width: 150px;" name="categoryId">
+                                                <% cat.forEach(category => { %>
+                                                    <option value="<%= category._id %>" <%= product.categoryId.toString() === category._id.toString() ? 'selected' : '' %>><%= category.categoryName %></option>
+                                                <% }); %>
+                                            </select>
+                                            <div id="category-error" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-<!-- Total Amount -->
-<div class="total-amount">
-    <h3>Total Amount: $<%= totalAmount %></h3>
-    <% if (coupon) { %>
-        <p>Discounted Total: $<%= discountedTotal %></p>
-    <% } %>
-</div>
-<!-- Shipping Address -->
-<div class="shipping-section">
-    <h4>Shipping Address</h4>
-    <% if (userAddress && userAddress.length > 0) { %>
-        <p><%= userAddress[0].housename %>, <%= userAddress[0].city %>, <%= userAddress[0].state %>, <%= userAddress[0].pincode %>, <%= userAddress[0].country %></p>
-        <a href="/change-address" class="btn">Change Address</a>
-        <input type="hidden" name="addressId" value="<%= userAddress[0]._id %>"> <!-- Ensure address ID is passed -->
-    <% } else { %>
-        <p>No address available. Please add an address.</p>
-        <a href="/add-address" class="btn">Add Address</a>
-    <% } %>
-</div>
+                            <!-- Discount Type -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Type</label>
+                                <select class="form-select border" name="discountType">
+                                    <option value="">Select discount type</option>
+                                    <option value="percentage" <%= product.discountType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                                    <option value="flat" <%= product.discountType === 'flat' ? 'selected' : '' %>>Flat</option>
+                                </select>
+                                <div id="discountType-error" class="error-message"></div>
+                            </div>
 
+                            <!-- Discount Value -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Value</label>
+                                <input placeholder="Discount Value" name="discountValue" type="text" class="form-control border" value="<%= product.productOffer %>">
+                                <div id="discountValue-error" class="error-message"></div>
+                            </div>
 
-        <!-- Payment Method Selection -->
-        <div class="payment-method">
-            <h4>Select Payment Method</h4>
-            <form action="/checkout" method="POST">
-                <div class="payment-options">
-                    <label>
-                        <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
-                        Cash on Delivery
-                    </label>
-                    <label>
-                        <input type="radio" name="paymentMethod" value="online">
-                        Online Payment
-                    </label>
+                            <!-- Tax Type -->
+                            <div class="mb-4">
+                                <label class="form-label">Tax Type</label>
+                                <select class="form-select border" name="taxType">
+                                    <option value="">Select tax type</option>
+                                    <option value="percentage" <%= product.taxType === 'percentage' ? 'selected' : '' %>>Percentage</option>
+                                    <option value="flat" <%= product.taxType === 'flat' ? 'selected' : '' %>>Flat</option>
+                                </select>
+                                <div id="taxType-error" class="error-message"></div>
+                            </div>
+
+                            <!-- Tax Value -->
+                            <div class="mb-4">
+                                <label class="form-label">Tax Value</label>
+                                <input placeholder="Tax Value" name="taxValue" type="text" class="form-control border" value="<%= product.tax %>">
+                                <div id="taxValue-error" class="error-message"></div>
+                            </div>
+
+                            <!-- Offer Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Offer Description</label>
+                                <textarea placeholder="Offer Description" name="offerDescription" class="form-control border" rows="2"><%= product.offerDescription %></textarea>
+                            </div>
+
+                            <!-- Sizes -->
+                            <div class="mb-4">
+                                <label class="form-label">Sizes</label>
+                                <input placeholder="Sizes (comma separated)" name="sizes" type="text" class="form-control border" value="<%= product.sizes.join(', ') %>">
+                            </div>
+
+                            <!-- Existing Images -->
+                            <h3>Current Images</h3>
+                            <div class="image-gallery" id="imageGallery">
+                                <% product.productImages.forEach((image, index) => { %>
+                                    <div class="image-item" id="image-<%= index %>">
+                                        <img src="/<%= image %>" alt="Product Image" style="width: 100px; height: auto;">
+                                        <button type="button" class="btn btn-danger btn-sm delete-image" data-image="<%= image %>" data-index="<%= index %>">Delete</button>
+                                    </div>
+                                <% }); %>
+                            </div>
+
+                            <!-- New Image Upload -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h4>Upload New Images</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
+                                    <% for(let i = 1; i <= 4; i++) { %>
+                                        <div class="image-input-container">
+                                            <input class="form-control" type="file" name="images" id="input<%= i %>" accept="image/*" onchange="handleImageSelect(event, <%= i %>)">
+                                            <img src="" alt="" id="imgView<%= i %>" class="image-preview">
+                                            <div class="crop-container" id="cropContainer<%= i %>">
+                                                <img src="" id="croppedImg<%= i %>" alt="">
+                                                <button type="button" id="saveButton<%= i %>" class="btn btn-primary mt-2">Save Cropped Image</button>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                    <div id="images-error" class="error-message"></div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Update Product</button>
+                        </form>
+                    </div>
                 </div>
-
-                <!-- Hidden Inputs for Cart Data -->
-                <input type="hidden" name="userId" value="<%= user._id %>">
-                <input type="hidden" name="totalAmount" value="<%= totalAmount - (coupon ? coupon.offerPrice : 0) %>">
-                <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>"> <!-- Calculate total quantity -->
-                <input type="hidden" name="addressId" value="<%= userAddress[0]._id %>"> <!-- Ensure address ID is passed -->
-
-                <button type="submit" class="btn">Place Order</button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <%- include('../partials/user/footer') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        let croppers = [];
+
+        function handleImageSelect(event, index) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imgView = document.getElementById(`imgView${index}`);
+                    imgView.src = e.target.result;
+                    
+                    if (croppers[index]) {
+                        croppers[index].destroy();
+                    }
+                    
+                    croppers[index] = new Cropper(imgView, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        guides: true,
+                        background: false,
+                        autoCropArea: 1,
+                        zoomable: true
+                    });
+
+                    const cropContainer = document.getElementById(`cropContainer${index}`);
+                    cropContainer.style.display = 'block';
+
+                    const saveButton = document.getElementById(`saveButton${index}`);
+                    saveButton.onclick = function() {
+                        const croppedCanvas = croppers[index].getCroppedCanvas();
+                        const croppedImage = document.getElementById(`croppedImg${index}`);
+                        croppedImage.src = croppedCanvas.toDataURL('image/png');
+                        
+                        // Here you can save the cropped image data or send it to the server
+                        // For example, you could add it to a FormData object to be sent with the form
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-image');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const imageUrl = this.getAttribute('data-image');
+                    const index = this.getAttribute('data-index');
+                    deleteImage('<%= product._id %>', imageUrl, index);
+                });
+            });
+        });
+
+        function deleteImage(productId, imageUrl, index) {
+            axios.post(`/admin/edit-product/${productId}/delete-image`, { imageUrl })
+                .then(response => {
+                    if (response.data.success) {
+                        const imageElement = document.getElementById(`image-${index}`);
+                        if (imageElement) {
+                            imageElement.remove();
+                        }
+                    } else {
+                        alert('Failed to delete image');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting image:', error);
+                    alert('An error occurred while deleting the image');
+                });
+        }
+    </script>
 </body>
 </html>

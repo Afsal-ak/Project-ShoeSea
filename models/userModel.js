@@ -50,6 +50,26 @@ const userSchema = new mongoose.Schema({
             }
         }
     ],
+    referralCode: {
+        type: String,
+        unique: true,
+        index: true,
+    },
+    referredBy: {
+        type: String, // This can store the referral code of the referrer
+        index: true,
+    },
+    walletBalance: {
+        type: Number,
+        default: 0, // Amount credited for referrals
+    },
+    walletTransaction:[{
+        date: { type: Date, default: Date.now },
+        type: { type: String, enum: ['credit', 'debit'] },
+        amount: { type: Number },
+        description: { type: String }
+    }]
+ 
 });
 
 module.exports = mongoose.model('User', userSchema);
