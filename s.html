@@ -1,191 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
 
-//         function validateForm() {
-    //     clearErrorMessages();
-    //     let isValid = true;
-    
-    //     // Validate Product Name
-    //     const title = document.getElementById('title').value.trim();
-    //     if (title === '') {
-    //         displayErrorMessage('productName-error', 'Product name is required.');
-    //         isValid = false;
-    //     }
-    
-    //     // Validate Regular Price
-    //     const regularPrice = parseFloat(document.querySelector('input[name="regularPrice"]').value.trim());
-    //     if (isNaN(regularPrice) || regularPrice <= 0) {
-    //         displayErrorMessage('regularPrice-error', 'Valid regular price is required.');
-    //         isValid = false;
-    //     }
-    
-    //     // Validate Sale Price
-    //     const salePrice = parseFloat(document.querySelector('input[name="salePrice"]').value.trim());
-    //     if (isNaN(salePrice) || salePrice < 0) {
-    //         displayErrorMessage('salePrice-error', 'Valid sale price is required.');
-    //         isValid = false;
-    //     }
-    
-    //     // Validate Quantity
-    //     const quantity = parseInt(document.querySelector('input[name="quantity"]').value.trim(), 10);
-    //     if (isNaN(quantity) || quantity < 0) {
-    //         displayErrorMessage('quantity-error', 'Valid quantity is required.');
-    //         isValid = false;
-    //     }
-    
-    //     // Validate Size Entries
-    //     const sizeEntries = document.querySelectorAll('#sizes-container .size-entry');
-    //     let totalSizeQuantity = 0;
-    //     sizeEntries.forEach(entry => {
-    //         const sizeInput = entry.querySelector('input[name$="[size]"]');
-    //         const quantityInput = entry.querySelector('input[name$="[quantity]"]');
-    //         const sizeQuantity = parseInt(quantityInput.value.trim(), 10);
-    
-    //         if (isNaN(sizeQuantity) || sizeQuantity < 0) {
-    //             displayErrorMessage('sizes-error', 'Valid quantity for each size is required.');
-    //             isValid = false;
-    //         } else {
-    //             totalSizeQuantity += sizeQuantity;
-    //         }
-    //     });
-    
-    //     if (totalSizeQuantity > quantity) {
-    //         displayErrorMessage('sizes-error', `The total quantity of all sizes (${totalSizeQuantity}) cannot exceed the original quantity (${quantity}).`);
-    //         isValid = false;
-    //     }
-    
-    //     return isValid;
-    // }
-    
-    // function clearErrorMessages() {
-    //     const errorElements = document.getElementsByClassName('error-message');
-    //     Array.from(errorElements).forEach(element => {
-    //         element.innerText = '';
-    //         element.style.display = 'none';
-    //     });
-    // }
-    
-    // function displayErrorMessage(elementId, message) {
-    //     const errorElement = document.getElementById(elementId);
-    //     errorElement.innerText = message;
-    //     errorElement.style.display = "block";
-    // }
-    // let sizeCount = 1;
-    
-    // function addSizeEntry() {
-    //     sizeCount++;
-    //     const container = document.getElementById('sizes-container');
-    //     const newEntry = document.createElement('div');
-    //     newEntry.className = 'size-entry';
-    //     newEntry.innerHTML = `
-    //         <label for="size-${sizeCount}">Size</label>
-    //         <input type="text" name="sizes[${sizeCount}][size]" id="size-${sizeCount}">
-    //         <label for="quantity-${sizeCount}">Quantity</label>
-    //         <input type="number" name="sizes[${sizeCount}][quantity]" id="quantity-${sizeCount}" min="0">
-    //     `;
-    //     container.appendChild(newEntry);
-    // }
-    
-    // document.getElementById('productForm').addEventListener('submit', function(event) {
-    //     // Get the original quantity value
-    //     const originalQuantityInput = document.querySelector('input[name="quantity"]');
-    //     const originalQuantity = parseInt(originalQuantityInput.value.trim(), 10);
-    
-    //     // Validate original quantity
-    //     if (isNaN(originalQuantity) || originalQuantity < 0) {
-    //         event.preventDefault();
-    //         displayErrorMessage('quantity-error', 'Valid original quantity is required.');
-    //         return;
-    //     }
-    
-    //     // Get all size quantity inputs
-    //     const sizeQuantityInputs = document.querySelectorAll('input[name$="[quantity]"]');
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoesea Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            background-color: #ffffff;
+            height: 100vh;
+            padding-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .nav-link {
+            color: #6c757d;
+            padding: 10px 20px;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            height: 8px;
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
+
+     
+
         
-    //     // Calculate the total quantity of sizes
-    //     let totalSizeQuantity = 0;
-    //     sizeQuantityInputs.forEach(input => {
-    //         const quantity = parseInt(input.value.trim(), 10);
-    //         if (!isNaN(quantity) && quantity >= 0) {
-    //             totalSizeQuantity += quantity;
-    //         } else {
-    //             event.preventDefault();
-    //             displayErrorMessage('sizes-error', 'All size quantities must be valid numbers.');
-    //             return;
-    //         }
-    //     });
-        
-    //     // Compare total size quantity with original quantity
-    //     if (totalSizeQuantity > originalQuantity) {
-    //         // Prevent form submission
-    //         event.preventDefault();
-            
-    //         // Display an error message
-    //         displayErrorMessage('sizes-error', `The total quantity of all sizes (${totalSizeQuantity}) cannot exceed the original quantity (${originalQuantity}).`);
-    //     }
-    // });
+        #customDateRange {
+            display: none;
+        }
+
+        /* Custom CSS for Chart Container */
+        .chart-container {
+            position: relative;
+            margin: auto;
+            width: 80%;
+            height: 400px;
+        }
+
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+   
+  <!-- Start Header/Navigation -->
+  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
+    <div class="container">
+      <a class="navbar-brand" href="/admin/home">Admin<span>.</span></a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAdmin" aria-controls="navbarsAdmin" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsAdmin">
+        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item active">
+            <a class="nav-link" href="/admin/Dashboard">Dashboard</a>
+          </li>
+          <li><a class="nav-link" href="/admin/products">Products</a></li>
+          <li><a class="nav-link" href="/admin/orders">Orders</a></li>
+          <li><a class="nav-link" href="/admin/users-list">Users</a></li>
+          <li><a class="nav-link" href="/admin/category">Category</a></li>
+          <li><a class="nav-link" href="/admin/stocks">Stocks</a></li>
+          <li><a class="nav-link" href="/admin/coupons">Coupons</a></li>
+
+
+        </ul>
+
+        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+          <li><a class="nav-link login-btn" href="/admin/logout">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <h5 class="px-3 mb-3">shoesea</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"></li>
+                            <a class="nav-link active" href="/admin/dashboard"><i class="fas fa-th-large me-2"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/users-list"><i class="fas fa-th-large me-2"></i> Customer</a>
+                        </li>
+                         
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Products"><i class="fas fa-box me-2"></i> Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Category"><i class="fas fa-box me-2"></i> Category</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Orders"><i class="fas fa-box me-2"></i> Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Stocks"><i class="fas fa-box me-2"></i> Stocks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Offers"><i class="fas fa-box me-2"></i> Offers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Coupons"><i class="fas fa-box me-2"></i> Coupons</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Sales-report"><i class="fas fa-box me-2"></i> Sales Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/referral"><i class="fas fa-box me-2"></i> Referral</a>
+                        </li>
+                     
+                        <!-- Add more menu items here -->
+                    </ul>
+                </div>
+            </nav>
+            <!-- <canvas id="salesChart" width="400" height="200"></canvas> -->
+
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                <div class="d-flex justify-content-center mb-4">
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('daily')">Daily</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('weekly')">Weekly</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('monthly')">Monthly</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('yearly')">Yearly</button>
+                </div>
+
+                <!-- Date Range Filter -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="form-group mx-2">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" class="form-control" id="startDate" value="<%= startDate.toISOString().split('T')[0] %>">
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" class="form-control" id="endDate" value="<%= endDate.toISOString().split('T')[0] %>">
+                    </div>
+                    <button style="height: fit-content; margin-top: 28px;" class="btn btn-primary btn-filter btn-filter-small" onclick="applyFilter('custom')">Apply Custom Dates</button>
+                </div>
+                <div style="width: 600px; height: 400px;">
+                    <canvas id="myChart"></canvas>
+                </div>
+                <!-- New Chart Section -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Sale Statistics</h5>
+                        <div class="chart-container">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+               
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Products</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topProducts.forEach(product => { %>
+                                        <tr>
+                                            <td><%= product.productName %></td>
+                                            <td><%= product.totalSold %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Category</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topCategories.forEach(category => { %>
+                                        <tr>
+                                            <td><%= category.categoryName %></td>
+                                            <td><%= category.totalSales %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Brands</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topBrands.forEach(brand => { %>
+                                        <tr>
+                                            <td><%= brand.brandName %></td>
+                                            <td><%= brand.totalSales %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Sales Chart</h5>
+            <div class="d-flex justify-content-end mb-3">
+                <select id="chartFilter" class="form-select me-2" style="width: auto;">
+                    <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
+                    <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                    <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                    <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                </select>
+                <input type="date" id="startDate" class="form-control me-2" style="width: auto;" value="<%= startDate.toISOString().split('T')[0] %>">
+                <input type="date" id="endDate" class="form-control me-2" style="width: auto;" value="<%= endDate.toISOString().split('T')[0] %>">
+                <button id="applyFilter" class="btn btn-primary">Apply</button>
+            </div>
+            <div class="chart-container" style="position: relative; height:50vh; width:80vw">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
     
-    // function displayErrorMessage(elementId, message) {
-    //     const errorElement = document.getElementById(elementId);
-    //     if (errorElement) {
-    //         errorElement.innerText = message;
-    //         errorElement.style.display = "block";
-    //     }
-    // }
+    <script>
+    let salesChart;
+    const initialChartData = <%- JSON.stringify(salesChartData) %>;
     
-    // function clearErrorMessages() {
-    //     const errorElements = document.getElementsByClassName('error-message');
-    //     Array.from(errorElements).forEach(element => {
-    //         element.innerText = '';
-    //         element.style.display = 'none';
-    //     });
-    // }
+    function initializeChart(data) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.label),
+                datasets: [{
+                    label: 'Sales',
+                    data: data.map(item => item.value),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
     
-    // function getFormData() {
-    //     return {
-    //         title: document.getElementById('title').value.trim(),
-    //         regularPrice: parseFloat(document.querySelector('input[name="regularPrice"]').value.trim()),
-    //         salePrice: parseFloat(document.querySelector('input[name="salePrice"]').value.trim()),
-    //         quantity: parseInt(document.querySelector('input[name="quantity"]').value.trim(), 10),
-    //         sizes: Array.from(document.querySelectorAll('input[name^="sizes["][name$="[quantity]"]')).map(input => ({
-    //             size: input.previousElementSibling.value.trim(),
-    //             quantity: parseInt(input.value.trim(), 10)
-    //         }))
-    //     };
-    // }
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartFilter = document.getElementById('chartFilter');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const applyFilterBtn = document.getElementById('applyFilter');
     
+        // Initialize chart with initial data
+        initializeChart(initialChartData);
     
-    // function addSizeEntry() {
-    //     const container = document.getElementById('sizes-container');
-    //     const newEntry = document.createElement('div');
-    //     newEntry.className = 'size-entry';
-    //     newEntry.innerHTML = `
-    //         <input type="text" name="sizes[][size]" placeholder="Size" required>
-    //         <input type="number" name="sizes[][quantity]" placeholder="Quantity" min="0" required>
-    //     `;
-    //     container.appendChild(newEntry);
-    // }
+        applyFilterBtn.addEventListener('click', function() {
+            const filter = chartFilter.value;
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+    
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Start date must be before end date');
+                return;
+            }
+    
+            // Redirect to the same page with new query parameters
+            window.location.href = `/admin/dashboard?filter=${filter}&startDate=${startDate}&endDate=${endDate}`;
+        });
+    });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
 
-
-    // // Validate sizes
-    // const sizeEntries = document.querySelectorAll('.size-entry');
-    // if (sizeEntries.length === 0) {
-    //     alert('At least one size and quantity is required.');
-    //     return false;
-    // }
-
-    // let totalSizeQuantity = 0;
-    // for (let entry of sizeEntries) {
-    //     const size = entry.querySelector('input[name="sizes[][size]"]').value.trim();
-    //     const quantity = parseInt(entry.querySelector('input[name="sizes[][quantity]"]').value);
-
-    //     if (!size || isNaN(quantity) || quantity < 0) {
-    //         alert('Each size entry must have a valid size and non-negative quantity.');
-    //         return false;
-    //     }
-
-    //     totalSizeQuantity += quantity;
-    // }
-
-    // const totalQuantity = parseInt(document.getElementsByName('totalQuantity')[0].value);
-    // if (totalSizeQuantity !== totalQuantity) {
-    //     alert('The sum of quantities for all sizes must equal the total quantity');
-    //     return false;
-    // }
+</html>

@@ -138,8 +138,8 @@
             <label for="email">Email</label>
             <input type="email" name="email" id="email" placeholder="Email" required>
 
-            <label for="referral">Referral</label>
-            <input type="password" name="referredBy" id="referral" placeholder="Referral" >
+            <label for="referral"></label>
+            <input type="hidden" name="referredBy" id="referral"   value="<%= referralCode || '' %>" >
 
             <label for="password">Password</label>
             <input type="password" name="password" id="password" placeholder="Password" required>

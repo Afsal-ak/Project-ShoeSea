@@ -1,169 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="author" content="Untree.co">
-  <link rel="shortcut icon" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoesea Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/css/style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
 
-  <meta name="description" content="" />
-  <meta name="keywords" content="bootstrap, bootstrap4" />
+        .sidebar {
+            background-color: #ffffff;
+            height: 100vh;
+            padding-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-    body {
-      overflow-x: hidden;
-      position: relative;
-      font-family: "Inter", sans-serif;
-      font-weight: 400;
-      line-height: 28px;
-      color: #6a6a6a;
-      font-size: 14px;
-      background-color: #eff2f1;
-    }
+        .sidebar .nav-link {
+            color: #6c757d;
+            padding: 10px 20px;
+        }
 
-    a {
-      text-decoration: none;
-      transition: .3s all ease;
-      color: #2f2f2f;
-      text-decoration: underline;
-    }
-    a:hover {
-      color: #2f2f2f;
-      text-decoration: none;
-    }
-    a.more {
-      font-weight: 600;
-    }
+        .sidebar .nav-link.active {
+            background-color: #e9ecef;
+            color: #007bff;
+        }
 
-    .custom-navbar {
-      background: #3b5d50 !important;
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
-    .custom-navbar .navbar-brand {
-      font-size: 32px;
-      font-weight: 600;
-    }
-    .custom-navbar .navbar-brand > span {
-      opacity: .4;
-    }
-    .custom-navbar .navbar-toggler {
-      border-color: transparent;
-    }
-    .custom-navbar .navbar-toggler:active, .custom-navbar .navbar-toggler:focus {
-      box-shadow: none;
-      outline: none;
-    }
-    .custom-navbar .custom-navbar-nav li {
-      margin-left: 15px;
-      margin-right: 15px;
-    }
-    .custom-navbar .custom-navbar-nav li a {
-      font-weight: 500;
-      color: #ffffff !important;
-      opacity: .5;
-      transition: .3s all ease;
-      position: relative;
-    }
-    .custom-navbar .custom-navbar-nav li a:hover {
-      opacity: 1;
-    }
-    .custom-navbar .custom-navbar-nav li.active a {
-      opacity: 1;
-    }
-    .custom-navbar .custom-navbar-cta {
-      margin-left: 0 !important;
-      flex-direction: row;
-    }
-    .custom-navbar .custom-navbar-cta li {
-      margin-left: 0px;
-      margin-right: 0px;
-    }
-    .custom-navbar .custom-navbar-cta li:first-child {
-      margin-right: 20px;
-    }
+        .main-content {
+            padding: 20px;
+        }
 
-    .sidebar {
-      width: 250px;
-      background-color: #3b5d50;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      padding-top: 20px;
-    }
-    .sidebar a {
-      color: #ffffff;
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: background-color 0.3s ease;
-    }
-    .sidebar a:hover {
-      background-color: #2a4b3c;
-    }
-    .sidebar .active {
-      background-color: #2a4b3c;
-    }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
 
-    .main-content {
-      margin-left: 250px;
-      padding: 20px;
-    }
+        .progress {
+            height: 8px;
+        }
 
-    .block-graph {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center; /* Center align the blocks */
-      margin-bottom: 20px; /* Add space below the blocks */
-    }
+        .table th,
+        .table td {
+            vertical-align: middle;
+        }
 
-    .block {
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      flex: 1;
-      min-width: 220px; /* Adjust for better fit */
-      max-width: 300px; /* Limit the maximum width of the blocks */
-      text-align: center;
-    }
+     
 
-    .block h2 {
-      margin: 0;
-      font-size: 24px;
-      color: #333;
-    }
+        
+        #customDateRange {
+            display: none;
+        }
 
-    .block p {
-      font-size: 36px;
-      margin: 10px 0;
-      color: #2980b9;
-    }
+        /* Custom CSS for Chart Container */
+        .chart-container {
+            position: relative;
+            margin: auto;
+            width: 80%;
+            height: 400px;
+        }
 
-    .block .label {
-      font-size: 14px;
-      color: #777;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .block-graph {
-        flex-direction: column;
-        align-items: center;
-      }
-    }
-  </style>
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
-<body>
 
+<body>
+   
   <!-- Start Header/Navigation -->
   <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
     <div class="container">
@@ -180,8 +89,12 @@
           </li>
           <li><a class="nav-link" href="/admin/products">Products</a></li>
           <li><a class="nav-link" href="/admin/orders">Orders</a></li>
-          <li><a class="nav-link" href="/admin/users">Users</a></li>
-          <li><a class="nav-link" href="/admin/Category">Category</a></li>
+          <li><a class="nav-link" href="/admin/users-list">Users</a></li>
+          <li><a class="nav-link" href="/admin/category">Category</a></li>
+          <li><a class="nav-link" href="/admin/stocks">Stocks</a></li>
+          <li><a class="nav-link" href="/admin/coupons">Coupons</a></li>
+
+
         </ul>
 
         <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
@@ -190,56 +103,231 @@
       </div>
     </div>
   </nav>
-  <!-- End Header/Navigation -->
+  
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <h5 class="px-3 mb-3">shoesea</h5>
+                    <ul class="nav flex-column">
+                        <li class="nav-item"></li>
+                            <a class="nav-link active" href="/admin/dashboard"><i class="fas fa-th-large me-2"></i> Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/users-list"><i class="fas fa-th-large me-2"></i> Customer</a>
+                        </li>
+                         
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Products"><i class="fas fa-box me-2"></i> Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Category"><i class="fas fa-box me-2"></i> Category</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Orders"><i class="fas fa-box me-2"></i> Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Stocks"><i class="fas fa-box me-2"></i> Stocks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Offers"><i class="fas fa-box me-2"></i> Offers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Coupons"><i class="fas fa-box me-2"></i> Coupons</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/Sales-report"><i class="fas fa-box me-2"></i> Sales Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/referral"><i class="fas fa-box me-2"></i> Referral</a>
+                        </li>
+                     
+                        <!-- Add more menu items here -->
+                    </ul>
+                </div>
+            </nav>
+            <!-- <canvas id="salesChart" width="400" height="200"></canvas> -->
 
-  <div class="sidebar">
-    <!-- Sidebar content here -->
-    <a href="/admin/dashboard" class="active">Dashboard</a>
-    <a href="/admin/users-list">Users</a>
-    <a href="/admin/products">Products</a>
-    <a href="/admin/orders">Orders</a>
-    
-    <a href="/admin/category">Category</a>
-    <a href="/admin/stocks">Stocks</a>
-    <a href="/admin/coupons">Coupons</a>
-    <a href="/admin/sales-report">sales-report</a>
-    <a href="/admin/offers">Offers</a>
+            <!-- Main content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
+                <!-- <div class="d-flex justify-content-center mb-4">
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('daily')">Daily</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('weekly')">Weekly</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('monthly')">Monthly</button>
+                    <button class="btn btn-primary btn-filter" onclick="applyFilter('yearly')">Yearly</button>
+                </div> -->
 
+                <!-- Date Range Filter -->
+                <!-- <div class="d-flex justify-content-center mb-4">
+                    <div class="form-group mx-2">
+                        <label for="startDate">Start Date:</label>
+                        <input type="date" class="form-control" id="startDate" value="<%= startDate.toISOString().split('T')[0] %>">
+                    </div>
+                    <div class="form-group mx-2">
+                        <label for="endDate">End Date:</label>
+                        <input type="date" class="form-control" id="endDate" value="<%= endDate.toISOString().split('T')[0] %>">
+                    </div>
+                    <button style="height: fit-content; margin-top: 28px;" class="btn btn-primary btn-filter btn-filter-small" onclick="applyFilter('custom')">Apply Custom Dates</button>
+                </div>
+                -->
+            
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Sales Chart</h5>
+                        <div class="d-flex justify-content-end mb-3">
+                            <select id="chartFilter" class="form-select me-2" style="width: auto;">
+                                <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
+                                <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                                <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                            </select>
+                            <input type="hidden" id="startDate" class="form-control me-2" style="width: auto;" value="<%= startDate.toISOString().split('T')[0] %>">
+                            <input type="hidden" id="endDate" class="form-control me-2" style="width: auto;" value="<%= endDate.toISOString().split('T')[0] %>">
+                            <button id="applyFilter" class="btn btn-primary">Apply</button>
+                        </div>
+                        <div class="chart-container" style="position: relative; height:50vh; width:80vw">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+               
 
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Products</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topProducts.forEach(product => { %>
+                                        <tr>
+                                            <td><%= product.productName %></td>
+                                            <td><%= product.totalSold %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Category</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topCategories.forEach(category => { %>
+                                        <tr>
+                                            <td><%= category.categoryName %></td>
+                                            <td><%= category.totalSales %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-  </div>
-
-  <div class="main-content">
-    <!-- Block Graph -->
-    <div class="block-graph">
-      <div class="block">
-        <h2>Total Users</h2>
-        <p>1000</p> <!-- Replace with dynamic data -->
-        <div class="label">Users</div>
-      </div>
-      <div class="block">
-        <h2>Total Products</h2>
-        <p>500</p> <!-- Replace with dynamic data -->
-        <div class="label">Products</div>
-      </div>
-      <div class="block">
-        <h2>Total Sales</h2>
-        <p>20,000</p> <!-- Replace with dynamic data -->
-        <div class="label">Sales</div>
-      </div>
-      <div class="block">
-        <h2>New Orders</h2>
-        <p>25</p> <!-- Replace with dynamic data -->
-        <div class="label">Orders</div>
-      </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Top Selling Brands</h5>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Brand</th>
+                                        <th>Total Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topBrands.forEach(brand => { %>
+                                        <tr>
+                                            <td><%= brand.brandName %></td>
+                                            <td><%= brand.totalSales %> sold</td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
-    <!-- Additional Content -->
-    <!-- Add tables, graphs, or additional blocks here -->
-  </div>
-
-  <!-- Bootstrap JS and dependencies -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+   
+    
+    <script>
+    let salesChart;
+    const initialChartData = <%- JSON.stringify(salesChartData) %>;
+    
+    function initializeChart(data) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.map(item => item.label),
+                datasets: [{
+                    label: 'Sales',
+                    data: data.map(item => item.value),
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartFilter = document.getElementById('chartFilter');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const applyFilterBtn = document.getElementById('applyFilter');
+    
+        // Initialize chart with initial data
+        initializeChart(initialChartData);
+    
+        applyFilterBtn.addEventListener('click', function() {
+            const filter = chartFilter.value;
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
+    
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Start date must be before end date');
+                return;
+            }
+    
+            // Redirect to the same page with new query parameters
+            window.location.href = `/admin/dashboard?filter=${filter}&startDate=${startDate}&endDate=${endDate}`;
+        });
+    });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
+    
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

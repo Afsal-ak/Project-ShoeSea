@@ -3,166 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Referral Offer | Homey Admin</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Invoice</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .navbar {
-            background-color: #3b5d50;
-        }
-        .navbar-brand, .nav-link {
-            color: white !important;
-        }
-        .sidebar {
-            background-color: #3b5d50;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            transition: all 0.3s;
-        }
-        .sidebar .brand {
-            font-size: 1.5rem;
-            color: white;
-            text-align: center;
-            padding: 10px 0;
-            font-weight: bold;
-        }
-        .sidebar a {
-            color: white;
-            display: block;
-            padding: 10px 20px;
-            text-decoration: none;
-        }
-        .sidebar a:hover, .sidebar a.active {
-            background-color: #2f4a41;
-        }
-        .content {
-            margin-left: 200px;
-            padding: 20px;
-        }
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.1);
-        }
-        .form-label {
-            font-weight: 600;
-            color: #3b5d50;
-        }
-        @media (max-width: 768px) {
-            .sidebar, .content {
-                width: 100%;
-                margin-left: 0;
-                position: relative;
-            }
-            .sidebar.active, .content.active {
-                margin-left: 200px;
-            }
-        }
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+.invoice-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 20px;
+}
+
+.logo {
+    max-width: 150px;
+}
+
+.company-name {
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.company-address, .company-contact {
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.invoice-info {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.invoice-details, .customer-details {
+    width: 45%;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.invoice-table th, .invoice-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.invoice-table th {
+    background-color: #f2f2f2;
+}
+
+.total-label {
+    font-weight: bold;
+}
+
+.invoice-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="#">Homey Admin</a>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link logout-btn" href="/admin/logout">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    <div class="invoice-container">
+        <header class="invoice-header">
+            <img src="logo.png" alt="Company Logo" class="logo">
+            <h1 class="company-name">Your Company Name</h1>
+            <p class="company-address">1234 Street Name, City, State, 12345</p>
+            <p class="company-contact">Phone: (123) 456-7890 | Email: info@company.com</p>
+            <h2>INVOICE</h2>
+        </header>
 
-    <div class="sidebar">
-        <div class="brand">Homey</div>
-        <a href="/admin/dashboard">Dashboard</a>
-        <a href="/admin/orders">Orders</a>
-        <a href="/admin/category">Categories</a>
-        <a href="/admin/coupons">Coupons</a>
-        <a href="/admin/product">Products</a>
-        <a href="/admin/user">Users</a>
-        <a href="/admin/referral" class="active">Offer</a>
-        <a href="/admin/sales-report">Sales</a>
+        <section class="invoice-info">
+            <div class="invoice-details">
+                <p><strong>Invoice Number:</strong> #12345</p>
+                <p><strong>Invoice Date:</strong> 2024-09-26</p>
+                <p><strong>Due Date:</strong> 2024-10-26</p>
+            </div>
+            <div class="customer-details">
+                <p><strong>Customer Name:</strong> John Doe</p>
+                <p><strong>Billing Address:</strong> 5678 Customer St, City, State, 67890</p>
+                <p><strong>Shipping Address:</strong> 91011 Shipping St, City, State, 91011</p>
+                <p><strong>Contact:</strong> (987) 654-3210</p>
+            </div>
+        </section>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Product 1</td>
+                    <td>SKU1</td>
+                    <td>2</td>
+                    <td>₹500</td>
+                    <td>₹1000</td>
+                </tr>
+                <tr>
+                    <td>Product 2</td>
+                    <td>SKU2</td>
+                    <td>1</td>
+                    <td>₹300</td>
+                    <td>₹300</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="total-label">Subtotal</td>
+                    <td>₹1300</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="total-label">Discount</td>
+                    <td>-₹100</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="total-label">Tax</td>
+                    <td>₹50</td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="total-label">Total Due</td>
+                    <td>₹1250</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <footer class="invoice-footer">
+            <p><strong>Payment Method:</strong> Credit Card</p>
+            <p><strong>Transaction ID:</strong> ABC123456789</p>
+            <p>Thank you for your purchase!</p>
+            <p>Contact us: info@company.com</p>
+        </footer>
     </div>
-
-    <div class="content">
-        <div class="form-container">
-            <h2>Manage Referral Offer</h2>
-            <form id="offerForm">
-                <div class="mb-3">
-                    <label for="creditAmount" class="form-label">Credit Amount</label>
-                    <input type="number" class="form-control" id="creditAmount" name="creditAmount" required value="100"> <!-- Example static value -->
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Offer Status</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="isActive" id="active" value="true" checked>
-                        <label class="form-check-label" for="active">Active</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="isActive" id="inactive" value="false">
-                        <label class="form-check-label" for="inactive">Inactive</label>
-                    </div>
-                </div>
-                <button type="button" onclick="submitForm()" class="btn btn-primary">Update Offer</button>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function submitForm() {
-            const formData = new FormData(document.getElementById('offerForm'));
-            const creditAmount = formData.get('creditAmount');
-            const isActive = formData.get('isActive');
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You want to update the referral offer settings?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, update it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('/admin/update-offer', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            creditAmount,
-                            isActive
-                        })
-                    }).then(response => response.json())
-                      .then(data => {
-                          Swal.fire(
-                              'Updated!',
-                              'The referral offer has been updated.',
-                              'success'
-                          );
-                      })
-                      .catch(error => {
-                          Swal.fire(
-                              'Failed!',
-                              'There was a problem updating the offer.',
-                              'error'
-                          );
-                      });
-                }
-            });
-        }
-    </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

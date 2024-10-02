@@ -32,12 +32,12 @@ const orderSchema = new mongoose.Schema({
   }],
   paymentMethod: {
     type: String,
-    enum: ['Cash on Delivery', 'Credit Card', 'PayPal','Razorpay'],
+    enum: ['Cash on Delivery', 'Credit Card', 'Wallet','Razorpay'],
     default: 'Cash on Delivery'
   },
   paymentStatus: {
     type: String,
-    enum: ['Paid', 'Processing', 'Cancelled', 'Success', 'Failed'],
+    enum: ['Paid', 'Processing', 'Cancelled', 'Success', 'Failed','Payment Pending'],
     default: 'Processing'
 },
   status: {
@@ -69,10 +69,15 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  shippingCost: {
+  walletUsed: {
     type: Number,
-    default: 0
-  },
+     default: 0
+    },
+  deliveryCharge: {
+     type: Number,
+      default: 0
+     }, 
+
   discount: {
     type: Number,
     default: 0
@@ -91,11 +96,11 @@ const orderSchema = new mongoose.Schema({
     pincode: String,
     phone: String,
 },
-  paymentStatus: {
-    type: String,
-    enum: ['Pending', 'Completed', 'Failed'],
-    default: 'Pending'
-  }
+razorpay: {
+  orderId: { type: String }, // Save Razorpay Order ID here
+  paymentId: { type: String }, // Razorpay Payment ID
+  signature: { type: String } // Razorpay Signature
+},
 });
 
 const Order = mongoose.model('Order', orderSchema);

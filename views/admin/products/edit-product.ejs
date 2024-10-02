@@ -37,9 +37,9 @@
             <div class="col-lg-8">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <% if (messages.length > 0) { %>
+                        <% if (message.length > 0) { %>
                             <div class="alert alert-danger">
-                                <%= messages.join('<br>') %> <!-- Display each error message -->
+                                <%= message.join('<br>') %> <!-- Display each error message -->
                             </div>
                         <% } %>
                         <form id="productForm" method="post" action="/admin/edit-product/<%= product._id %>" enctype="multipart/form-data">
@@ -157,7 +157,7 @@
                                 <div id="sizesContainer">
                                     <% product.sizes.forEach((size, index) => { %>
                                         <div class="size-row mb-2">
-                                            <input type="text" name="sizes[<%= index %>][size]" class="form-control border" value="<%= size.size %>" placeholder="Size">
+                                            <input type="number" name="sizes[<%= index %>][size]" class="form-control border" value="<%= size.size %>" placeholder="Size" min="0">
                                             <input type="number" name="sizes[<%= index %>][quantity]" class="form-control border" value="<%= size.quantity %>" placeholder="Quantity" min="0">
                                         </div>
                                     <% }); %>

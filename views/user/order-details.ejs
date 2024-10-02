@@ -4,9 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details | Homey</title>
+    <title>Order Details | Shoesea</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
     <style>
         .breadcrumb-container {
             margin-top: 20px;
@@ -103,9 +105,10 @@
             <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
             <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
             <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
-    
+
             <h4 class="order-status <%= order.status.toLowerCase().replace(/ /g, '-') %>">Order Status: <%= order.status %></h4>
-    
+            <h4 class="order-status <%= order.paymentStatus.toLowerCase().replace(/ /g, '-') %>">Payment Status: <%= order.paymentStatus %></h4>
+ 
             <h4>Order Details</h4>
             <table class="table">
                 <thead>
@@ -129,7 +132,7 @@
                                     <% } %>
                                 </td>
                                 <td>
-                                    <a  style="text-decoration: none;" href="/product-details/<%= product.productId._id %>">
+                                    <a style="text-decoration: none;" href="/product-details/<%= product.productId._id %>">
                                         <%= product.productId.productName %>
                                     </a>
                                 </td>
@@ -141,6 +144,15 @@
                     <% }) %>
                 </tbody>
             </table>
+            <!-- <a href="/download-Invoice/<%= order.orderId %>" class="btn btn-success">Download invoice</a> -->
+
+            <% if (order.paymentStatus === 'Payment Pending') { %>
+                <button id="retryPaymentButton" class="btn btn-primary btn-sm">Retry Payment</button>
+            <% }else{%>
+                <a href="/download-Invoice/<%= order.orderId %>" class="btn btn-success">Download invoice</a>
+
+            <%} %>
+
         </div>
         <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
             <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
@@ -148,67 +160,130 @@
             </form>
         <% } else if (order.status === 'Delivered') { %>
             <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
-                <input type="hidden" name="reason" id="reason-<%= order._id %>"> 
+                <input type="hidden" name="reason" id="reason-<%= order._id %>">
                 <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return</button>
             </form>
         <% } %>
         
-        
-        
-        </div>
     </div>
-    
-            
-    </div>
+
     <%- include('../partials/user/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-function confirmReturn(orderId) {
-    event.preventDefault(); // Prevent the default form submission
-    Swal.fire({
-        title: 'Are you sure you want to return this order?',
-        text: "Please provide a reason for the return:",
-        input: 'text', // This adds an input field for the return reason
-        inputPlaceholder: 'Enter return reason...',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#f39c12',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, return it!',
-        inputValidator: (value) => {
-            if (!value) {
-                return 'You need to provide a reason for returning the order!';
-            }
+        function confirmReturn(orderId) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to return this order?',
+                text: "Please provide a reason for the return:",
+                input: 'text',
+                inputPlaceholder: 'Enter return reason...',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f39c12',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, return it!',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to provide a reason for returning the order!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    document.getElementById(`reason-${orderId}`).value = result.value;
+                    document.getElementById(`returnOrderForm-${orderId}`).submit();
+                }
+            });
         }
-    }).then((result) => {
-        if (result.isConfirmed && result.value) {
-            // Set the reason in a hidden input field in the form
-            document.getElementById(`reason-${orderId}`).value = result.value;
-            // Submit the form
-            document.getElementById(`returnOrderForm-${orderId}`).submit();
-        }
-    });
-}
 
-function confirmCancel(orderId) {
-    event.preventDefault(); // Prevent the default form submission
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, cancel it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Submit the form if confirmed
-            document.getElementById(`cancelOrderForm-${orderId}`).submit();
+        function confirmCancel(orderId) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`cancelOrderForm-${orderId}`).submit();
+                }
+            });
         }
-    });
-}
-</script>
+
+     
+        document.getElementById('retryPaymentButton')?.addEventListener('click', async function() {
+    const orderId = '<%= order._id %>';
+
+    try {
+        // Request to retry payment
+        const response = await fetch(`/order/${orderId}/retry-payment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to retry payment');
+        }
+
+        // Razorpay payment options
+        const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            name: 'shoesea',
+            description: 'Order Payment',
+            order_id: data.order_id,
+            handler: async function(response) {
+                // Verify the payment with your backend
+                const verifyResponse = await fetch(`/order/${orderId}/verify-razorpay-payment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    })
+                });
+                const verifyData = await verifyResponse.json();
+
+                if (verifyData.success) {
+                    // Payment verified successfully
+                    window.location.href = `/order-success?orderId=${orderId}`;
+                } else {
+                    // Handle verification failure
+                    alert('Payment verification failed: ' + verifyData.message);
+                    window.location.href = `/payment-failed?orderId=${orderId}`;
+                }
+            },
+            modal: {
+                ondismiss: function() {
+                    console.log('Payment modal closed');
+                }
+            },
+            prefill: {
+                name: 'Customer Name',
+                email: 'customer@example.com',
+                contact: '9999999999'
+            },
+            theme: {
+                color: '#F37254'
+            }
+        };
+
+        // Open Razorpay payment modal
+        const paymentObject = new Razorpay(options);
+        paymentObject.open();
+    } catch (error) {
+        console.error('Error retrying payment:', error);
+        alert('Failed to retry payment: ' + error.message);
+    }
+});
+
+    </script>
     <script src="/js/bootstrap.bundle.min.js"></script>
     <script src="/js/custom.js"></script>
 </body>

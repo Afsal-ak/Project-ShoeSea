@@ -155,15 +155,26 @@
                                 <label class="form-label">Offer Description</label>
                                 <textarea placeholder="Offer Description" name="offerDescription" class="form-control border" rows="2"></textarea>
                             </div>
-                            <div id="sizes-container">
+                            <!-- <div id="sizes-container">
                                 <h4>Sizes and Stock</h4>
                                 <div class="size-entry">
-                                    <input type="text" name="sizes[0][size]" placeholder="Size" required>
+                                    <input type="number" name="sizes[0][size]" placeholder="Size"  min="0" required >
                                     <input type="number" name="sizes[0][quantity]" placeholder="Quantity" min="0" required>
                                 </div>
                             </div>
                             <button type="button" onclick="addSizeEntry()" class="btn btn-secondary mt-2">Add Size</button>
                             
+                             -->
+                             <div id="sizes-container">
+                                <h4>Sizes and Stock</h4>
+                                <div class="size-entry">
+                                    <input type="number" name="sizes[0][size]" placeholder="Size" min="1" required>
+                                    <input type="number" name="sizes[0][quantity]" placeholder="Quantity" min="1" required>
+                                </div>
+                                <div id="error-message" style="color: red; display: none;"></div> <!-- Error message -->
+                            </div>
+                            <button type="button" onclick="addSizeEntry()" class="btn btn-secondary mt-2">Add Size</button>
+                            <!-- <button type="submit" onclick="validateSizes()" class="btn btn-primary mt-2">Submit</button> -->
                             
                             
                             <!-- Image Upload -->
@@ -301,7 +312,52 @@ function addSizeEntry() {
     return true;
 
     }
+    // Function to add new size entry
+    function addSizeEntry() {
+        const sizesContainer = document.getElementById('sizes-container');
+        const index = sizesContainer.getElementsByClassName('size-entry').length;
 
+        const newSizeEntry = document.createElement('div');
+        newSizeEntry.classList.add('size-entry');
+        newSizeEntry.innerHTML = `
+            <input type="number" name="sizes[${index}][size]" placeholder="Size" min="0" required>
+            <input type="number" name="sizes[${index}][quantity]" placeholder="Quantity" min="0" required>
+        `;
+
+        sizesContainer.appendChild(newSizeEntry);
+    }
+
+    // Function to validate sizes and quantities
+    function validateSizes() {
+        const sizeEntries = document.querySelectorAll('.size-entry');
+        let hasError = false;
+        let errorMessage = '';
+
+        sizeEntries.forEach((entry, index) => {
+            const sizeInput = entry.querySelector(`input[name="sizes[${index}][size]"]`);
+            const quantityInput = entry.querySelector(`input[name="sizes[${index}][quantity]"]`);
+
+            const sizeValue = parseInt(sizeInput.value);
+            const quantityValue = parseInt(quantityInput.value);
+
+            if (sizeValue < 0 || quantityValue < 0) {
+                hasError = true;
+                errorMessage = 'Size and quantity must be non-negative.';
+            }
+        });
+
+        // Show error message if validation fails
+        const errorDiv = document.getElementById('error-message');
+        if (hasError) {
+            errorDiv.innerText = errorMessage;
+            errorDiv.style.display = 'block';
+        } else {
+            errorDiv.style.display = 'none';
+            // Submit the form if there are no errors
+            // You can submit the form using JavaScript if necessary
+            // e.g., document.getElementById('your-form-id').submit();
+        }
+    }
 </script>
         
 </body>

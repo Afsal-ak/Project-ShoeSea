@@ -1,116 +1,232 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Wallet</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
-<style>
-    body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f3f4f6;
-    margin: 0;
-    padding: 20px;
-}
 
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-}
+const getAdminDashboard = async (req, res) => {
+    try {
+        if (!req.session.isAuth || !req.session.adminId) {
+            return res.redirect('/admin/login');
+        }
 
-.wallet-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
+        const { filter, startDate: queryStartDate, endDate: queryEndDate } = req.query;
+        let startDate, endDate;
 
-.wallet-header h1 {
-    margin: 0;
-    color: #333;
-}
+         // Set date range based on filter type
+         switch (filter) {
+            case 'daily':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 30); // Last 30 days
+                endDate = new Date();
+                break;
+            case 'weekly':
+                startDate = new Date();
+                startDate.setDate(startDate.getDate() - 7 * 12); // Last 12 weeks
+                endDate = new Date();
+                break;
+            case 'monthly':
+                startDate = new Date();
+                startDate.setMonth(startDate.getMonth() - 12); // Last 12 months
+                endDate = new Date();
+                break;
+            case 'yearly':
+                startDate = new Date();
+                startDate.setFullYear(startDate.getFullYear() - 5); // Last 5 years
+                endDate = new Date();
+                break;
+            case 'custom':
+                startDate = new Date(queryStartDate || '2024-01-01');
+                endDate = new Date(queryEndDate || Date.now());
+                break;
+            default:
+                startDate = new Date('2024-01-01');
+                endDate = new Date();
+        }
 
-.wallet-header h2 {
-    color: #28a745;
-}
+        // Existing aggregations (topProducts, topCategories, topBrands) remain unchanged
+  // Top 10 Products aggregation (unchanged)
+        const topProducts = await Order.aggregate([
+            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+            { $unwind: "$products" },
+            {
+                $group: {
+                    _id: "$products.productId",
+                    totalSold: { $sum: "$products.quantity" }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'product'
+                }
+            },
+            { $unwind: "$product" },
+            {
+                $project: {
+                    productName: "$product.productName",
+                    totalSold: 1
+                }
+            },
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 }
+        ]);
 
-.actions {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
+        // Top 10 Categories aggregation (unchanged)
+        const topCategories = await Order.aggregate([
+            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+            { $unwind: "$products" },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'products.productId',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: 'productDetails.categoryId',
+                    foreignField: '_id',
+                    as: 'categoryDetails'
+                }
+            },
+            { $unwind: "$categoryDetails" },
+            {
+                $group: {
+                    _id: "$categoryDetails._id",
+                    categoryName: { $first: "$categoryDetails.categoryName" },
+                    totalSales: { $sum: "$products.quantity" }
+                }
+            },
+            { $sort: { totalSales: -1 } },
+            { $limit: 10 }
+        ]);
 
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+        // Top 10 Brands aggregation (unchanged)
+        const topBrands = await Order.aggregate([
+            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+            { $unwind: "$products" },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'products.productId',
+                    foreignField: '_id',
+                    as: 'brandDetails'
+                }
+            },
+            { $unwind: "$brandDetails" },
+            {
+                $group: {
+                    _id: "$brandDetails.brand",
+                    brandName: { $first: "$brandDetails.brand" },
+                    totalSales: { $sum: "$products.quantity" }
+                }
+            },
+            { $sort: { totalSales: -1 } },
+            { $limit: 10 }
+        ]);
 
-.btn:hover {
-    background-color: #0056b3;
-}
+       
+        // Sales chart data aggregation based on the filter (sum of products.quantity)
+        let salesChartData = [];
+        switch (filter) {
+            case 'daily':
+                salesChartData = await Order.aggregate([
+                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+                    { $unwind: "$products" }, // Unwind products to access each one
+                    {
+                        $group: {
+                            _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
+                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
+                        }
+                    },
+                    { $sort: { "_id": 1 } }
+                ]);
+                break;
+            case 'weekly':
+                salesChartData = await Order.aggregate([
+                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+                    { $unwind: "$products" }, // Unwind products to access each one
+                    {
+                        $group: {
+                            _id: { 
+                                year: { $year: "$orderDate" },
+                                week: { $week: "$orderDate" }
+                            },
+                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
+                        }
+                    },
+                    { $sort: { "_id.year": 1, "_id.week": 1 } }
+                ]);
+                break;
+            case 'monthly':
+                salesChartData = await Order.aggregate([
+                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+                    { $unwind: "$products" }, // Unwind products to access each one
+                    {
+                        $group: {
+                            _id: { 
+                                year: { $year: "$orderDate" },
+                                month: { $month: "$orderDate" }
+                            },
+                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
+                        }
+                    },
+                    { $sort: { "_id.year": 1, "_id.month": 1 } }
+                ]);
+                break;
+            case 'yearly':
+                salesChartData = await Order.aggregate([
+                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+                    { $unwind: "$products" }, // Unwind products to access each one
+                    {
+                        $group: {
+                            _id: { $year: "$orderDate" },
+                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
+                        }
+                    },
+                    { $sort: { "_id": 1 } }
+                ]);
+                break;
+        }
 
-.transaction-history {
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-}
+        // Format the sales chart data for frontend
+        const formattedSalesChartData = salesChartData.map(item => {
+            let label;
+            switch (filter) {
+                case 'daily':
+                    label = new Date(item._id).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    break;
+                case 'weekly':
+                    label = `W${item._id.week} ${item._id.year}`;
+                    break;
+                case 'monthly':
+                    label = new Date(item._id.year, item._id.month - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                    break;
+                case 'yearly':
+                    label = item._id.toString();
+                    break;
+            }
+            return {
+                label: label,
+                value: item.totalQuantity || 0
+            };
+        });
 
-.transaction-history h3 {
-    margin-bottom: 10px;
-    color: #333;
-}
+        // Render the data to the view
+        res.render('dashboard', {
+            topProducts,
+            topCategories,
+            topBrands,
+            startDate,
+            endDate,
+            filter,
+            salesChartData: formattedSalesChartData
+        });
 
-#transactionList {
-    list-style: none;
-    padding: 0;
-}
 
-#transactionList li {
-    padding: 10px;
-    border-bottom: 1px solid #f1f1f1;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#transactionList li i {
-    margin-right: 10px;
-}
-
-#transactionList li span {
-    color: #888;
-}
-
-</style>
-<body>
-    <div class="container">
-        <header class="wallet-header">
-            <h1>Your Wallet</h1>
-            <h2>Balance: <span id="balance">₹5000</span></h2>
-        </header>
-
-        <section class="actions">
-            <button class="btn" id="addFundsBtn">Add Funds</button>
-            <button class="btn" id="viewTransactionsBtn">View Transactions</button>
-        </section>
-
-        <section class="transaction-history">
-            <h3>Transaction History</h3>
-            <ul id="transactionList">
-                <li><i class="fas fa-plus-circle"></i> Credit: ₹1000 <span>on Sep 20, 2024</span></li>
-                <li><i class="fas fa-minus-circle"></i> Debit: ₹500 <span>on Sep 21, 2024</span></li>
-                <li><i class="fas fa-plus-circle"></i> Credit: ₹2000 <span>on Sep 22, 2024</span></li>
-                <li><i class="fas fa-minus-circle"></i> Debit: ₹300 <span>on Sep 23, 2024</span></li>
-            </ul>
-        </section>
-    </div>
-</body>
-</html>
+    } catch (err) {
+        console.error("Error loading dashboard:", err);
+        res.status(500).send('Internal Server Error');
+    }
+};

@@ -6,6 +6,7 @@ const flash = require('connect-flash');
 const authUser = require('../middlewares/userAuth');
 
 const userController = require('../controllers/user/userController');
+const productController =  require('../controllers/user/productController');
 const profileController = require('../controllers/user/profileController');
 const cartController = require('../controllers/user/cartController');
 const orderController = require('../controllers/user/orderController');
@@ -43,13 +44,15 @@ userRoute.use('/public', express.static(path.join(__dirname, '../public')));
 userRoute.set('views', path.join(__dirname, '../views/user'));
 
 // User routes
-userRoute.get('/', userController.getHome);
+userRoute.get('/', productController.getHome);
 
 userRoute.get('/login', authUser.isLogout, userController.getLogin);
 userRoute.post('/login', authUser.isLogout, userController.postLogin);
 
 userRoute.get('/signup', authUser.isLogout, userController.getSignup);
 userRoute.post('/signup', authUser.isLogout, userController.postSignup);
+
+userRoute.get('/logout', userController.getLogout);
 
 userRoute.post('/verify-otp', authUser.isLogout, userController.verifyOtp);
 userRoute.post('/resend-otp', authUser.isLogout, userController.resendOtp);
@@ -70,11 +73,11 @@ userRoute.get('/auth/google/callback', passport.authenticate('google', { failure
   res.redirect('/home');
 });
 
-userRoute.get('/home', authUser.isLogin, userController.getHome, authUser.checkUserStatus);
-userRoute.get('/products',userController.listProducts)
-userRoute.get('/product-details/:id', userController.productDetails);
-userRoute.get('/search',userController.search)
-userRoute.get('/logout', userController.getLogout);
+//product routes
+userRoute.get('/home', authUser.isLogin, productController.getHome, authUser.checkUserStatus);
+userRoute.get('/products',productController.listProducts)
+userRoute.get('/product-details/:id', productController.productDetails);
+userRoute.get('/search',productController.search)
 
 // Profile routes
 userRoute.get('/account',authUser.isLogin,profileController.getAccount)
@@ -100,42 +103,35 @@ userRoute.get('/cart', authUser.isLogin, cartController.showCart);
 userRoute.get('/cart/delete', authUser.isLogin, cartController.deleteFromCart);
 userRoute.post('/cart/update', authUser.isLogin, cartController.updateQuantity);
 
-// Checkout and order routes
-//userRoute.get('/checkout', authUser.isLogin, orderController.getCheckoutPage);
-//userRoute.post('/checkout', authUser.isLogin, orderController.getCheckoutPage); // Make sure this is needed; typically GET is enough.
-userRoute.get('/order-success', authUser.isLogin,orderController.getOrderSuccess)
-//userRoute.post('/place-order', authUser.isLogin, orderController.placeOrder); // Secure with isLogin
-userRoute.get('/buy-now',authUser.isLogin,orderController.buyNow)
-//userRoute.get('/checkout/buy-now', authUser.isLogin, orderController.getBuyNowCheckout);
 
-
+//checkout routes
 
 // Show checkout page
 userRoute.get('/checkout',authUser.isLogin, orderController.checkoutPage);
 
-// Apply coupon
-userRoute.post('/apply-coupon',authUser.isLogin, orderController.applyCoupon);
-
-userRoute.post('/remove-coupon',authUser.isLogin, orderController.removeCoupon);
-
-// Process checkout
-userRoute.post('/checkout/cod',authUser.isLogin, orderController.processCheckout);
-
-
+// Process checkout for cash on delivery
+userRoute.post('/checkout/cod',authUser.isLogin, orderController.orderCashOnDelivery);
+userRoute.post('/checkout/wallet',authUser.isLogin, orderController.walletPayment);
+userRoute.post('/apply-wallet-deduction',authUser.isLogin,orderController.walletDeduction)
 // Create Razorpay Order
 userRoute.post('/create-razorpay-order', authUser.isLogin,orderController.createRazorpayOrder);
-
-// Process online payment (verify and complete order)
 userRoute.post('/verify-razorpay-payment', authUser.isLogin,orderController.verifyRazorpayPayment);
-
 userRoute.post('/checkout/online-payment',authUser.isLogin, orderController.processOnlinePaymentCheckout);
+userRoute.post('/checkout/failed-payment',authUser.isLogin, orderController.failedOnlinePaymentCheckout);
 
-// userRoute.post('/prepare-checkout',orderController.prepareCheckout)
-// userRoute.post('/create-order',orderController.createOrder)
 
-//userRoute.post('/verify-razorpay-payment', orderController.verifyRazorpayPayment);
+// Apply coupon
+userRoute.post('/apply-coupon',authUser.isLogin, orderController.applyCoupon);
+userRoute.post('/remove-coupon',authUser.isLogin, orderController.removeCoupon);
 
-// Route to display order success page
+// order success
+userRoute.get('/order-success', authUser.isLogin,orderController.getOrderSuccess)
+userRoute.get('/payment-failed', authUser.isLogin,orderController.getPaymentFailed)
+userRoute.post('/order/:id/retry-payment',authUser.isLogin, orderController.retryPayments);
+
+// Define the route to verify Razorpay payment
+userRoute.post('/order/:id/verify-razorpay-payment', authUser.isLogin, orderController.verifyRazorpayPayment);
+
 
 //order
 userRoute.get('/order',authUser.isLogin,orderController.orderList)
@@ -155,32 +151,31 @@ userRoute.post('/coupons/apply',authUser.isLogin,orderController.applyCoupon)
 //wallet
 userRoute.get('/wallet',authUser.isLogin,userController.getWallet)
 
+//invoice download
+userRoute.get('/download-Invoice/:orderId',orderController.downloadInvoice)
 
 userRoute.use(express.json()); // Add this if not already present
 
-// Simulated in-memory data
-let products = [
-  { id: 1, name: 'Product 1', quantity: 5 },
-  { id: 2, name: 'Product 2', quantity: 10 }
-];
 
-// Route to serve the HTML page
-userRoute.get('/carts', (req, res) => {
-  res.render('fetch.ejs')
-});
 
-// Route to handle quantity update via fetch
-userRoute.post('/update-quantity/:id', (req, res) => {
-  const productId = parseInt(req.params.id);
-  const { quantity } = req.body;
+// // New route to handle failed payments
+// userRoute.get('/payment-failed/:orderId', async (req, res) => {
+//   try {
+//       const orderId = req.params.orderId;
+//       const order = await Order.findById(orderId);
 
-  const product = products.find(p => p.id === productId);
-  if (product) {
-    product.quantity = parseInt(quantity, 10);
-    res.json({ message: 'Quantity updated', product });
-  } else {
-    res.status(404).json({ message: 'Product not found' });
-  }
-});
+//       if (!order) {
+//           return res.status(404).render('error', { message: 'Order not found' });
+//       }
+
+//       res.render('payment-failed', { order });
+//   } catch (error) {
+//       console.error('Error rendering payment failed page:', error);
+//       res.status(500).render('error', { message: 'An error occurred' });
+//   }
+// });
+// Add this route to your Express app
+ 
+
 
 module.exports = userRoute;

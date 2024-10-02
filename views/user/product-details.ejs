@@ -96,13 +96,7 @@
                     <button type="submit" class="btn btn-primary" <%= product.quantity > 0 ? '' : 'disabled' %>>Add to Cart</button>
                 </form>
 
-                <!-- Buy Now Button -->
-                <!-- <a href="/checkout?productId=<%= product._id %>&quantity=1" class="btn btn-success ms-2" <%= product.quantity > 0 ? '' : 'disabled' %>>Buy Now</a> -->
-                <!-- <form action="/buy-now" method="GET">
-                    <input type="hidden" name="productId" value="<%= product._id %>">
-                    <input type="hidden" name="quantity" value="1"> 
-                    <button type="submit" class="btn btn-primary">Buy Now</button>
-                </form> -->
+             
                 
                 
                 <!-- Wishlist Button -->
@@ -192,7 +186,13 @@
                     <% relatedProducts.forEach((related) => { %>
                         <div class="col-md-3 mb-4">
                             <a href="/product-details/<%= related._id %>" class="text-decoration-none">
-                                <img src="/<%= related.productImages[0] %>" alt="<%= related.productName %>" class="img-fluid">
+                                <% if (related.productImages && related.productImages[0].length>0) { %>
+                                    <img src="/<%= related.productImages[0] %> "
+                                     alt="<%= related.productName %>" class="img-fluid" 
+                                     onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                                <% } else {%>
+                                <img src="/styles/images/no_images.jpg" alt="no_images" >
+                                <%} %>
                                 <h5 class="mt-2"><%= related.productName %></h5>
                                 <p><%= related.salePrice %> rupees</p>
                             </a>

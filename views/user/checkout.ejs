@@ -197,22 +197,232 @@
         #addressForm {
             display: none;
         }
-        .coupon-link {
-        display: inline-block;
-        margin-bottom: 15px;
-        background-color: #f37254; /* Matches the Razorpay color theme */
-        color: white;
-        padding: 8px 12px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
+      
+        .coupon-section {
+    background-color: #f8f9fa; /* Light background for the coupon section */
+    padding: 20px; /* Inner spacing */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-bottom: 20px; /* Space below the section */
+}
+
+.coupon-section h4 {
+    margin-bottom: 15px; /* Space below the heading */
+    font-size: 1.5em; /* Larger font size */
+    color: #343a40; /* Dark color for text */
+    display: flex; /* Flexbox for icon alignment */
+    align-items: center; /* Center icon and text vertically */
+}
+
+.coupon-section i {
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.coupon-form {
+    display: flex; /* Flex layout for the form */
+    gap: 10px; /* Space between input and button */
+}
+
+.coupon-form input {
+    flex: 1; /* Input takes remaining space */
+    padding: 10px; /* Inner spacing */
+    border: 1px solid #ced4da; /* Border color */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.coupon-form .btn {
+    background-color: #28a745; /* Green button */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Inner spacing */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition effect */
+}
+
+.coupon-form .btn:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.applied-coupon {
+    background-color: #e2ffe2; /* Light green background */
+    padding: 15px; /* Inner spacing */
+    border-radius: 4px; /* Rounded corners */
+    margin-top: 10px; /* Space above */
+}
+
+.applied-coupon .success {
+    margin: 0; /* Remove default margin */
+    color: #155724; /* Dark green color */
+}
+
+.remove-coupon-form {
+    margin-top: 10px; /* Space above the remove button */
+}
+
+.remove-coupon-form .btn-secondary {
+    background-color: #dc3545; /* Red button */
+    padding: 10px 20px; /* Inner spacing */
+}
+
+.remove-coupon-form .btn-secondary:hover {
+    background-color: #c82333; /* Darker red on hover */
+}
+
+.error {
+    color: #dc3545; /* Red color for error messages */
+    margin-top: 10px; /* Space above error message */
+}
+
+.coupon-container {
+    margin-top: 20px; /* Space above coupon container */
+}
+
+.coupon-container h1 {
+    font-size: 1.8em; /* Larger font size for heading */
+    color: #2c3e50; /* Dark color */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapse borders */
+    margin-top: 10px; /* Space above table */
+}
+
+table th, table td {
+    padding: 12px; /* Inner spacing */
+    text-align: left; /* Left-align text */
+    border-bottom: 1px solid #ddd; /* Bottom border */
+}
+
+table th {
+    background-color: #f8f8f8; /* Light background for header */
+    font-weight: bold; /* Bold text */
+}
+
+table tr:hover {
+    background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+@media (max-width: 768px) {
+    .coupon-form {
+        flex-direction: column; /* Stack input and button on smaller screens */
     }
 
-    /* Hover effect for the coupon link */
-    .coupon-link:hover {
-        background-color: #c94b30; /* Darker shade on hover */
+    .coupon-form input {
+        margin-bottom: 10px; /* Space below input */
     }
+}
+
+.error {
+    color: #dc3545; /* Red color for error messages */
+    margin-top: 10px; /* Space above error message */
+}
+.payment-method {
+    background-color: #ffffff; /* White background for contrast */
+    padding: 20px; /* Inner spacing */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 20px; /* Space above */
+}
+
+.payment-logo {
+    display: block; /* Center logo */
+    margin: 0 auto 15px; /* Center and space below */
+    width: 150px; /* Set a width for the logo */
+}
+
+.payment-method h4 {
+    margin-bottom: 15px; /* Space below the heading */
+    font-size: 1.5em; /* Larger font size */
+    color: #343a40; /* Dark color for text */
+    display: flex; /* Flexbox for icon alignment */
+    align-items: center; /* Center icon and text vertically */
+}
+
+.payment-method i {
+    margin-right: 10px; /* Space between icon and text */
+}
+
+.payment-options {
+    margin-bottom: 20px; /* Space below the payment options */
+}
+
+.payment-options label {
+    display: flex; /* Flex layout for radio buttons */
+    align-items: center; /* Center radio button with text */
+    margin-bottom: 10px; /* Space between options */
+    font-size: 1.1em; /* Slightly larger font */
+    color: #495057; /* Darker text color */
+}
+
+.payment-options input[type="radio"] {
+    margin-right: 10px; /* Space between radio and label */
+    accent-color: #28a745; /* Custom radio button color */
+}
+
+.btn {
+    background-color: #28a745; /* Green button */
+    color: white; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Inner spacing */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition effect */
+    display: block; /* Full-width button */
+    width: 100%; /* Full width */
+}
+
+.btn:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+.wallet-section {
+    max-width: 400px; /* Limit the width of the wallet section */
+    margin: 20px auto; /* Center the wallet section */
+    padding: 20px; /* Add padding for aesthetics */
+    border: 1px solid #ddd; /* Light border for the container */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    text-align: center; /* Center-align text */
+}
+
+.wallet-header {
+    display: flex; /* Use flexbox for header alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin-bottom: 15px; /* Space below the header */
+}
+
+.wallet-icon {
+    width: 40px; /* Set icon width */
+    height: 40px; /* Set icon height */
+    margin-right: 10px; /* Space between icon and title */
+}
+
+.wallet-balance {
+    font-size: 24px; /* Larger font for balance */
+    font-weight: bold; /* Bold font for emphasis */
+    color: #333; /* Darker color for balance text */
+    margin-bottom: 15px; /* Space below the balance */
+}
+
+.use-wallet {
+    display: flex; /* Use flexbox for alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+}
+
+.use-wallet input[type="checkbox"] {
+    margin-right: 8px; /* Space between checkbox and label */
+}
+
+.use-wallet label {
+    font-size: 16px; /* Font size for the label */
+    color: #555; /* Color for the label text */
+}
+
     </style>
 </head>
 <body>
@@ -240,7 +450,8 @@
                     <input type="text" name="state" placeholder="State" required>
                     <input type="text" name="country" placeholder="Country" required>
                     <input type="number" name="pincode" placeholder="Pincode" required>
-                    <input type="number" name="phone" placeholder="Phone" required>
+                    <input type="number" name="phone" placeholder="Phone Number" required>
+
                     <button type="submit" class="btn">Save Address</button>
                 </form>
 
@@ -306,54 +517,104 @@
                 </table>
             </div>
             
-            
-                <div class="coupon-section">
-                    <h4><i class="fas fa-tag"></i> Have a Coupon?</h4>
-                    <% if (!coupon) { %>
-                        <form action="/apply-coupon" method="POST">
-                            <input type="text" name="couponCode" placeholder="Enter coupon code" required>
-                            <button type="submit" class="btn">Apply</button>
-                        </form>
-                    <% } else { %>
+            <div class="coupon-section">
+                <h4><i class="fas fa-tag"></i> Have a Coupon?</h4>
+                <% if (!coupon) { %>
+                    <form action="/apply-coupon" method="POST" class="coupon-form">
+                        <input type="text" name="couponCode" placeholder="Enter coupon code" required>
+                        <button type="submit" class="btn">Apply</button>
+                    </form>
+                <% } else { %>
+                    <div class="applied-coupon">
                         <p class="success">Coupon "<%= coupon.code %>" applied! Discount: ₹<%= coupon.discountAmount.toFixed(2) %></p>
-                        <form action="/remove-coupon" method="POST">
+                        <form action="/remove-coupon" method="POST" class="remove-coupon-form">
                             <button type="submit" class="btn btn-secondary">Remove Coupon</button>
                         </form>
-                    <% } %>
-                    <% if (error_msg) { %>
-                        <p class="error"><%= error_msg %></p>
-                    <% } %>
-                </div>
-
-                <div class="payment-method">
-                    <h4><i class="fas fa-credit-card"></i> Select Payment Method</h4>
-                    <form id="checkoutForm" method="POST" onsubmit="return validateAddressSelection()">
-                        <div class="payment-options">
-                            <label>
-                                <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
-                                Cash on Delivery
-                            </label>
-                            <label>
-                                <input type="radio" name="paymentMethod" value="Razorpay">
-                                Online Payment
-                            </label>
-                        </div>
-                    
-                        <input type="hidden" name="userId" value="<%= user._id %>">
-                        <input type="hidden" name="totalAmount" value="<%= totalAmount - (coupon ? coupon.offerPrice : 0) %>">
-                        <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>">
-                        <input type="hidden" name="addressId" id="selectedAddressId" value="">
-                    
-                        <button type="submit" class="btn">Place Order</button>
-                    </form>
-                </div>
+                    </div>
+                <% } %>
+                <% if (error_msg) { %>
+                    <p class="error"><%= error_msg %></p>
+                <% } %>
+            </div>
+            <div class="coupon-container">
+                <h1>Available Coupons</h1>
+                <% if (coupons.length > 0) { %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Coupon Name</th>
+                                <th>Discount</th>
+                                <th>Minimum Purchase</th>
+                                <th>Expires On</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% coupons.forEach(coupon => { %> <!-- Fixed variable name from 'coupons' to 'coupon' -->
+                                <tr>
+                                    <td><%= coupon.name %></td>
+                                    <td>
+                                        <% if (coupon.discountType === 'percentage') { %>
+                                            <%= coupon.offerPrice %>% off
+                                        <% } else { %>
+                                            ₹<%= coupon.offerPrice.toFixed(2) %> off
+                                        <% } %>
+                                    </td>
+                                    <td>₹<%= coupon.minimumPrice.toFixed(2) %></td>
+                                    <td><%= coupon.expirationDate.toDateString() %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p>No coupons available at the moment. Please check back later!</p>
+                <% } %>
+            </div>
+        
+            <div class="payment-method">
+                <% if (error) { %>
+                    <p class="error"><%= error %></p>
+                <% } %>
+                <h4><i class="fas fa-credit-card"></i> Select Payment Method</h4>
+                <form id="checkoutForm" method="POST" onsubmit="return validateAddressSelection()">
+                    <div class="payment-options">
+                        <label>
+                            <input type="radio" name="paymentMethod" value="Cash on Delivery" checked>
+                            Cash on Delivery
+                        </label>
+                        <label>
+                            <input type="radio" name="paymentMethod" value="Razorpay">
+                            Online Payment
+                        </label>
+                        <label>
+                            <input type="radio" name="paymentMethod" value="Wallet">
+                            Wallet Payment (₹<%= user.walletBalance %>)
+                        </label>
+                    </div>
+            
+                    <!-- Optional: Show wallet balance section if you need more details -->
+                    <div id="walletBalanceSection" style="display: none; margin-top: 10px;">
+                        <input type="checkbox" id="useWallet" name="useWallet" value="1">
+                        <label for="useWallet">Use Wallet Balance</label>
+                    </div>
+            
+             
+            
+                    <input type="hidden" name="userId" value="<%= user._id %>">
+                    <input type="hidden" name="totalAmount" value="<%= totalAmount - (coupon ? coupon.offerPrice : 0) %>">
+                    <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>">
+                    <input type="hidden" name="addressId" id="selectedAddressId" value="">
+            
+                    <button type="submit" class="btn">Place Order</button>
+                </form>
+            </div>
+            
             </div>
         </div>
     </div>
+    
     <%- include('../partials/user/footer') %>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
@@ -398,87 +659,112 @@
                 form.action = '#';
                 handleRazorpayPayment(form.querySelector('input[name="totalAmount"]').value);
                 return false;
+            }else if (paymentMethod === 'Wallet') {
+                form.action = '/checkout/Wallet';
+              
             }
     
             return true;
         }
-    
-        async function handleRazorpayPayment(totalAmount) {
-            try {
-                const response = await fetch('/create-razorpay-order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ totalAmount })
-                });
-                const data = await response.json();
-    
-                if (!data.success) {
-                    throw new Error(data.message || 'Failed to create Razorpay order');
-                }
-    
-                const options = {
-                    key: data.key,
-                    amount: data.amount,
-                    currency: data.currency,
-                    name: 'shoesea',
-                    description: 'Order Payment',
-                    order_id: data.order_id,
-                    handler: async function (response) {
-                        try {
-                            const verifyResponse = await fetch('/verify-razorpay-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_signature: response.razorpay_signature
-                                })
-                            });
-                            const verifyData = await verifyResponse.json();
-    
-                            if (!verifyData.success) {
-                                throw new Error(verifyData.message || 'Payment verification failed');
-                            }
-    
-                            const checkoutResponse = await fetch('/checkout/online-payment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                    addressId: document.getElementById('selectedAddressId').value
-                                })
-                            });
-                            const checkoutData = await checkoutResponse.json();
-    
-                            if (checkoutData.success) {
-                                window.location.href = `/order-success?orderId=${checkoutData.orderId}`;
-                            } else {
-                                throw new Error(checkoutData.message || 'Checkout process failed');
-                            }
-                        } catch (error) {
-                            console.error('Error processing payment:', error);
-                            alert('Payment failed: ' + error.message);
-                        }
-                    },
-                    prefill: {
-                        name: 'Customer Name',
-                        email: 'customer@example.com',
-                        contact: '9999999999'
-                    },
-                    theme: {
-                        color: '#F37254'
-                    }
-                };
-    
-                const paymentObject = new Razorpay(options);
-                paymentObject.open();
-            } catch (error) {
-                console.error('Error initializing Razorpay:', error);
-                alert('Failed to initiate payment: ' + error.message);
-            }
+ 
+async function handleRazorpayPayment(totalAmount) {
+    try {
+        const response = await fetch('/create-razorpay-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ totalAmount })
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to create Razorpay order');
         }
+
+        // Store the order_id outside the handler
+        let savedOrderId = data.order_id;
+
+        const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            name: 'shoesea',
+            description: 'Order Payment',
+            order_id: savedOrderId, // Save it here
+            handler: async function (response) {
+                try {
+                    const verifyResponse = await fetch('/verify-razorpay-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    });
+                    const verifyData = await verifyResponse.json();
+
+                    const checkoutResponse = await fetch('/checkout/online-payment', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_signature: response.razorpay_signature,
+                            addressId: document.getElementById('selectedAddressId').value
+                        })
+                    });
+                    const checkoutData = await checkoutResponse.json();
+
+                    if (checkoutData.success) {
+                        window.location.href = `/order-success?orderId=${checkoutData.orderId}`;
+                    } else {
+                        window.location.href = `/payment-failed?orderId=${checkoutData.orderId}`;
+                    }
+                } catch (error) {
+                    console.error('Error processing payment:', error);
+                    alert('Payment failed: ' + error.message);
+                    window.location.href = '/payment-failed';
+                }
+            },
+            modal: {
+                ondismiss: async function() {
+                    console.log('Payment modal closed');
+                    try {
+                        // Use the saved order_id here
+                        const checkoutResponse = await fetch('/checkout/failed-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: savedOrderId, // Use the saved value
+                                addressId: document.getElementById('selectedAddressId').value
+                            })
+                        });
+                        const checkoutData = await checkoutResponse.json();
+                        window.location.href = `/payment-failed?orderId=${checkoutData.orderId}`;
+                    } catch (error) {
+                        console.error('Error handling payment cancellation:', error);
+                        window.location.href = `/payment-failed?orderId=${checkoutData.orderId}`;
+                    }
+                }
+            },
+            prefill: {
+                name: 'Customer Name',
+                email: 'customer@example.com',
+                contact: '9999999999'
+            },
+            theme: {
+                color: '#F37254'
+            }
+        };
+
+        const paymentObject = new Razorpay(options);
+        paymentObject.open();
+    } catch (error) {
+        console.error('Error initializing Razorpay:', error);
+        alert('Failed to initiate payment: ' + error.message);
+    }
+}
+
     </script>
     
 </body>

@@ -6,8 +6,13 @@ const path = require('path');
 
 const { PassThrough } = require('stream');
 const generateSalesReportPDF = async (reportData) => {
-    const doc = new PDFDocument({ margin: 50 });
-    const stream = new PassThrough();
+
+    // Create a new PDF document
+    const doc = new PDFDocument({
+        size: 'A4',
+        margin: 50
+      });
+          const stream = new PassThrough();
     doc.pipe(stream);
 
     // Title

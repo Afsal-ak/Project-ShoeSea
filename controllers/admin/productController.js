@@ -104,6 +104,136 @@ const sharp = require('sharp');
 //         res.redirect('/500');
 //     }
 // };
+
+// const addNewProduct = async (req, res) => {
+//     try {
+//         // Validate input
+//         const regularPrice = parseFloat(req.body.regularPrice);
+//         const productOffer = parseFloat(req.body.productOffer) || 0;
+//         const taxValue = parseFloat(req.body.taxValue) || 0;
+
+//         if (isNaN(regularPrice) || regularPrice < 0) {
+//             req.flash('error', 'Invalid regular price');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         if (productOffer < 0) {
+//             req.flash('error', 'Product offer cannot be negative');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         if (taxValue < 0) {
+//             req.flash('error', 'Tax value cannot be negative');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         // Check if the product with the same name already exists
+//         const productName = req.body.productName?.trim(); // Use optional chaining to avoid accessing undefined
+//         if (!productName) {
+//             req.flash('error', 'Product name is required');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         const existingProduct = await Product.findOne({ productName });
+//         if (existingProduct) {
+//             req.flash('error', 'A product with the same name already exists.');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         // Fetch the category offer and handle offer comparison
+//         const categoryOffer = await Category.findById(req.body.categoryId).select('offer').lean();
+//         const finalOffer = Math.max(productOffer, categoryOffer?.offer || 0); // Use whichever offer is larger
+
+//         // Apply the offer to calculate the sale price
+//         let salePrice = regularPrice;
+//         if (req.body.discountType === 'percentage') {
+//             salePrice -= (salePrice * finalOffer / 100);
+//         } else {
+//             salePrice -= finalOffer;
+//         }
+//         salePrice = Math.max(0, Math.round(salePrice)); // Ensure sale price is not negative
+
+//         // Calculate tax
+//         const taxAmount = req.body.taxType === 'percentage'
+//             ? salePrice * taxValue / 100
+//             : taxValue;
+//         const finalPrice = Math.round(salePrice + taxAmount); // Final price including tax
+
+//         // Handle sizes
+//         const sizes = req.body.sizes || [];
+//         let totalQuantity = 0;
+//         const sizesData = sizes.map(sizeEntry => {
+//             const quantity = parseInt(sizeEntry.quantity) || 0;
+//             totalQuantity += quantity;
+//             return {
+//                 size: sizeEntry.size,
+//                 quantity: quantity
+//             };
+//         });
+
+//         // Ensure the total quantity reflects the sum of sizes
+//         if (totalQuantity === 0) {
+//             req.flash('error', 'Total quantity must be greater than zero');
+//             return res.redirect('/admin/add-products');
+//         }
+
+//         // Resize images and store paths
+//         const imagePromises = req.files.map(async (file) => {
+//             const imagePath = path.join('public', 'uploads', file.filename);
+//             const resizedImagePath = path.join('public', 'uploads', `resized_${file.filename}`);
+
+//             try {
+//                 await sharp(imagePath)
+//                     .resize({ width: 400, height: 400 })
+//                     .toFile(resizedImagePath);
+//                 return resizedImagePath.replace('public/', ''); // Return path relative to 'public/'
+//             } catch (error) {
+//                 console.error('Error processing image', error);
+//                 throw error;
+//             }
+//         });
+
+//         const resizedImageUrls = await Promise.all(imagePromises);
+
+//         // Determine status based on quantity
+//         const status = totalQuantity === 0 ? 'Out of Stock' : 'Available';
+
+//         // Prepare product data
+//         const productData = {
+//             productName: productName,
+//             description: req.body.description?.trim() || '', // Default empty string if undefined
+//             categoryId: req.body.categoryId,
+//             brand: req.body.brand?.trim() || '', // Handle brand safely
+//             regularPrice: regularPrice,
+//             salePrice: finalPrice,
+//             productOffer: Math.round(productOffer),
+//             tax: Math.round(taxValue),
+//             offerDescription: req.body.offerDescription?.trim() || '', // Default empty string if undefined
+//             quantity: totalQuantity,
+//             colour: req.body.color?.trim() || '', // Handle color safely
+//             productImages: resizedImageUrls,
+//             sizes: sizesData,
+//             status: status,
+//         };
+// console.log(req.body);
+
+//         // Save the product to the database
+//         const product = new Product(productData);
+//         const savedProduct = await product.save();
+
+//         if (savedProduct) {
+//             req.flash('success', 'Product added successfully');
+//             res.redirect('/admin/products');
+//         } else {
+//             req.flash('error', 'Error saving product');
+//             res.redirect('/admin/add-products');
+//         }
+//     } catch (error) {
+//         console.error(error.message);
+//         req.flash('error', 'An error occurred while adding the product');
+//         res.redirect('/500');
+//     }
+// };
 const addNewProduct = async (req, res) => {
     try {
         // Validate input
@@ -163,6 +293,10 @@ const addNewProduct = async (req, res) => {
         let totalQuantity = 0;
         const sizesData = sizes.map(sizeEntry => {
             const quantity = parseInt(sizeEntry.quantity) || 0;
+            if (quantity < 0) {
+                req.flash('error', 'Quantity for size ' + sizeEntry.size + ' cannot be negative');
+                throw new Error('Negative quantity not allowed');
+            }
             totalQuantity += quantity;
             return {
                 size: sizeEntry.size,
@@ -214,7 +348,8 @@ const addNewProduct = async (req, res) => {
             sizes: sizesData,
             status: status,
         };
-console.log(req.body);
+
+        console.log(req.body);
 
         // Save the product to the database
         const product = new Product(productData);
@@ -598,6 +733,7 @@ const loadAddProduct = async (req, res) => {
 //         res.redirect('/500');
 //     }
 // };
+
 // const editProduct = async (req, res) => {
 //     const id = req.params.id;
 //     try {
@@ -642,19 +778,19 @@ const loadAddProduct = async (req, res) => {
 //             return res.redirect(`/admin/edit-product/${id}`);
 //         }
 
-//         // Fetch the category offer after validating other data
-//         const category = await Category.findById(req.body.categoryId).select('offer').lean();
-//         const categoryOffer = category?.offer || 0;
+//         // Fetch the category offer as a percentage
+//         const category = await Category.findById(req.body.categoryId).select('categoryOffer').lean();
+//         const categoryOffer = category?.categoryOffer || 0;
 
-//         // Calculate final offer to apply
-//         const finalOffer = Math.max(productOffer, categoryOffer); // Use whichever offer is larger
+//         // Determine the effective offer to apply (higher of product offer or category offer)
+//         const effectiveOffer = Math.max(productOffer, categoryOffer);
 
-//         // Calculate sale price
+//         // Calculate sale price based on effective offer
 //         let salePrice = regularPrice;
 //         if (req.body.discountType === 'percentage') {
-//             salePrice -= (salePrice * finalOffer / 100);
+//             salePrice -= (salePrice * effectiveOffer / 100);
 //         } else {
-//             salePrice -= finalOffer;
+//             salePrice -= effectiveOffer; // If it's a flat amount, apply it directly
 //         }
 //         salePrice = Math.max(0, Math.round(salePrice)); // Ensure sale price is not negative
 
@@ -732,13 +868,14 @@ const loadAddProduct = async (req, res) => {
 //         res.redirect('/500');
 //     }
 // };
+
 const editProduct = async (req, res) => {
     const id = req.params.id;
     try {
         // Find the product by ID
         const product = await Product.findById(id);
         if (!product) {
-            req.flash('error', 'Product not found');
+            req.flash('errors', 'Product not found');
             return res.redirect('/admin/products');
         }
 
@@ -748,31 +885,31 @@ const editProduct = async (req, res) => {
         const taxValue = parseFloat(req.body.taxValue) || 0;
 
         if (isNaN(regularPrice) || regularPrice < 0) {
-            req.flash('error', 'Invalid regular price');
+            req.flash('errors', 'Invalid regular price');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
         if (productOffer < 0) {
-            req.flash('error', 'Product offer cannot be negative');
+            req.flash('errors', 'Product offer cannot be negative');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
         if (taxValue < 0) {
-            req.flash('error', 'Tax value cannot be negative');
+            req.flash('errors', 'Tax value cannot be negative');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
         // Validate product name
         const productName = req.body.productName?.trim();
         if (!productName) {
-            req.flash('error', 'Product name is required');
+            req.flash('errors', 'Product name is required');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
         // Check for duplicate product name
         const existingProduct = await Product.findOne({ productName, _id: { $ne: id } });
         if (existingProduct) {
-            req.flash('error', 'A product with the same name already exists.');
+            req.flash('errors', 'A product with the same name already exists.');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
@@ -820,6 +957,13 @@ const editProduct = async (req, res) => {
         let totalQuantity = 0;
         const sizesData = sizes.map(sizeEntry => {
             const quantity = parseInt(sizeEntry.quantity) || 0;
+            
+            // Validate for negative quantity
+            if (quantity < 0) {
+                req.flash('errors', `Quantity for size ${sizeEntry.size} cannot be negative`);
+                throw new Error('Negative size quantity detected');
+            }
+            
             totalQuantity += quantity;
             return {
                 size: sizeEntry.size,
@@ -829,7 +973,7 @@ const editProduct = async (req, res) => {
 
         // Ensure the total quantity reflects the sum of sizes
         if (totalQuantity === 0) {
-            req.flash('error', 'Total quantity must be greater than zero');
+            req.flash('errors', 'Total quantity must be greater than zero');
             return res.redirect(`/admin/edit-product/${id}`);
         }
 
@@ -868,46 +1012,6 @@ const editProduct = async (req, res) => {
 };
 
 
-// const deleteProductImage = async (req, res) => {
-//     const { id } = req.params;
-//     const { imageUrl } = req.body; // This is the URL passed from the form
-
-//     try {
-//         const product = await Product.findById(id);
-
-//         if (!product) {
-//             return res.status(404).send('Product not found');
-//         }
-
-//         // Remove the image from the product's images array
-//         //product.productImages = product.productImages.filter(img => img !== imageUrl); // Adjusted to match your array
-//         product.productImages.pull(imageUrl)
-//         console.log(`Images after delete: ${product.productImages.length}`);
-
-//         await product.save()
-//         // If you are storing images locally, delete the file
-//         const fs = require('fs');
-//         const localImagePath = path.join(__dirname, '..', 'public', imageUrl); // Adjust to get the correct path
-
-//         // Check if the file exists before attempting to delete
-//         if (fs.existsSync(localImagePath)) {
-//             fs.unlinkSync(localImagePath); // Delete the file from the filesystem
-//         } else {
-//             console.error('File not found:', localImagePath);
-//         }
-      
-//         await product.save();
-//         console.log('2 Image URL to delete:', imageUrl);
-//         console.log('2 Current Images:', product.productImages);
-        
-//         req.flash('success_msg', 'Image deleted successfully');
-//         res.redirect(`/admin/edit-product/${id}`);
-//     } catch (error) {
-//         console.error('Error deleting image:', error);
-//         res.status(500).json({ success: false, message: 'Error deleting image' });
-//     }
-// };
-
 
 const deleteProductImage = async (req, res) => {
     const { id } = req.params;
@@ -926,13 +1030,13 @@ const deleteProductImage = async (req, res) => {
         await product.save();
 
         // Optionally, delete the image file from your server
-        const imagePath = path.join('public', imageUrl);
+        const imagePath = path.join( imageUrl);
         fs.unlink(imagePath, (err) => {
             if (err) {
                 console.error('Failed to delete image file:', err);
             }
         });
-
+console.log(imagePath,'images deleted successfully')
         res.json({ success: true, message: 'Image deleted successfully' });
     } catch (error) {
         console.error('Error deleting image:', error);
@@ -1054,7 +1158,7 @@ const loadEditProduct = async (req, res) => {
         res.render('./products/edit-product', {
             product,
             cat:categories,
-            messages: req.flash('error') // Pass flash messages to the template
+            message: req.flash('errors') // Pass flash messages to the template
         });
     } catch (error) {
         console.error(error.message);
