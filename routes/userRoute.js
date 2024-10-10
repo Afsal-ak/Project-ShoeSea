@@ -5,11 +5,13 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const authUser = require('../middlewares/userAuth');
 
+const User = require('../models/userModel')
 const userController = require('../controllers/user/userController');
 const productController =  require('../controllers/user/productController');
 const profileController = require('../controllers/user/profileController');
 const cartController = require('../controllers/user/cartController');
-const orderController = require('../controllers/user/orderController');
+const checkoutController = require('../controllers/user/checkoutController');
+const orderController = require('../controllers/user/orderController')
 const wishlistController = require('../controllers/user/wishlistController')
 const passport = require('passport');
 require('dotenv').config();
@@ -25,6 +27,8 @@ userRoute.use(session({
   saveUninitialized: false
 }));
 userRoute.use(flash());
+//for checking if user is blocked or not
+userRoute.use(authUser.checkUserStatus)
 userRoute.use(authUser.userMiddleware);
 
 // Set global variables for flash messages
@@ -39,6 +43,12 @@ userRoute.use((req, res, next) => {
   // Add other common variables if needed
   next();
 });
+
+// Example route that triggers an error
+userRoute.get('/error-test', (req, res) => {
+  throw new Error('This is a test error!'); // This will be caught by the error handler
+});
+ 
 
 userRoute.use('/public', express.static(path.join(__dirname, '../public')));
 userRoute.set('views', path.join(__dirname, '../views/user'));
@@ -67,11 +77,21 @@ userRoute.get('/new-password',authUser.isLogout,userController.getNewPassword)
 userRoute.post('/new-password',authUser.isLogout,userController.postNewPassword)
 
 
-// Google OAuth routes
-userRoute.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+//Google OAuth routes
+
+userRoute.get('/auth/google',passport.authenticate('google', { scope: ['profile', 'email'] }));
+
 userRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), (req, res) => {
+
+  req.session.userId = req.user.id;
+  //for assigning referalcode to google auth users
+  userController.assignReferralCodesToUsers(); 
   res.redirect('/home');
 });
+
+
+
+
 
 //product routes
 userRoute.get('/home', authUser.isLogin, productController.getHome, authUser.checkUserStatus);
@@ -107,30 +127,29 @@ userRoute.post('/cart/update', authUser.isLogin, cartController.updateQuantity);
 //checkout routes
 
 // Show checkout page
-userRoute.get('/checkout',authUser.isLogin, orderController.checkoutPage);
+userRoute.get('/checkout',authUser.isLogin, checkoutController.checkoutPage);
 
 // Process checkout for cash on delivery
-userRoute.post('/checkout/cod',authUser.isLogin, orderController.orderCashOnDelivery);
-userRoute.post('/checkout/wallet',authUser.isLogin, orderController.walletPayment);
-userRoute.post('/apply-wallet-deduction',authUser.isLogin,orderController.walletDeduction)
+userRoute.post('/checkout/cod',authUser.isLogin, checkoutController.orderCashOnDelivery);
+userRoute.post('/checkout/wallet',authUser.isLogin, checkoutController.walletPayment);
 // Create Razorpay Order
-userRoute.post('/create-razorpay-order', authUser.isLogin,orderController.createRazorpayOrder);
-userRoute.post('/verify-razorpay-payment', authUser.isLogin,orderController.verifyRazorpayPayment);
-userRoute.post('/checkout/online-payment',authUser.isLogin, orderController.processOnlinePaymentCheckout);
-userRoute.post('/checkout/failed-payment',authUser.isLogin, orderController.failedOnlinePaymentCheckout);
+userRoute.post('/create-razorpay-order', authUser.isLogin,checkoutController.createRazorpayOrder);
+userRoute.post('/verify-razorpay-payment', authUser.isLogin,checkoutController.verifyRazorpayPayment);
+userRoute.post('/checkout/online-payment',authUser.isLogin, checkoutController.processOnlinePaymentCheckout);
+userRoute.post('/checkout/failed-payment',authUser.isLogin, checkoutController.failedOnlinePaymentCheckout);
 
 
 // Apply coupon
-userRoute.post('/apply-coupon',authUser.isLogin, orderController.applyCoupon);
-userRoute.post('/remove-coupon',authUser.isLogin, orderController.removeCoupon);
+userRoute.post('/apply-coupon',authUser.isLogin, checkoutController.applyCoupon);
+userRoute.post('/remove-coupon',authUser.isLogin, checkoutController.removeCoupon);
 
 // order success
-userRoute.get('/order-success', authUser.isLogin,orderController.getOrderSuccess)
-userRoute.get('/payment-failed', authUser.isLogin,orderController.getPaymentFailed)
-userRoute.post('/order/:id/retry-payment',authUser.isLogin, orderController.retryPayments);
+userRoute.get('/order-success', authUser.isLogin,checkoutController.getOrderSuccess)
+userRoute.get('/payment-failed', authUser.isLogin,checkoutController.getPaymentFailed)
+userRoute.post('/order/:id/retry-payment',authUser.isLogin, checkoutController.retryPayments);
 
 // Define the route to verify Razorpay payment
-userRoute.post('/order/:id/verify-razorpay-payment', authUser.isLogin, orderController.verifyRazorpayPayment);
+userRoute.post('/order/:id/verify-razorpay-payment', authUser.isLogin, checkoutController.verifyRazorpayPayment);
 
 
 //order
@@ -138,6 +157,9 @@ userRoute.get('/order',authUser.isLogin,orderController.orderList)
 userRoute.post('/order/:orderId/cancel',authUser.isLogin, orderController.orderCancel);
 userRoute.get('/order-details/:orderId',authUser.isLogin,orderController.viewOrderDetails)
 userRoute.post('/order/return/:orderId',authUser.isLogin,orderController.returnOrder)
+userRoute.post('/order/:orderId/:productId/return', orderController.returnSingleProduct);
+userRoute.post('/order/:orderId/:productId/cancel', orderController.cancelSingleProduct);
+
 
 //wishlist
 userRoute.get('/wishlist',authUser.isLogin,wishlistController.getWishlist)
@@ -145,8 +167,8 @@ userRoute.post('/wishlist/add',authUser.isLogin,wishlistController.addWishlist)
 userRoute.post('/wishlist/remove',authUser.isLogin,wishlistController.removeWishlist)
 
 //coupon
-userRoute.get('/coupons',authUser.isLogin,orderController.getCoupons)
-userRoute.post('/coupons/apply',authUser.isLogin,orderController.applyCoupon)
+userRoute.get('/coupons',authUser.isLogin,checkoutController.getCoupons)
+userRoute.post('/coupons/apply',authUser.isLogin,checkoutController.applyCoupon)
 
 //wallet
 userRoute.get('/wallet',authUser.isLogin,userController.getWallet)
@@ -157,25 +179,7 @@ userRoute.get('/download-Invoice/:orderId',orderController.downloadInvoice)
 userRoute.use(express.json()); // Add this if not already present
 
 
-
-// // New route to handle failed payments
-// userRoute.get('/payment-failed/:orderId', async (req, res) => {
-//   try {
-//       const orderId = req.params.orderId;
-//       const order = await Order.findById(orderId);
-
-//       if (!order) {
-//           return res.status(404).render('error', { message: 'Order not found' });
-//       }
-
-//       res.render('payment-failed', { order });
-//   } catch (error) {
-//       console.error('Error rendering payment failed page:', error);
-//       res.status(500).render('error', { message: 'An error occurred' });
-//   }
-// });
-// Add this route to your Express app
- 
+userRoute.use(userController.errorHandler)
 
 
 module.exports = userRoute;

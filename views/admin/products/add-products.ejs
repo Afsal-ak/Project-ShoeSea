@@ -7,33 +7,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <style>
-        .form-container {
-            margin-top: 20px;
-        }
-        .error-message {
-            color: red;
-        }
-        .thumbnails-container {
-            display: flex;
-            overflow-x: auto;
-        }
-        .thumbnail {
-            margin-right: 10px;
-        }
-        .image-input-container {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 20px;
-        }
-        .image-preview {
-            max-width: 300px;
-            max-height: 200px;
-            margin-top: 10px;
-        }
-        .crop-container {
-            display: none;
-            margin-top: 10px;
-        }
+        .form-container { margin-top: 20px; }
+        .error-message { color: red; }
+        .thumbnails-container { display: flex; overflow-x: auto; }
+        .thumbnail { margin-right: 10px; }
+        .image-input-container { display: flex; flex-direction: column; margin-bottom: 20px; }
+        .image-preview { max-width: 300px; max-height: 200px; margin-top: 10px; }
+        .crop-container { display: none; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -46,8 +26,8 @@
                     <h2 class="content-title">Add New Product</h2>
                 </div>
             </div>
-            <% if (messages.error) { %>
-                <div class="alert alert-danger"><%= messages.error %></div> <!-- Flash error message -->
+            <% if (errorMessage) { %>
+                <h6 style="color: red;"><%= errorMessage %></h6>
             <% } %>
             <div class="col-lg-6">
                 <div class="card mb-4">
@@ -66,23 +46,23 @@
                                 <textarea placeholder="Type here" id="description" name="description" class="form-control border" rows="4" required></textarea>
                                 <div id="description-error" class="error-message"></div>
                             </div>
+
+                            <!-- Brand -->
                             <div class="mb-4">
                                 <label for="brand" class="form-label">Brand</label>
                                 <input type="text" placeholder="Brand Name" name="brand" class="form-control border" id="brand" required>
                                 <div id="brand-error" class="error-message"></div>
                             </div>
-                            
     
                             <!-- Prices and Quantity -->
                             <div class="row">
                                 <div class="col-lg-4">
                                     <div class="mb-4">
                                         <label class="form-label">Regular price</label>
-                                        <input placeholder="$" name="regularPrice" type="number" min="0" step="0.01" class="form-control border" required>
+                                        <input placeholder="$" name="regularPrice" type="number" class="form-control border" required>
                                         <div id="regularPrice-error" class="error-message"></div>
                                     </div>
                                 </div>
-                               
                             </div>
     
                             <!-- Color -->
@@ -113,24 +93,23 @@
                                 </div>
                             </div>
     
-                          <!-- Discount Type -->
-<div class="mb-4">
-    <label class="form-label">Discount Type</label>
-    <select class="form-select border" name="discountType">
-        <option value="">Select discount type</option>
-        <option value="percentage">Percentage</option>
-        <option value="flat">Flat</option>
-    </select>
-    <div id="discountType-error" class="error-message"></div>
-</div>
+                            <!-- Discount Type -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Type</label>
+                                <select class="form-select border" name="discountType">
+                                    <option value="">Select discount type</option>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                                <div id="discountType-error" class="error-message"></div>
+                            </div>
 
-<!-- Discount Value -->
-<div class="mb-4">
-    <label class="form-label">Discount Value</label>
-    <input placeholder="Discount Value" name="productOffer" type="number" min="0" step="0.01" class="form-control border">
-    <div id="discountValue-error" class="error-message"></div>
-</div>
-
+                            <!-- Discount Value -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Value</label>
+                                <input placeholder="Discount Value" name="productOffer" type="number" class="form-control border">
+                                <div id="discountValue-error" class="error-message"></div>
+                            </div>
     
                             <!-- Tax Type -->
                             <div class="mb-4">
@@ -146,7 +125,7 @@
                             <!-- Tax Value -->
                             <div class="mb-4">
                                 <label class="form-label">Tax Value</label>
-                                <input placeholder="Tax Value" name="taxValue" type="number" min="0" step="0.01" class="form-control border">
+                                <input placeholder="Tax Value" name="taxValue" type="number" class="form-control border">
                                 <div id="taxValue-error" class="error-message"></div>
                             </div>
     
@@ -154,29 +133,20 @@
                             <div class="mb-4">
                                 <label class="form-label">Offer Description</label>
                                 <textarea placeholder="Offer Description" name="offerDescription" class="form-control border" rows="2"></textarea>
+                                <div id="offerDescription-error" class="error-message"></div>
                             </div>
-                            <!-- <div id="sizes-container">
+                           
+                            <!-- Sizes and Stock -->
+                            <div id="sizes-container">
                                 <h4>Sizes and Stock</h4>
                                 <div class="size-entry">
-                                    <input type="number" name="sizes[0][size]" placeholder="Size"  min="0" required >
-                                    <input type="number" name="sizes[0][quantity]" placeholder="Quantity" min="0" required>
+                                    <input type="number" name="sizes[0][size]" placeholder="Size" required>
+                                    <input type="number" name="sizes[0][quantity]" placeholder="Quantity" required>
                                 </div>
+                                <div id="sizes-error" class="error-message"></div>
                             </div>
                             <button type="button" onclick="addSizeEntry()" class="btn btn-secondary mt-2">Add Size</button>
-                            
-                             -->
-                             <div id="sizes-container">
-                                <h4>Sizes and Stock</h4>
-                                <div class="size-entry">
-                                    <input type="number" name="sizes[0][size]" placeholder="Size" min="1" required>
-                                    <input type="number" name="sizes[0][quantity]" placeholder="Quantity" min="1" required>
-                                </div>
-                                <div id="error-message" style="color: red; display: none;"></div> <!-- Error message -->
-                            </div>
-                            <button type="button" onclick="addSizeEntry()" class="btn btn-secondary mt-2">Add Size</button>
-                            <!-- <button type="submit" onclick="validateSizes()" class="btn btn-primary mt-2">Submit</button> -->
-                            
-                            
+                       
                             <!-- Image Upload -->
                             <div class="card mb-4 mt-4">
                                 <div class="card-header">
@@ -187,17 +157,18 @@
                                     <% for(let i = 1; i <= 4; i++) { %>
                                         <div class="image-input-container">
                                             <input class="form-control" type="file" name="images" id="input<%= i %>" accept="image/*" onchange="handleImageSelect(event, <%= i %>)">
-                                            <img src="" alt="" id="imgView<%= i %>" class="image-preview">
-                                            <div class="crop-container" id="cropContainer<%= i %>">
-                                                <img src="" id="croppedImg<%= i %>" alt="">
+                                            <img src="" alt="" id="imgView<%= i %>" class="image-preview" style="display: block;">
+                                            <div class="crop-container" id="cropContainer<%= i %>" style="display:none;">
+                                                <img src="" id="croppedImg<%= i %>" alt="Cropped Image" style="display:none;">
                                                 <button type="button" id="saveButton<%= i %>" class="btn btn-primary mt-2">Save Cropped Image</button>
                                             </div>
+                                            <img src="" alt="Cropped Image Preview" id="croppedImg<%= i %>" style="display:none; max-width: 200px;">
                                         </div>
                                     <% } %>
                                     <div id="images-error" class="error-message"></div>
                                 </div>
                             </div>
-    
+                            
                             <div>
                                 <button class="btn btn-primary" type="submit">Publish</button>
                             </div>
@@ -212,34 +183,21 @@
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
     
     <script>
-   let sizeCount = 1; // Start from 1 since you already have one size entry
-
-function addSizeEntry() {
-    const sizesContainer = document.getElementById('sizes-container');
-    const newSizeEntry = document.createElement('div');
-    newSizeEntry.classList.add('size-entry');
-    newSizeEntry.innerHTML = `
-        <input type="text" name="sizes[${sizeCount}][size]" placeholder="Size" required>
-        <input type="number" name="sizes[${sizeCount}][quantity]" placeholder="Quantity" min="0" required>
-    `;
-    sizesContainer.appendChild(newSizeEntry);
-    sizeCount++; // Increment the count for the next entry
-}
-
+        let sizeCount = 1;
         let croppers = [];
 
         function handleImageSelect(event, index) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const imgView = document.getElementById(`imgView${index}`);
                     imgView.src = e.target.result;
-                    
+
                     if (croppers[index]) {
                         croppers[index].destroy();
                     }
-                    
+
                     croppers[index] = new Cropper(imgView, {
                         aspectRatio: 1,
                         viewMode: 1,
@@ -253,22 +211,24 @@ function addSizeEntry() {
                     cropContainer.style.display = 'block';
 
                     const saveButton = document.getElementById(`saveButton${index}`);
-                    saveButton.onclick = function() {
+                    saveButton.onclick = function () {
                         const croppedCanvas = croppers[index].getCroppedCanvas();
                         const croppedImage = document.getElementById(`croppedImg${index}`);
                         croppedImage.src = croppedCanvas.toDataURL('image/jpeg');
+
+                        imgView.style.display = 'none';
+                        croppedImage.style.display = 'block';
 
                         croppedCanvas.toBlob((blob) => {
                             const input = document.getElementById(`input${index}`);
                             const fileName = `cropped-img-${new Date().getTime()}-${index}.png`;
                             const file = new File([blob], fileName, { type: 'image/png' });
-                            
+
                             const dataTransfer = new DataTransfer();
                             dataTransfer.items.add(file);
                             input.files = dataTransfer.files;
                         });
 
-                        cropContainer.style.display = 'none';
                         croppers[index].destroy();
                         croppers[index] = null;
                     };
@@ -277,88 +237,122 @@ function addSizeEntry() {
             }
         }
 
+        function addSizeEntry() {
+            const sizesContainer = document.getElementById('sizes-container');
+            const index = sizesContainer.getElementsByClassName('size-entry').length;
 
-    function validateForm() {
-        let isValid = true;
-     
-        // Validate product name
-        const productName = document.getElementById('title').value.trim();
-        if (!productName) {
-            document.getElementById('productName-error').innerText = 'Product name is required';
-            isValid = false;
-        } else {
-            document.getElementById('productName-error').innerText = '';
+            const newSizeEntry = document.createElement('div');
+            newSizeEntry.classList.add('size-entry');
+            newSizeEntry.innerHTML = `
+                <input type="number" name="sizes[${index}][size]" placeholder="Size" min="0" required>
+                <input type="number" name="sizes[${index}][quantity]" placeholder="Quantity" min="0" required>
+            `;
+
+            sizesContainer.appendChild(newSizeEntry);
         }
 
-        // Validate description
-        const description = document.getElementById('description').value.trim();
-        if (!description) {
-            document.getElementById('description-error').innerText = 'Description is required';
-            isValid = false;
-        } else {
-            document.getElementById('description-error').innerText = '';
-        }
+        function validateForm() {
+            let isValid = true;
+            const errorMessages = {};
 
-        // Validate regular price
-        const regularPrice = parseFloat(document.getElementsByName('regularPrice')[0].value);
-        if (isNaN(regularPrice) || regularPrice < 0) {
-            document.getElementById('regularPrice-error').innerText = 'Regular price must be a non-negative number';
-            isValid = false;
-        } else {
-            document.getElementById('regularPrice-error').innerText = '';
-        }
-
-    
-    return true;
-
-    }
-    // Function to add new size entry
-    function addSizeEntry() {
-        const sizesContainer = document.getElementById('sizes-container');
-        const index = sizesContainer.getElementsByClassName('size-entry').length;
-
-        const newSizeEntry = document.createElement('div');
-        newSizeEntry.classList.add('size-entry');
-        newSizeEntry.innerHTML = `
-            <input type="number" name="sizes[${index}][size]" placeholder="Size" min="0" required>
-            <input type="number" name="sizes[${index}][quantity]" placeholder="Quantity" min="0" required>
-        `;
-
-        sizesContainer.appendChild(newSizeEntry);
-    }
-
-    // Function to validate sizes and quantities
-    function validateSizes() {
-        const sizeEntries = document.querySelectorAll('.size-entry');
-        let hasError = false;
-        let errorMessage = '';
-
-        sizeEntries.forEach((entry, index) => {
-            const sizeInput = entry.querySelector(`input[name="sizes[${index}][size]"]`);
-            const quantityInput = entry.querySelector(`input[name="sizes[${index}][quantity]"]`);
-
-            const sizeValue = parseInt(sizeInput.value);
-            const quantityValue = parseInt(quantityInput.value);
-
-            if (sizeValue < 0 || quantityValue < 0) {
-                hasError = true;
-                errorMessage = 'Size and quantity must be non-negative.';
+            // Product Name validation
+            const productName = document.getElementById('title').value.trim();
+            if (productName === '') {
+                errorMessages.productName = 'Product name is required';
+                isValid = false;
             }
-        });
 
-        // Show error message if validation fails
-        const errorDiv = document.getElementById('error-message');
-        if (hasError) {
-            errorDiv.innerText = errorMessage;
-            errorDiv.style.display = 'block';
-        } else {
-            errorDiv.style.display = 'none';
-            // Submit the form if there are no errors
-            // You can submit the form using JavaScript if necessary
-            // e.g., document.getElementById('your-form-id').submit();
+            // Description validation
+            const description = document.getElementById('description').value.trim();
+            if (description === '') {
+                errorMessages.description = 'Description is required';
+                isValid = false;
+            }
+
+            // Brand validation
+            const brand = document.getElementById('brand').value.trim();
+            if (brand === '') {
+                errorMessages.brand = 'Brand is required';
+                isValid = false;
+            }
+
+            // Regular Price validation
+            const regularPrice = document.getElementsByName('regularPrice')[0].value;
+            if (regularPrice === '' || isNaN(regularPrice) || parseFloat(regularPrice) < 0) {
+                errorMessages.regularPrice = 'Regular price must be a non-negative number';
+                isValid = false;
+            }
+
+            // Color validation
+            const color = document.getElementsByName('color')[0].value.trim();
+            if (color === '') {
+                errorMessages.color = 'Color is required';
+                isValid = false;
+            }
+
+            // Category validation
+            const category = document.getElementsByName('categoryId')[0].value;
+            if (category === '') {
+                errorMessages.category = 'Please select a category';
+                isValid = false;
+            }
+
+            // Discount validation
+            const discountType = document.getElementsByName('discountType')[0].value;
+            const discountValue = document.getElementsByName('productOffer')[0].value;
+            if (discountType !== '' && (discountValue === '' || isNaN(discountValue) || parseFloat(discountValue) < 0)) {
+                errorMessages.discountValue = 'Discount value must be a non-negative number';
+                isValid = false;
+            }
+
+            // Tax validation
+            const taxType = document.getElementsByName('taxType')[0].value;
+            const taxValue = document.getElementsByName('taxValue')[0].value;
+            if (taxType !== '' && (taxValue === '' || isNaN(taxValue) || parseFloat(taxValue) < 0)) {
+                errorMessages.taxValue = 'Tax value must be a non-negative number';
+                isValid = false;
+            }
+
+            // Sizes and Stock validation
+            const sizeEntries = document.getElementsByClassName('size-entry');
+            let sizeError = false;
+            for (let i = 0; i < sizeEntries.length; i++) {
+                const size = sizeEntries[i].querySelector('input[name^="sizes"][name$="[size]"]').value;
+                const quantity = sizeEntries[i].querySelector('input[name^="sizes"][name$="[quantity]"]').value;
+                if (size === '' || isNaN(size) || parseInt(size) < 0 || quantity === '' || isNaN(quantity) || parseInt(quantity) < 0) {
+                    sizeError = true
+                    break;
+                }
+            }
+            if (sizeError) {
+                errorMessages.sizes = 'All sizes and stock quantities must be valid non-negative numbers';
+                isValid = false;
+            }
+
+            // Image validation
+            const imageInputs = document.querySelectorAll('input[type="file"]');
+            let hasImage = false;
+            for (let i = 0; i < imageInputs.length; i++) {
+                if (imageInputs[i].files.length > 0) {
+                    hasImage = true;
+                    break;
+                }
+            }
+            if (!hasImage) {
+                errorMessages.images = 'At least one image must be uploaded';
+                isValid = false;
+            }
+
+            // Display error messages
+            document.querySelectorAll('.error-message').forEach(errorDiv => {
+                errorDiv.innerHTML = '';  // Clear existing errors
+            });
+            for (const [key, value] of Object.entries(errorMessages)) {
+                document.getElementById(`${key}-error`).innerHTML = value;
+            }
+
+            return isValid;
         }
-    }
-</script>
-        
+    </script>
 </body>
 </html>

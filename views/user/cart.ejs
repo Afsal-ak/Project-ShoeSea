@@ -169,6 +169,9 @@
 
         <% if (userCart.cart.length === 0) { %>
             <div class="empty-cart">
+                <% if (error_msg) { %>
+                    <p class="error"><%= error_msg %></p>
+                <% } %>
                 <p>Your cart is empty.</p>
                 <a href="/products">Continue shopping</a>
             </div>

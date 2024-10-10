@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    authType: {
+        type: String,
+        enum: ['local', 'google'], // 'local' for regular email/password users, 'google' for OAuth
+        default: 'local', 
+      },
     is_admin: {
         type: Boolean,
         default: false

@@ -33,8 +33,23 @@ const checkAuth = (req, res, next) => {
     next();
 };
 
+
+const errorHandler = (err, req, res, next) => {
+    console.error(err.stack); // Log the error stack for debugging
+  
+    // Set the response status code (default to 500 for server errors)
+    const statusCode = err.status || 500;
+  
+    // Render the error page
+    res.status(statusCode).render('error', {
+        message: err.message || 'Internal Server Error',
+        statusCode
+    });
+  };
+
 module.exports = {
     isLogin,
     isLogout,
-    checkAuth
+    checkAuth,
+    errorHandler
 };

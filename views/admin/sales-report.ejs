@@ -107,7 +107,7 @@
                     <% reportData.orders.forEach(order => { %>
                         <tr>
                             <td><%= order.orderId %></td>
-                            <td><%= order.userId.username %></td>
+                            <td><%= order.userId&&order.userId.username?order.userId.username:'NaN' %></td>
                             <td>
                                 <ul>
                                     <% order.products.forEach(product => { %>

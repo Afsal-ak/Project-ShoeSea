@@ -17,12 +17,10 @@ app.set('view engine', 'ejs');
 // Set the directory where the views are located
 app.set('views', './views/user');
 app.use(session({
-    secret:'hello world',
+    secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized:false,
-    // cookie:{
-    //     maxAge: 24 * 60 * 60 * 1000,
-    // }
+  
     cookie: { secure: false } 
 }))
 

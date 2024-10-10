@@ -98,7 +98,7 @@
                 <p>Date: <strong><%= order.orderDate.toDateString() %></strong></p>
                 <p>Total: <strong>₹<%= order.totalAmount.toFixed(2) %></strong></p>
                 <p>Payment Method: <strong><%= order.paymentMethod %></strong></p>
-                <p>User: <strong><%= order.userId.username %></strong></p>
+                <p>User: <strong><%= order.userId && order.userId.username ? order.userId.username : 'N/A' %></strong></p>
             
                 <h4 class="order-status <%= order.status.toLowerCase().replace(/ /g, '-') %>">Order Status: <%= order.status %></h4>
             

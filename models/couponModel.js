@@ -30,10 +30,6 @@ const couponSchema = new mongoose.Schema({
         default: true,
     },
   
-    usageCount: {
-        type: Number,
-        default: 0, // Track the usage of the coupon
-    },
 }, { timestamps: true });
 
 const Coupon = mongoose.model('Coupon', couponSchema);

@@ -1,9 +1,9 @@
 const Coupon = require('../../models/couponModel');
  
 
-const getCouponList = async (req, res) => {
+const getCouponList = async (req, res,next) => {
     try {
-        const page = parseInt(req.query.page) || 1; // Get the current page number from the query parameters, default to 1
+        const page = parseInt(req.query.page) || 1; 
         const limit = 10; // Number of coupons to display per page
         const skip = (page - 1) * limit; // Calculate the number of documents to skip
 
@@ -26,23 +26,22 @@ const getCouponList = async (req, res) => {
         });
     } catch (error) {
         console.error(error.message);
-        req.flash('error', 'Failed to load coupons.');
-        res.redirect('/admin');
+         next(error)
     }
 };
 
 
 // Render create coupon form
-const getCreateCoupon = async (req, res) => {
+const getCreateCoupon = async (req, res,next) => {
     try {
         res.render('./coupon/create-coupon', { error: req.flash() });
     } catch (error) {
         console.error('Error rendering create coupon form:', error.message);
-        req.flash('error', 'Failed to load the create coupon form. Please try again.');
-        res.redirect('/admin/coupons'); // Redirect to coupon list if form fails to load
+         next(error)
     }
 };
-const postCreateCoupon = async (req, res) => {
+
+const postCreateCoupon = async (req, res,next) => {
     try {
         const name = req.body.name.trim();
         const offerPrice = req.body.offerPrice.trim();
@@ -86,13 +85,13 @@ const postCreateCoupon = async (req, res) => {
     } catch (error) {
         console.error('Error creating coupon:', error.message);
         req.flash('error', 'Failed to create coupon.');
-        res.redirect('/admin/coupons/create');
+        next(error)
     }
 };
 
 
 // Block a coupon (make inactive)
-const blockCoupon = async (req, res) => {
+const blockCoupon = async (req, res,next) => {
     try {
         const couponId = req.params.id;
         await Coupon.updateOne({ _id: couponId }, { $set: { isActive: false } });
@@ -101,13 +100,12 @@ const blockCoupon = async (req, res) => {
 
     } catch (error) {
         console.error('Error blocking coupon:', error.message);
-        req.flash('error', 'Failed to block coupon. Please try again.');
-        res.redirect('/admin/coupons');
+         next(error)
     }
 };
 
 // Unblock a coupon (make active)
-const unBlockCoupon = async (req, res) => {
+const unBlockCoupon = async (req, res,next) => {
     try {
         const couponId = req.params.id;
         await Coupon.updateOne({ _id: couponId }, { $set: { isActive: true } });
@@ -116,8 +114,7 @@ const unBlockCoupon = async (req, res) => {
 
     } catch (error) {
         console.error('Error unblocking coupon:', error.message);
-        req.flash('error', 'Failed to unblock coupon. Please try again.');
-        res.redirect('/admin/coupons');
+         next(error)
     }
 };
 

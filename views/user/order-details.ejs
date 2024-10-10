@@ -118,6 +118,9 @@
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
+                        <th>Total Returns/Cancel</th>
+
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,32 +142,76 @@
                                 <td>₹<%= product.productId.salePrice.toFixed(2) %></td>
                                 <td><%= product.quantity %></td>
                                 <td>₹<%= (product.productId.salePrice * product.quantity).toFixed(2) %></td>
+                                <td>
+                                    <% 
+                                    // Find the return request for the specific product
+                                    const returnRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
+                                    const totalReturnedQuantity = returnRequest ? returnRequest.quantity : 0; // Get the returned quantity or 0 if not found
+                                    %>
+                                    <%= totalReturnedQuantity %>
+                                </td>
+                                
+                                <td>
+                                    <% if (order.status === 'Delivered') { %>
+                                        <% 
+                                        // Check total quantity returned
+                                        const returnRequest = order.products.find(req => req.productId.toString() === product.productId._id.toString());
+                                        const totalReturnedQuantity = returnRequest ? returnRequest.quantity : 0;
+                                        const isFullyReturned = totalReturnedQuantity >= product.quantity; // Check if fully returned
+                                        %>
+                                        <% if (isFullyReturned) { %>
+                                            <span class="text-success">Returned</span>
+                                        <% } else { %>
+                                            <!-- Return Button -->
+                                            <form action="/order/<%= order._id %>/<%= product.productId._id %>/return" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
+                                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirmProductReturn('<%= product._id %>', '<%= product.quantity %>')">Return</button>
+                                            </form>
+                                        <% } %>
+                                    <% } %>
+                                    
+                                    <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
+                                        <% 
+                                        // Check total quantity canceled
+                                        const cancelRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
+                                        const totalCanceledQuantity = cancelRequest ? cancelRequest.quantity : 0;
+                                        const isCanceled = 0 >= product.quantity; // Check if fully canceled
+                                        %>
+                                        <% if (isCanceled) { %>
+                                            <span class="text-danger">Cancelled</span>
+                                        <% } else { %>
+                                            <!-- Cancel Button -->
+                                            <form action="/order/<%= order._id %>/<%= product.productId._id %>/cancel" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
+                                                <input type="number" name="quantity" id="cancel-quantity-<%= product._id %>" min="1" max="<%= product.quantity %>" value="1" style="width: 60px; margin-right: 5px;">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmProductCancel('<%= product._id %>')">Cancel</button>
+                                            </form>
+                                        <% } %>
+                                    <% } %>
+                                </td>
                             </tr>
                         <% } %>
                     <% }) %>
                 </tbody>
+                
+                
             </table>
-            <!-- <a href="/download-Invoice/<%= order.orderId %>" class="btn btn-success">Download invoice</a> -->
-
+            <% if (order.status === 'Pending' || order.status === 'Shipped' ) { %>
+                <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmCancel('<%= order._id %>')">Cancel All</button>
+                </form>
+            <% } else if (order.status === 'Delivered') { %>
+                <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
+                    <input type="hidden" name="reason" id="reason-<%= order._id %>">
+                    <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return All</button>
+                </form>
+            <% } %>
             <% if (order.paymentStatus === 'Payment Pending') { %>
                 <button id="retryPaymentButton" class="btn btn-primary btn-sm">Retry Payment</button>
-            <% }else{%>
+            <% } %>
+            <% if (order.status === 'Delivered') { %>
                 <a href="/download-Invoice/<%= order.orderId %>" class="btn btn-success">Download invoice</a>
-
-            <%} %>
+            <% } %>
 
         </div>
-        <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
-            <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
-                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmCancel('<%= order._id %>')">Cancel</button>
-            </form>
-        <% } else if (order.status === 'Delivered') { %>
-            <form id="returnOrderForm-<%= order._id %>" action="/order/return/<%= order._id %>" method="POST" style="display:inline;">
-                <input type="hidden" name="reason" id="reason-<%= order._id %>">
-                <button type="submit" class="btn btn-warning btn-sm" onclick="confirmReturn('<%= order._id %>')">Return</button>
-            </form>
-        <% } %>
-        
     </div>
 
     <%- include('../partials/user/footer') %>
@@ -213,75 +260,116 @@
             });
         }
 
-     
-        document.getElementById('retryPaymentButton')?.addEventListener('click', async function() {
-    const orderId = '<%= order._id %>';
 
-    try {
-        // Request to retry payment
-        const response = await fetch(`/order/${orderId}/retry-payment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.message || 'Failed to retry payment');
+        function confirmProductReturn(productId, maxQuantity) {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Are you sure you want to return this product?',
+                text: "Please select the quantity and provide a reason.",
+                html: `
+                    <label for="returnQuantity">Quantity:</label>
+                    <input type="number" id="returnQuantity" name="returnQuantity" min="1" max="${maxQuantity}" value="1" style="width: 60px; margin-bottom: 10px;">
+                    <label for="returnReason">Reason for return:</label>
+                    <textarea id="returnReason" name="returnReason" placeholder="Enter your reason" rows="3" style="width: 100%;"></textarea>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#f39c12',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, return it!',
+                preConfirm: () => {
+                    const quantity = document.getElementById('returnQuantity').value;
+                    const reason = document.getElementById('returnReason').value;
+    
+                    if (!reason) {
+                        Swal.showValidationMessage('Please provide a reason for the return');
+                    } else {
+                        return { quantity, reason };
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById(`returnOrderForm-${productId}`);
+                    const quantityInput = document.createElement('input');
+                    quantityInput.type = 'hidden';
+                    quantityInput.name = 'quantity';
+                    quantityInput.value = result.value.quantity;
+    
+                    const reasonInput = document.createElement('input');
+                    reasonInput.type = 'hidden';
+                    reasonInput.name = 'reason';
+                    reasonInput.value = result.value.reason;
+    
+                    form.appendChild(quantityInput);
+                    form.appendChild(reasonInput);
+                    form.submit();
+                }
+            });
         }
+    
 
-        // Razorpay payment options
-        const options = {
-            key: data.key,
-            amount: data.amount,
-            currency: data.currency,
-            name: 'shoesea',
-            description: 'Order Payment',
-            order_id: data.order_id,
-            handler: async function(response) {
-                // Verify the payment with your backend
-                const verifyResponse = await fetch(`/order/${orderId}/verify-razorpay-payment`, {
+        document.getElementById('retryPaymentButton')?.addEventListener('click', async function() {
+            const orderId = '<%= order._id %>';
+
+            try {
+                const response = await fetch(`/order/${orderId}/retry-payment`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_signature: response.razorpay_signature
-                    })
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                const verifyData = await verifyResponse.json();
+                const data = await response.json();
 
-                if (verifyData.success) {
-                    // Payment verified successfully
-                    window.location.href = `/order-success?orderId=${orderId}`;
-                } else {
-                    // Handle verification failure
-                    alert('Payment verification failed: ' + verifyData.message);
-                    window.location.href = `/payment-failed?orderId=${orderId}`;
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to retry payment');
                 }
-            },
-            modal: {
-                ondismiss: function() {
-                    console.log('Payment modal closed');
-                }
-            },
-            prefill: {
-                name: 'Customer Name',
-                email: 'customer@example.com',
-                contact: '9999999999'
-            },
-            theme: {
-                color: '#F37254'
+
+                const options = {
+                    key: data.key,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: 'shoesea',
+                    description: 'Order Payment',
+                    order_id: data.order_id,
+                    handler: async function(response) {
+                        const verifyResponse = await fetch(`/order/${orderId}/verify-razorpay-payment`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+                        const verifyData = await verifyResponse.json();
+
+                        if (verifyData.success) {
+                            window.location.href = `/order-success?orderId=${orderId}`;
+                        } else {
+                            alert('Payment verification failed: ' + verifyData.message);
+                            window.location.href = `/payment-failed?orderId=${orderId}`;
+                        }
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            console.log('Payment modal closed');
+                        }
+                    },
+                    prefill: {
+                        name: 'Customer Name',
+                        email: 'customer@example.com',
+                        contact: '9999999999'
+                    },
+                    theme: {
+                        color: '#F37254'
+                    }
+                };
+
+                const paymentObject = new Razorpay(options);
+                paymentObject.open();
+            } catch (error) {
+                console.error('Error retrying payment:', error);
+                alert('Failed to retry payment: ' + error.message);
             }
-        };
-
-        // Open Razorpay payment modal
-        const paymentObject = new Razorpay(options);
-        paymentObject.open();
-    } catch (error) {
-        console.error('Error retrying payment:', error);
-        alert('Failed to retry payment: ' + error.message);
-    }
-});
+        });
 
     </script>
     <script src="/js/bootstrap.bundle.min.js"></script>

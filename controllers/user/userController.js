@@ -13,15 +13,18 @@ const referralModel = require('../../models/referralModel');
 
 const getSignup = async (req, res) => {
   try {
-    const referralCode = req.query.referralCode; // Extract referral code from query params
+    let code = req.query.referralCode || ''; // Extract referral code from query params
+
+    console.log("Referral Code:", code); // Log referral code for debugging
 
     res.render('signup', { 
-      messages: null ,
-      referralCode
+        code ,
+      messages: req.flash('messages'), // This should handle flash messages
+    // Passing the referral code to the view
     });
   } catch (error) {
     console.log(error.message);
-    res.redirect('/500');
+    res.redirect('/500'); // Redirecting to error page if something goes wrong
   }
 };
 
@@ -69,12 +72,74 @@ const securePassword = async (password) => {
 };
   
 
+// const postSignup = async (req, res) => {
+//   try {
+//       const username = req.body.username.trim();
+//       const email = req.body.email.trim();
+//       const number = req.body.number.trim();
+//       const referredBy = req.body.referredBy ||'' 
+
+//       const password = req.body.password.trim();
+//       const confirm_password = req.body.confirm_password.trim();
+
+//       // Validate input
+//       if (!username || !email || !number || !password || !confirm_password) {
+//           return res.render('signup', { messages: 'All fields are required and cannot be empty or just spaces' });
+//       }
+
+//       const regex = /^[a-zA-Z]+$/;
+//       if (!regex.test(username)) {
+//           return res.render('signup', { messages: 'Username should only contain alphabetic characters' });
+//       }
+
+//       if (password !== confirm_password) {
+//           return res.render('signup', { messages: 'Passwords do not match' });
+//       }
+
+//       let user = await User.findOne({ email });
+//       if (user) {
+//           return res.render('signup', { messages: 'Email is already taken, try a new one' });
+//       }
+
+//       const otp = generateOtp();
+//       const emailSent = await sendVerificationEmail(email, otp);
+
+//       if (!emailSent) {
+//           return res.json("email-error");
+//       }
+
+//       // Check if the referral offer is active
+//       const referralOffer = await Referral.findOne();
+//       if (referralOffer && !referralOffer.isActive) {
+//           return res.render('signup', { messages: 'Referral offer is currently inactive' });
+//       }
+
+//       // If referral code is provided, check if it's valid
+//       let referrer = null;
+//       if (referredBy) {
+//           referrer = await User.findOne({ referralCode: referredBy });
+//           if (!referrer) {
+//               return res.render('signup', { messages: 'Invalid referral code' });
+//           }
+//       }
+
+//       // Store OTP and user data in session
+//       req.session.userOtp = otp;
+//       req.session.userData = { username, email, number, password, referredBy };
+
+//       console.log('OTP Sent', otp);
+//       return res.render('verify-otp');
+//   } catch (error) {
+//       console.error('Signup Error', error.message);
+//       res.status(500).send('Server Error');
+//   }
+// };
 const postSignup = async (req, res) => {
   try {
       const username = req.body.username.trim();
       const email = req.body.email.trim();
       const number = req.body.number.trim();
-      const referredBy = req.body.referredBy.trim(); // Changed from referredBy to something clearer
+      const referredBy = req.body.referredBy || ''; 
 
       const password = req.body.password.trim();
       const confirm_password = req.body.confirm_password.trim();
@@ -107,14 +172,11 @@ const postSignup = async (req, res) => {
 
       // Check if the referral offer is active
       const referralOffer = await Referral.findOne();
-      if (referralOffer && !referralOffer.isActive) {
-          return res.render('signup', { messages: 'Referral offer is currently inactive' });
-      }
-
-      // If referral code is provided, check if it's valid
-      let referrer = null;
+      
+      // Proceed even if referral offer is inactive or doesn't exist
       if (referredBy) {
-          referrer = await User.findOne({ referralCode: referredBy });
+          // If referral code is provided, check if it's valid
+          const referrer = await User.findOne({ referralCode: referredBy });
           if (!referrer) {
               return res.render('signup', { messages: 'Invalid referral code' });
           }
@@ -132,18 +194,83 @@ const postSignup = async (req, res) => {
   }
 };
 
+// const verifyOtp = async (req, res) => {
+//   try {
+//       const { otp } = req.body;
+
+//       // Fetch the active referral offer
+//       const referralOffer = await Referral.findOne({ isActive: true });
+
+//       if (!referralOffer) {
+//           throw new Error("Referral offer is not available or inactive.");
+//       }
+
+//       const referralAmount = referralOffer.referralAmount; 
+
+//       // Check if the OTP matches
+//       if (otp.toString() === req.session.userOtp.toString()) {
+//           const userData = req.session.userData;
+//           const passwordHash = await securePassword(userData.password);
+
+//           // Create a new user instance and save it to the database
+//           const newUser = new User({
+//               username: userData.username,
+//               email: userData.email,
+//               referredBy: userData.referredBy,
+//               number: userData.number,
+//               password: passwordHash
+//           });
+
+//           await newUser.save();
+
+//           // Handle referral cashback for referrer
+//           if (userData.referredBy) {
+//               const referrer = await User.findOne({ referralCode: userData.referredBy });
+
+//               if (referrer) { 
+//                   // Credit the referrer with the referral amount
+//                   referrer.walletBalance += referralAmount; 
+//                   referrer.walletTransaction.push({
+//                       date: new Date(),
+//                       type: 'credit',
+//                       amount: referralAmount,
+//                       description: 'Referral cashback for referring a user'
+//                   });
+
+//                   await referrer.save();
+//                   console.log(referrer, 'Referral cashback credited to referrer');
+//               }
+//           }
+
+//           // Clear OTP and user data from the session
+//           req.session.userOtp = null;
+//           req.session.userData = null;
+//           req.session.user = newUser._id;
+//           req.session.userId = newUser._id;
+
+//           assignReferralCodesToUsers(); // Assuming this generates referral codes for the new user
+//          // req.session.email = email;
+      
+//           // Redirect to home page after successful login
+//           //return res.redirect('/home');
+//           res.json({ success: true, redirectUrl: '/home' });
+//       } else {
+//           res.status(400).json({ success: false, message: 'Invalid OTP, Please try again' });
+//       }
+//   } catch (error) {
+//       console.error('Error verifying OTP:', error);
+//       res.status(500).json({ success: false, message: 'An error occurred' });
+//   }
+// };
 const verifyOtp = async (req, res) => {
   try {
       const { otp } = req.body;
 
-      // Fetch the active referral offer
+      // Fetch the active referral offer (if available)
       const referralOffer = await Referral.findOne({ isActive: true });
 
-      if (!referralOffer) {
-          throw new Error("Referral offer is not available or inactive.");
-      }
-
-      const referralAmount = referralOffer.referralAmount; 
+      // If there's no active referral offer, set referralAmount to 0
+      const referralAmount = referralOffer ? referralOffer.referralAmount : 0;
 
       // Check if the OTP matches
       if (otp.toString() === req.session.userOtp.toString()) {
@@ -165,8 +292,8 @@ const verifyOtp = async (req, res) => {
           if (userData.referredBy) {
               const referrer = await User.findOne({ referralCode: userData.referredBy });
 
-              if (referrer) { 
-                  // Credit the referrer with the referral amount
+              if (referrer && referralAmount > 0) { 
+                  // Credit the referrer with the referral amount if applicable
                   referrer.walletBalance += referralAmount; 
                   referrer.walletTransaction.push({
                       date: new Date(),
@@ -184,10 +311,12 @@ const verifyOtp = async (req, res) => {
           req.session.userOtp = null;
           req.session.userData = null;
           req.session.user = newUser._id;
+          req.session.userId = newUser._id;
 
           assignReferralCodesToUsers(); // Assuming this generates referral codes for the new user
 
-          res.json({ success: true, redirectUrl: '/login' });
+          // Redirect to home page after successful login
+          res.json({ success: true, redirectUrl: '/home' });
       } else {
           res.status(400).json({ success: false, message: 'Invalid OTP, Please try again' });
       }
@@ -253,8 +382,7 @@ const getOtpPage=async(req,res)=>{
 
 
 
-  
-const postLogin = async (req, res) => {
+const postLogin = async (req, res,next) => {
   try {
     const email = req.body.email.trim();
     const password = req.body.password.trim();
@@ -266,7 +394,11 @@ const postLogin = async (req, res) => {
       req.flash('error', 'Incorrect Email or Password');
       return res.redirect('/login');
     }
-
+    // If the user is an OAuth user, bypass password check
+ if (user.authType === 'google') {
+      req.flash('error', 'Please use Google Sign-In');
+      return res.redirect('/login');
+     }
     // Check if the user is blocked
     if (user.is_blocked) {
       req.flash('error', 'Your account has been blocked. Please contact support.');
@@ -290,10 +422,10 @@ const postLogin = async (req, res) => {
     return res.redirect('/home');
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server Error');
+    next(error)
   }
 };
-
+ 
 
 const getForgotPassword=async(req,res)=>{
   try {
@@ -533,7 +665,18 @@ const getWallet=async(req,res)=>{
 }
 
 
+const errorHandler = (err, req, res, next) => {
+  console.error(err.stack); // Log the error stack for debugging
 
+  // Set the response status code (default to 500 for server errors)
+  const statusCode = err.status || 500;
+
+  // Render the error page
+  res.status(statusCode).render('error', {
+      message: err.message || 'Internal Server Error',
+      statusCode
+  });
+};
 
 module.exports = {
   getSignup,
@@ -551,11 +694,9 @@ module.exports = {
   getNewPassword,
   postNewPassword,
   resendForgotPasswordOtp,
- 
- // getVerifyEmailOtp,
- // editUserProfile
  requestEmailChangeOtp,
  verifyEmailOtp,
- getWallet
-  
+ getWallet,
+ assignReferralCodesToUsers,
+ errorHandler
 };

@@ -1,343 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shoesea Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/css/style.css">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>404 Error</title>
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
+        /* General styles for the error page */
         body {
-            background-color: #f8f9fa;
+            background-color: #f8f9fa; /* Light background color */
+            margin: 0; /* Remove default margin */
+            font-family: Arial, sans-serif; /* Set a default font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full height */
         }
 
-        .sidebar {
-            background-color: #ffffff;
-            height: 100vh;
-            padding-top: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        #layoutError {
+            text-align: center; /* Center text */
+            max-width: 600px; /* Maximum width for the content */
+            margin: auto; /* Center the container */
         }
 
-        .sidebar .nav-link {
-            color: #6c757d;
-            padding: 10px 20px;
+        .img-error {
+            width: 300px; /* Control the size of the error image */
+            margin-bottom: 20px; /* Space below the image */
         }
 
-        .sidebar .nav-link.active {
-            background-color: #e9ecef;
-            color: #007bff;
+        p.lead {
+            font-size: 1.25rem; /* Larger font size for the message */
+            margin: 20px 0; /* Space above and below the paragraph */
         }
 
-        .main-content {
-            padding: 20px;
+        a {
+            color: #007bff; /* Link color */
+            text-decoration: none; /* Remove underline */
+            font-weight: bold; /* Make links bold */
         }
 
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        a:hover {
+            text-decoration: underline; /* Add underline on hover */
         }
 
-        .progress {
-            height: 8px;
+        /* Footer styles */
+        footer {
+            background-color: #f1f1f1; /* Light footer background */
+            padding: 10px 0; /* Padding for footer */
+            position: absolute;
+            bottom: 0; /* Stick to the bottom */
+            width: 100%; /* Full width */
         }
 
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-     
-
-        
-        #customDateRange {
-            display: none;
-        }
-
-        /* Custom CSS for Chart Container */
-        .chart-container {
-            position: relative;
-            margin: auto;
-            width: 80%;
-            height: 400px;
-        }
-
-        .card {
-            margin-bottom: 20px;
+        .text-muted {
+            color: #6c757d; /* Muted text color */
         }
     </style>
 </head>
-
 <body>
-   
-  <!-- Start Header/Navigation -->
-  <nav class="custom-navbar navbar navbar-expand-md navbar-dark bg-dark" aria-label="Furni navigation bar">
-    <div class="container">
-      <a class="navbar-brand" href="/admin/home">Admin<span>.</span></a>
-
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAdmin" aria-controls="navbarsAdmin" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarsAdmin">
-        <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item active">
-            <a class="nav-link" href="/admin/Dashboard">Dashboard</a>
-          </li>
-          <li><a class="nav-link" href="/admin/products">Products</a></li>
-          <li><a class="nav-link" href="/admin/orders">Orders</a></li>
-          <li><a class="nav-link" href="/admin/users-list">Users</a></li>
-          <li><a class="nav-link" href="/admin/category">Category</a></li>
-          <li><a class="nav-link" href="/admin/stocks">Stocks</a></li>
-          <li><a class="nav-link" href="/admin/coupons">Coupons</a></li>
-
-
-        </ul>
-
-        <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
-          <li><a class="nav-link login-btn" href="/admin/logout">Logout</a></li>
-        </ul>
-      </div>
+    <div id="layoutError">
+        <img class="mb-4 img-error" src="/public/styles/images/error-404-monochrome.svg" alt="404 Error" />
+        <p class="lead">This requested URL was not found on this server.</p>
+        <a href="/">
+            <i class="fas fa-arrow-left me-1"></i>
+            Return to Home
+        </a>
     </div>
-  </nav>
-  
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
-                <div class="position-sticky">
-                    <h5 class="px-3 mb-3">shoesea</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item"></li>
-                            <a class="nav-link active" href="/admin/dashboard"><i class="fas fa-th-large me-2"></i> Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/users-list"><i class="fas fa-th-large me-2"></i> Customer</a>
-                        </li>
-                         
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Products"><i class="fas fa-box me-2"></i> Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Category"><i class="fas fa-box me-2"></i> Category</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Orders"><i class="fas fa-box me-2"></i> Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Stocks"><i class="fas fa-box me-2"></i> Stocks</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Offers"><i class="fas fa-box me-2"></i> Offers</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Coupons"><i class="fas fa-box me-2"></i> Coupons</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Sales-report"><i class="fas fa-box me-2"></i> Sales Report</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/referral"><i class="fas fa-box me-2"></i> Referral</a>
-                        </li>
-                     
-                        <!-- Add more menu items here -->
-                    </ul>
-                </div>
-            </nav>
-            <!-- <canvas id="salesChart" width="400" height="200"></canvas> -->
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
-                <div class="d-flex justify-content-center mb-4">
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('daily')">Daily</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('weekly')">Weekly</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('monthly')">Monthly</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('yearly')">Yearly</button>
-                </div>
-
-                <!-- Date Range Filter -->
-                <div class="d-flex justify-content-center mb-4">
-                    <div class="form-group mx-2">
-                        <label for="startDate">Start Date:</label>
-                        <input type="date" class="form-control" id="startDate" value="<%= startDate.toISOString().split('T')[0] %>">
-                    </div>
-                    <div class="form-group mx-2">
-                        <label for="endDate">End Date:</label>
-                        <input type="date" class="form-control" id="endDate" value="<%= endDate.toISOString().split('T')[0] %>">
-                    </div>
-                    <button style="height: fit-content; margin-top: 28px;" class="btn btn-primary btn-filter btn-filter-small" onclick="applyFilter('custom')">Apply Custom Dates</button>
-                </div>
-                <div style="width: 600px; height: 400px;">
-                    <canvas id="myChart"></canvas>
-                </div>
-                <!-- New Chart Section -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Sale Statistics</h5>
-                        <div class="chart-container">
-                            <canvas id="myChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-               
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Products</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topProducts.forEach(product => { %>
-                                        <tr>
-                                            <td><%= product.productName %></td>
-                                            <td><%= product.totalSold %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Category</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topCategories.forEach(category => { %>
-                                        <tr>
-                                            <td><%= category.categoryName %></td>
-                                            <td><%= category.totalSales %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Brands</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Brand</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topBrands.forEach(brand => { %>
-                                        <tr>
-                                            <td><%= brand.brandName %></td>
-                                            <td><%= brand.totalSales %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <footer>
+        <div class="text-muted text-center">
+            &copy; Your Website 2023 | <a href="#">Privacy Policy</a> &middot; <a href="#">Terms &amp; Conditions</a>
         </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title">Sales Chart</h5>
-            <div class="d-flex justify-content-end mb-3">
-                <select id="chartFilter" class="form-select me-2" style="width: auto;">
-                    <option value="daily" <%= filter === 'daily' ? 'selected' : '' %>>Daily</option>
-                    <option value="weekly" <%= filter === 'weekly' ? 'selected' : '' %>>Weekly</option>
-                    <option value="monthly" <%= filter === 'monthly' ? 'selected' : '' %>>Monthly</option>
-                    <option value="yearly" <%= filter === 'yearly' ? 'selected' : '' %>>Yearly</option>
-                </select>
-                <input type="date" id="startDate" class="form-control me-2" style="width: auto;" value="<%= startDate.toISOString().split('T')[0] %>">
-                <input type="date" id="endDate" class="form-control me-2" style="width: auto;" value="<%= endDate.toISOString().split('T')[0] %>">
-                <button id="applyFilter" class="btn btn-primary">Apply</button>
-            </div>
-            <div class="chart-container" style="position: relative; height:50vh; width:80vw">
-                <canvas id="salesChart"></canvas>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-    let salesChart;
-    const initialChartData = <%- JSON.stringify(salesChartData) %>;
-    
-    function initializeChart(data) {
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        salesChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.map(item => item.label),
-                datasets: [{
-                    label: 'Sales',
-                    data: data.map(item => item.value),
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const chartFilter = document.getElementById('chartFilter');
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
-        const applyFilterBtn = document.getElementById('applyFilter');
-    
-        // Initialize chart with initial data
-        initializeChart(initialChartData);
-    
-        applyFilterBtn.addEventListener('click', function() {
-            const filter = chartFilter.value;
-            const startDate = startDateInput.value;
-            const endDate = endDateInput.value;
-    
-            if (new Date(startDate) > new Date(endDate)) {
-                alert('Start date must be before end date');
-                return;
-            }
-    
-            // Redirect to the same page with new query parameters
-            window.location.href = `/admin/dashboard?filter=${filter}&startDate=${startDate}&endDate=${endDate}`;
-        });
-    });
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"></script>
-    
- 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="js/scripts.js"></script>
 </body>
-
 </html>

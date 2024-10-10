@@ -1,395 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
+<style>
+    .product-gallery {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shoesea Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/styles/css/style.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+.main-image {
+    margin-bottom: 10px;
+}
 
-        .sidebar {
-            background-color: #ffffff;
-            height: 100vh;
-            padding-top: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+.main-image img {
+    width: 400px;
+    height: 400px;
+    object-fit: cover;
+}
 
-        .sidebar .nav-link {
-            color: #6c757d;
-            padding: 10px 20px;
-        }
+.thumbnail-images {
+    display: flex;
+    gap: 10px;
+}
 
-        .sidebar .nav-link.active {
-            background-color: #e9ecef;
-            color: #007bff;
-        }
+.thumbnail {
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
 
-        .main-content {
-            padding: 20px;
-        }
+.thumbnail:hover {
+    opacity: 1;
+}
 
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
+.active-main-img {
+    border: 2px solid #000; /* Optional: Add a border to the main image */
+}
+.active-thumbnail {
+    border: 2px solid #000;
+}
 
-        .progress {
-            height: 8px;
-        }
-
-        .table th,
-        .table td {
-            vertical-align: middle;
-        }
-
-        .navbar {
-            background-color: #007bff;
-        }
-
-        .navbar-brand {
-            color: #ffffff;
-        }
-
-        .navbar .nav-link {
-            color: #ffffff;
-        }
-
-        #customDateRange {
-            display: none;
-        }
-
-        /* Custom CSS for Chart Container */
-        .chart-container {
-            position: relative;
-            margin: auto;
-            width: 80%;
-            height: 400px;
-        }
-
-        .card {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Start Header/Navigation -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="/admin/home">Admin<span>.</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsAdmin"
-                aria-controls="navbarsAdmin" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarsAdmin">
-                <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/dashboard">Dashboard</a>
-                    </li>
-                    <li><a class="nav-link" href="/admin/products">Products</a></li>
-                    <li><a class="nav-link" href="/admin/orders">Orders</a></li>
-                    <li><a class="nav-link" href="/admin/users-list">Users</a></li>
-                    <li><a class="nav-link" href="/admin/category">Category</a></li>
-                    <li><a class="nav-link" href="/admin/stocks">Stocks</a></li>
-                    <li><a class="nav-link" href="/admin/coupons">Coupons</a></li>
-                    <li><a class="nav-link login-btn" href="/admin/logout">Logout</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <!-- End Header/Navigation -->
-
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
-                <div class="position-sticky">
-                    <h5 class="px-3 mb-3">shoesea</h5>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/users-list"><i class="fas fa-th-large me-2"></i> Customer</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link active" href="/admin/dashboard"><i class="fas fa-th-large me-2"></i> Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/admin/Products"><i class="fas fa-box me-2"></i> Products</a>
-                        </li>
-                        <!-- Add more menu items here -->
-                    </ul>
-                </div>
-            </nav>
-
-            <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 main-content">
-                <div class="d-flex justify-content-center mb-4">
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('daily')">Daily</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('weekly')">Weekly</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('monthly')">Monthly</button>
-                    <button class="btn btn-primary btn-filter" onclick="applyFilter('yearly')">Yearly</button>
-                </div>
-
-                <!-- Date Range Filter -->
-                <div class="d-flex justify-content-center mb-4">
-                    <div class="form-group mx-2">
-                        <label for="startDate">Start Date:</label>
-                        <input type="date" class="form-control" id="startDate" value="<%= startDate.toISOString().split('T')[0] %>">
-                    </div>
-                    <div class="form-group mx-2">
-                        <label for="endDate">End Date:</label>
-                        <input type="date" class="form-control" id="endDate" value="<%= endDate.toISOString().split('T')[0] %>">
-                    </div>
-                    <button style="height: fit-content; margin-top: 28px;" class="btn btn-primary btn-filter btn-filter-small" onclick="applyFilter('custom')">Apply Custom Dates</button>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Sales Chart</h5>
-                        <canvas id="salesChart" width="400" height="200"></canvas>
-                    </div>
-                </div>
-
-                <!-- New Chart Section -->
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Sale Statistics</h5>
-                        <div class="chart-container">
-                            <canvas id="myChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Revenue Based on Category</h5>
-                        <select id="filterDropdown" class="form-select mb-3">
-                            <option value="yearly">Yearly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="daily">Daily</option>
-                        </select>
-                        <div class="chart-container">
-                            <canvas id="myChart2"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Products</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topProducts.forEach(product => { %>
-                                        <tr>
-                                            <td><%= product.productName %></td>
-                                            <td><%= product.totalSold %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Category</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Category</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topCategories.forEach(category => { %>
-                                        <tr>
-                                            <td><%= category.categoryName %></td>
-                                            <td><%= category.totalSales %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Top Selling Brands</h5>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Brand</th>
-                                        <th>Total Sold</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% topBrands.forEach(brand => { %>
-                                        <tr>
-                                            <td><%= brand.brandName %></td>
-                                            <td><%= brand.totalSales %> sold</td>
-                                        </tr>
-                                    <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
+</style>
+<div class="product-gallery">
+    <!-- Main Image -->
+    <div class="main-image">
+        <img id="mainImage" src="/path-to-image1.jpg" alt="Product Image" class="active-main-img">
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.5.1/chart.min.js"></script>
-    <script>
-        // Sales Chart
-        const salesChartCtx = document.getElementById('salesChart').getContext('2d');
-        const salesChart = new Chart(salesChartCtx, {
-            type: 'line',
-            data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [{
-                    label: 'Sales',
-                    data: [65, 59, 80, 81, 56, 55, 40],
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 1,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
-                },
-                scales: {
-                    x: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Months'
-                        }
-                    },
-                    y: {
-                        display: true,
-                        title: {
-                            display: true,
-                            text: 'Sales'
-                        }
-                    }
-                }
-            }
-        });
+    <!-- Thumbnails -->
+    <div class="thumbnail-images">
+        <img src="/public/styles/images/bowl-2.png" alt="Product Image 1" class="thumbnail" onclick="changeMainImage(this)">
+        <img src="/public/styles/images/product-1.png" alt="Product Image 2" class="thumbnail" onclick="changeMainImage(this)">
+        <img src="/public/styles/images/bowl-2.png" alt="Product Image 3" class="thumbnail" onclick="changeMainImage(this)">
+        <img src="/public/styles/images/couch.png" alt="Product Image 4" class="thumbnail" onclick="changeMainImage(this)">
+    </div>
+</div>
+<script>
+    function changeMainImage(thumbnail) {
+    // Get the main image element
+    const mainImage = document.getElementById('mainImage');
 
-        // Chart 2
-        const ctx2 = document.getElementById('myChart2').getContext('2d');
-        const myChart2 = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+    // Change the src attribute of the main image to the clicked thumbnail's src
+    mainImage.src = thumbnail.src;
+}
+function changeMainImage(thumbnail) {
+    // Get the main image element
+    const mainImage = document.getElementById('mainImage');
 
-        // Chart 3
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return tooltipItem.label + ': ' + tooltipItem.raw;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+    // Change the src attribute of the main image to the clicked thumbnail's src
+    mainImage.src = thumbnail.src;
 
-        // Function to apply filter (Dummy implementation)
-        function applyFilter(filterType) {
-            console.log('Filter applied: ' + filterType);
-            // Implement your filtering logic here
-        }
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-</body>
+    // Remove the 'active' class from all thumbnails
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    thumbnails.forEach(thumb => thumb.classList.remove('active-thumbnail'));
 
-</html>
+    // Add the 'active' class to the clicked thumbnail
+    thumbnail.classList.add('active-thumbnail');
+}
+
+</script>

@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const referralOfferSchema = new mongoose.Schema({
     referralAmount: {
         type: Number,
-        required: true, // Amount credited when a referral is successful
+        required: true,
+        default:100 // Amount credited when a referral is successful
     },
     isActive: {
         type: Boolean,

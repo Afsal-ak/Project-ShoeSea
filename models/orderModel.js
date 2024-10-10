@@ -49,6 +49,28 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: null 
 },
+
+returnRequest: [{
+  productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+  },
+  quantity: {
+      type: Number
+  },
+  reason: {
+      type: String
+  },
+  status: {
+      type: String,
+      enum: ['Requested', 'Approved', 'Cancelled','Returned'],
+      default: 'Requested'
+  },
+  requestDate: {
+      type: Date,
+      default: Date.now
+  }
+}],
   orderDate: {
     type: Date,
     default: Date.now

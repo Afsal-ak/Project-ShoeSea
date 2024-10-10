@@ -1,232 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <style>
+        .form-container { margin-top: 20px; }
+        .error-message { color: red; }
+        .thumbnails-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .thumbnail { position: relative; }
+        .thumbnail img { max-width: 200px; max-height: 150px; }
+        .image-preview { max-width: 300px; max-height: 200px; margin-top: 10px; }
+        .crop-container { display: none; margin-top: 10px; }
+        .delete-image-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .size-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .size-row input {
+            margin-right: 10px;
+        }
+        .delete-size-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/admin/header') %>
+    <div class="container form-container">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Add New Product</h2>
+                </div>
+            </div>
+            <% if (messages.error) { %>
+                <div class="alert alert-danger"><%= messages.error %></div> <!-- Flash error message -->
+            <% } %>
+            <div class="col-lg-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form id="productForm" method="post" action="/admin/add-products" enctype="multipart/form-data">
+                            <!-- Product Name -->
+                            <div class="mb-4">
+                                <label for="title" class="form-label">Product Name</label>
+                                <input type="text" placeholder="Type here" name="productName" class="form-control border" id="title" required>
+                                <div id="productName-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Full description</label>
+                                <textarea placeholder="Type here" id="description" name="description" class="form-control border" rows="4" required></textarea>
+                                <div id="description-error" class="error-message"></div>
+                            </div>
+    
+                            <div class="mb-4">
+                                <label for="brand" class="form-label">Brand</label>
+                                <input type="text" placeholder="Brand Name" name="brand" class="form-control border" id="brand" required>
+                                <div id="brand-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Prices and Quantity -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Regular price</label>
+                                        <input placeholder="$" name="regularPrice" type="number" class="form-control border" required>
+                                        <div id="regularPrice-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Color -->
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <div class="mb-4">
+                                        <label class="form-label">Color</label>
+                                        <input name="color" type="text" class="form-control border" required>
+                                        <div id="color-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Category -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row gx-2">
+                                        <div class="col-sm-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select class="form-select border" style="width: 150px;" name="categoryId" required>
+                                                <% for(let i = 0; i < cat.length; i++) { %>
+                                                    <option value="<%= cat[i]._id %>"><%= cat[i].categoryName %></option>
+                                                <% } %>
+                                            </select>
+                                            <div id="category-error" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Discount Type -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Type</label>
+                                <select class="form-select border" name="discountType">
+                                    <option value="">Select discount type</option>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                                <div id="discountType-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Discount Value -->
+                            <div class="mb-4">
+                                <label class="form-label">Discount Value</label>
+                                <input placeholder="Discount Value" name="productOffer" type="number" class="form-control border">
+                                <div id="discountValue-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Tax Type -->
+                            <div class="mb-4">
+                                <label class="form-label">Tax Type</label>
+                                <select class="form-select border" name="taxType">
+                                    <option value="">Select tax type</option>
+                                    <option value="percentage">Percentage</option>
+                                    <option value="flat">Flat</option>
+                                </select>
+                                <div id="taxType-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Tax Value -->
+                            <div class="mb-4">
+                                <label class="form-label">Tax Value</label>
+                                <input placeholder="Tax Value" name="taxValue" type="number" class="form-control border">
+                                <div id="taxValue-error" class="error-message"></div>
+                            </div>
+    
+                            <!-- Offer Description -->
+                            <div class="mb-4">
+                                <label class="form-label">Offer Description</label>
+                                <textarea placeholder="Offer Description" name="offerDescription" class="form-control border" rows="2"></textarea>
+                            </div>
+    
+                            <!-- Sizes and Stock -->
+                            <div id="sizes-container">
+                                <h4>Sizes and Stock</h4>
+                                <div class="size-entry">
+                                    <input type="number" name="sizes[0][size]" placeholder="Size" required>
+                                    <input type="number" name="sizes[0][quantity]" placeholder="Quantity" required>
+                                </div>
+                                <div id="sizes-error" class="error-message"></div> <!-- Error message -->
+                            </div>
+                            <button type="button" onclick="addSizeEntry()" class="btn btn-secondary mt-2">Add Size</button>
+    
+                            <!-- Images -->
+                            <div class="card mb-4 mt-4">
+                                <div class="card-header">
+                                    <h4>Choose images</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
+                                    <% for(let i = 1; i <= 4; i++) { %>
+                                        <div class="image-input-container">
+                                            <input class="form-control" type="file" name="images" id="input<%= i %>" accept="image/*" onchange="handleImageSelect(event, <%= i %>)">
+                                            <img src="" alt="" id="imgView<%= i %>" class="image-preview" style="display: block;"> <!-- Show original -->
+                                            <div class="crop-container" id="cropContainer<%= i %>" style="display:none;">
+                                                <img src="" id="croppedImg<%= i %>" alt="Cropped Image" style="display:none;"> <!-- Hide cropped initially -->
+                                                <button type="button" id="saveButton<%= i %>" class="btn btn-primary mt-2">Save Cropped Image</button>
+                                            </div>
+                                            <img src="" alt="Cropped Image Preview" id="croppedImg<%= i %>" style="display:none; max-width: 200px;"> <!-- Initially hide cropped image -->
+                                        </div>
+                                    <% } %>
+                                    <div id="images-error" class="error-message"></div>
+                                </div>
+                            </div>
+    
+                            <div>
+                                <button class="btn btn-primary" type="submit">Publish</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-const getAdminDashboard = async (req, res) => {
-    try {
-        if (!req.session.isAuth || !req.session.adminId) {
-            return res.redirect('/admin/login');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('productForm');
+
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        const errorMessages = {};
+
+        // Validate regular price
+        const regularPrice = document.getElementsByName('regularPrice')[0];
+        if (regularPrice.value < 0) {
+            isValid = false;
+            errorMessages.regularPrice = 'Regular price cannot be negative.';
         }
 
-        const { filter, startDate: queryStartDate, endDate: queryEndDate } = req.query;
-        let startDate, endDate;
-
-         // Set date range based on filter type
-         switch (filter) {
-            case 'daily':
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 30); // Last 30 days
-                endDate = new Date();
-                break;
-            case 'weekly':
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - 7 * 12); // Last 12 weeks
-                endDate = new Date();
-                break;
-            case 'monthly':
-                startDate = new Date();
-                startDate.setMonth(startDate.getMonth() - 12); // Last 12 months
-                endDate = new Date();
-                break;
-            case 'yearly':
-                startDate = new Date();
-                startDate.setFullYear(startDate.getFullYear() - 5); // Last 5 years
-                endDate = new Date();
-                break;
-            case 'custom':
-                startDate = new Date(queryStartDate || '2024-01-01');
-                endDate = new Date(queryEndDate || Date.now());
-                break;
-            default:
-                startDate = new Date('2024-01-01');
-                endDate = new Date();
+        // Validate discount value
+        const discountValue = document.getElementsByName('productOffer')[0];
+        const discountType = document.getElementsByName('discountType')[0];
+        if (discountValue.value !== '' && parseFloat(discountValue.value) < 0) {
+            isValid = false;
+            errorMessages.discountValue = 'Discount value cannot be negative.';
+        }
+        if (discountType.value === 'percentage' && parseFloat(discountValue.value) > 100) {
+            isValid = false;
+            errorMessages.discountValue = 'Percentage discount cannot exceed 100%.';
         }
 
-        // Existing aggregations (topProducts, topCategories, topBrands) remain unchanged
-  // Top 10 Products aggregation (unchanged)
-        const topProducts = await Order.aggregate([
-            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-            { $unwind: "$products" },
-            {
-                $group: {
-                    _id: "$products.productId",
-                    totalSold: { $sum: "$products.quantity" }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'product'
-                }
-            },
-            { $unwind: "$product" },
-            {
-                $project: {
-                    productName: "$product.productName",
-                    totalSold: 1
-                }
-            },
-            { $sort: { totalSold: -1 } },
-            { $limit: 10 }
-        ]);
-
-        // Top 10 Categories aggregation (unchanged)
-        const topCategories = await Order.aggregate([
-            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-            { $unwind: "$products" },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: 'products.productId',
-                    foreignField: '_id',
-                    as: 'productDetails'
-                }
-            },
-            { $unwind: "$productDetails" },
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: 'productDetails.categoryId',
-                    foreignField: '_id',
-                    as: 'categoryDetails'
-                }
-            },
-            { $unwind: "$categoryDetails" },
-            {
-                $group: {
-                    _id: "$categoryDetails._id",
-                    categoryName: { $first: "$categoryDetails.categoryName" },
-                    totalSales: { $sum: "$products.quantity" }
-                }
-            },
-            { $sort: { totalSales: -1 } },
-            { $limit: 10 }
-        ]);
-
-        // Top 10 Brands aggregation (unchanged)
-        const topBrands = await Order.aggregate([
-            { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-            { $unwind: "$products" },
-            {
-                $lookup: {
-                    from: 'products',
-                    localField: 'products.productId',
-                    foreignField: '_id',
-                    as: 'brandDetails'
-                }
-            },
-            { $unwind: "$brandDetails" },
-            {
-                $group: {
-                    _id: "$brandDetails.brand",
-                    brandName: { $first: "$brandDetails.brand" },
-                    totalSales: { $sum: "$products.quantity" }
-                }
-            },
-            { $sort: { totalSales: -1 } },
-            { $limit: 10 }
-        ]);
-
-       
-        // Sales chart data aggregation based on the filter (sum of products.quantity)
-        let salesChartData = [];
-        switch (filter) {
-            case 'daily':
-                salesChartData = await Order.aggregate([
-                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-                    { $unwind: "$products" }, // Unwind products to access each one
-                    {
-                        $group: {
-                            _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
-                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
-                        }
-                    },
-                    { $sort: { "_id": 1 } }
-                ]);
-                break;
-            case 'weekly':
-                salesChartData = await Order.aggregate([
-                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-                    { $unwind: "$products" }, // Unwind products to access each one
-                    {
-                        $group: {
-                            _id: { 
-                                year: { $year: "$orderDate" },
-                                week: { $week: "$orderDate" }
-                            },
-                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
-                        }
-                    },
-                    { $sort: { "_id.year": 1, "_id.week": 1 } }
-                ]);
-                break;
-            case 'monthly':
-                salesChartData = await Order.aggregate([
-                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-                    { $unwind: "$products" }, // Unwind products to access each one
-                    {
-                        $group: {
-                            _id: { 
-                                year: { $year: "$orderDate" },
-                                month: { $month: "$orderDate" }
-                            },
-                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
-                        }
-                    },
-                    { $sort: { "_id.year": 1, "_id.month": 1 } }
-                ]);
-                break;
-            case 'yearly':
-                salesChartData = await Order.aggregate([
-                    { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-                    { $unwind: "$products" }, // Unwind products to access each one
-                    {
-                        $group: {
-                            _id: { $year: "$orderDate" },
-                            totalQuantity: { $sum: "$products.quantity" } // Sum of product quantities
-                        }
-                    },
-                    { $sort: { "_id": 1 } }
-                ]);
-                break;
+        // Validate tax value
+        const taxValue = document.getElementsByName('taxValue')[0];
+        const taxType = document.getElementsByName('taxType')[0];
+        if (taxValue.value !== '' && parseFloat(taxValue.value) < 0) {
+            isValid = false;
+            errorMessages.taxValue = 'Tax value cannot be negative.';
+        }
+        if (taxType.value === 'percentage' && parseFloat(taxValue.value) > 100) {
+            isValid = false;
+            errorMessages.taxValue = 'Percentage tax cannot exceed 100%.';
         }
 
-        // Format the sales chart data for frontend
-        const formattedSalesChartData = salesChartData.map(item => {
-            let label;
-            switch (filter) {
-                case 'daily':
-                    label = new Date(item._id).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                    break;
-                case 'weekly':
-                    label = `W${item._id.week} ${item._id.year}`;
-                    break;
-                case 'monthly':
-                    label = new Date(item._id.year, item._id.month - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-                    break;
-                case 'yearly':
-                    label = item._id.toString();
-                    break;
+        // Validate sizes
+        const sizeInputs = document.querySelectorAll('input[name^="sizes"]');
+        sizeInputs.forEach(input => {
+            if (input.value < 0) {
+                isValid = false;
+                errorMessages.sizes = 'Size and quantity values cannot be negative.';
             }
-            return {
-                label: label,
-                value: item.totalQuantity || 0
+        });
+
+        // Display error messages
+        Object.keys(errorMessages).forEach(key => {
+            const errorElement = document.getElementById(`${key}-error`);
+            if (errorElement) {
+                errorElement.textContent = errorMessages[key];
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+});
+
+        let croppers = [];
+
+function handleImageSelect(event, index) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imgView = document.getElementById(`imgView${index}`);
+            imgView.src = e.target.result; // Set the original image source
+
+            // Destroy previous cropper instance if it exists
+            if (croppers[index]) {
+                croppers[index].destroy();
+            }
+
+            // Initialize Cropper.js for the image
+            croppers[index] = new Cropper(imgView, {
+                aspectRatio: 1, // Square cropping ratio
+                viewMode: 1,
+                guides: true,
+                background: false,
+                autoCropArea: 1,
+                zoomable: true
+            });
+
+            // Display the cropping container
+            const cropContainer = document.getElementById(`cropContainer${index}`);
+            cropContainer.style.display = 'block';
+
+            // Handle the 'Save Cropped Image' button
+            const saveButton = document.getElementById(`saveButton${index}`);
+            saveButton.onclick = function () {
+                const croppedCanvas = croppers[index].getCroppedCanvas();
+                const croppedImage = document.getElementById(`croppedImg${index}`);
+                croppedImage.src = croppedCanvas.toDataURL('image/png'); // Display cropped image
+
+                // Show the cropped image preview
+                croppedImage.style.display = 'block'; // Show cropped image
+
+                // Store the cropped image in a hidden input field or FormData
+                croppedCanvas.toBlob((blob) => {
+                    const input = document.getElementById(`input${index}`);
+                    const fileName = `cropped-img-${new Date().getTime()}-${index}.png`;
+                    const file = new File([blob], fileName, { type: 'image/png' });
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    input.files = dataTransfer.files; // Set the cropped file to the input
+                });
+
+                // Clean up the cropper instance
+                croppers[index].destroy();
+                croppers[index] = null; // Set the cropper instance to null
             };
-        });
-
-        // Render the data to the view
-        res.render('dashboard', {
-            topProducts,
-            topCategories,
-            topBrands,
-            startDate,
-            endDate,
-            filter,
-            salesChartData: formattedSalesChartData
-        });
-
-
-    } catch (err) {
-        console.error("Error loading dashboard:", err);
-        res.status(500).send('Internal Server Error');
+        };
+        reader.readAsDataURL(file); // Read the file and trigger onload
     }
-};
+}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-image');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const imageUrl = this.getAttribute('data-image');
+                const index = this.getAttribute('data-index');
+                
+                // Check how many images are left
+                const remainingImages = document.querySelectorAll('.image-item').length;
+
+                // If there's only one image left, alert the user
+                if (remainingImages === 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cannot delete',
+                        text: 'At least one image must remain for the product.',
+                        confirmButtonText: 'Okay'
+                    });
+                    return; // Exit the function
+                }
+
+                // If more than one image, ask for confirmation before deleting
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to delete this image?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteImage('<%= product._id %>', imageUrl, index); // Call the function to delete the image
+                    }
+                });
+            });
+        });
+    });
+
+    function deleteImage(productId, imageUrl, index) {
+        axios.post(`/admin/edit-product/${productId}/delete-image`, { imageUrl })
+            .then(response => {
+                if (response.data.success) {
+                    const imageElement = document.getElementById(`image-${index}`);
+                    if (imageElement) {
+                        imageElement.remove(); // Remove the image element from the DOM
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'The image has been deleted successfully.',
+                            confirmButtonText: 'Okay'
+                        });
+                    }
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to delete the image.',
+                        confirmButtonText: 'Okay'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error deleting image:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while deleting the image.',
+                    confirmButtonText: 'Okay'
+                });
+            });
+    }
+
+// Add this script at the end of your HTML file, just before the closing </body> tag
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('productForm');
+
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        const errorMessages = {};
+
+        // Validate regular price
+        const regularPrice = document.getElementsByName('regularPrice')[0];
+        if (regularPrice.value < 0) {
+            isValid = false;
+            errorMessages.regularPrice = 'Regular price cannot be negative.';
+        }
+
+        // Validate sale price
+        const salePrice = document.getElementsByName('salePrice')[0];
+        if (salePrice.value !== '' && parseFloat(salePrice.value) < 0) {
+            isValid = false;
+            errorMessages.salePrice = 'Sale price cannot be negative.';
+        }
+
+        // Validate discount value
+        const discountValue = document.getElementsByName('productOffer')[0];
+        const discountType = document.getElementsByName('discountType')[0];
+        if (discountValue.value !== '' && parseFloat(discountValue.value) < 0) {
+            isValid = false;
+            errorMessages.discountValue = 'Discount value cannot be negative.';
+        }
+        if (discountType.value === 'percentage' && parseFloat(discountValue.value) > 100) {
+            isValid = false;
+            errorMessages.discountValue = 'Percentage discount cannot exceed 100%.';
+        }
+
+        // Validate tax value
+        const taxValue = document.getElementsByName('taxValue')[0];
+        const taxType = document.getElementsByName('taxType')[0];
+        if (taxValue.value !== '' && parseFloat(taxValue.value) < 0) {
+            isValid = false;
+            errorMessages.taxValue = 'Tax value cannot be negative.';
+        }
+        if (taxType.value === 'percentage' && parseFloat(taxValue.value) > 100) {
+            isValid = false;
+            errorMessages.taxValue = 'Percentage tax cannot exceed 100%.';
+        }
+
+        // Validate sizes
+        const sizeInputs = document.querySelectorAll('input[name^="sizes"]');
+        sizeInputs.forEach(input => {
+            if (input.value < 0) {
+                isValid = false;
+                errorMessages.sizes = 'Size and quantity values cannot be negative.';
+            }
+        });
+
+        // Display error messages
+        Object.keys(errorMessages).forEach(key => {
+            const errorElement = document.getElementById(`${key}-error`);
+            if (errorElement) {
+                errorElement.textContent = errorMessages[key];
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+
+    // // Add size button functionality
+    // let sizeIndex = document.querySelectorAll('.size-row').length;
+    // document.getElementById('addSizeButton').addEventListener('click', function() {
+    //     const sizesContainer = document.getElementById('sizesContainer');
+    //     const newSizeRow = document.createElement('div');
+    //     newSizeRow.className = 'size-row mb-2';
+    //     newSizeRow.innerHTML = `
+    //         <input type="number" name="sizes[${sizeIndex}][size]" class="form-control border" placeholder="Size" min="1" required>
+    //         <input type="number" name="sizes[${sizeIndex}][quantity]" class="form-control border" placeholder="Quantity" min="0" required>
+    //     `;
+    //     sizesContainer.appendChild(newSizeRow);
+    //     sizeIndex++;
+    // });
+    
+    
+});
+document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('productForm');
+            const sizesContainer = document.getElementById('sizesContainer');
+            let sizeIndex = <%= product.sizes.length %>;
+
+            // Function to add new size row
+            function addSizeRow() {
+                const newSizeRow = document.createElement('div');
+                newSizeRow.className = 'size-row';
+                newSizeRow.setAttribute('data-index', sizeIndex);
+                newSizeRow.innerHTML = `
+                    <input type="number" name="sizes[${sizeIndex}][size]" class="form-control border" placeholder="Size" min="1" required>
+                    <input type="number" name="sizes[${sizeIndex}][quantity]" class="form-control border" placeholder="Quantity" min="0" required>
+                    <button type="button" class="delete-size-btn">Delete</button>
+                `;
+                sizesContainer.appendChild(newSizeRow);
+                sizeIndex++;
+            }
+
+            // Add size button functionality
+            document.getElementById('addSizeButton').addEventListener('click', addSizeRow);
+
+            // Delete size row functionality
+            sizesContainer.addEventListener('click', function(event) {
+                if (event.target.classList.contains('delete-size-btn')) {
+                    const sizeRow = event.target.closest('.size-row');
+                    if (sizesContainer.children.length > 1) {
+                        sizeRow.remove();
+                        updateSizeIndexes();
+                    } else {
+                        alert('You must have at least one size for the product.');
+                    }
+                }
+            });
+
+            // Function to update indexes after deletion
+            function updateSizeIndexes() {
+                const sizeRows = sizesContainer.querySelectorAll('.size-row');
+                sizeRows.forEach((row, index) => {
+                    row.setAttribute('data-index', index);
+                    row.querySelectorAll('input').forEach(input => {
+                        const nameAttr = input.getAttribute('name');
+                        input.setAttribute('name', nameAttr.replace(/\d+/, index));
+                    });
+                });
+                sizeIndex = sizeRows.length;
+            }})
+
+//         let sizeIndex = <%= product.sizes.length %>; // Track the current index for dynamic sizes
+
+// document.getElementById('addSizeButton').addEventListener('click', function() {
+//     const sizesContainer = document.getElementById('sizesContainer');
+//     const newSizeRow = document.createElement('div');
+//     newSizeRow.className = 'size-row mb-2';
+//     newSizeRow.innerHTML = `
+//         <input type="text" name="sizes[${sizeIndex}][size]" class="form-control border" placeholder="Size">
+//         <input type="number" name="sizes[${sizeIndex}][quantity]" class="form-control border" placeholder="Quantity" min="0">
+//     `;
+//     sizesContainer.appendChild(newSizeRow);
+    
+//     // Increment the size index to ensure each new size gets a unique name attribute
+//     sizeIndex++;
+// });
+
+
+    </script>
+</body>
+</html>

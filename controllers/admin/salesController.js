@@ -94,8 +94,15 @@ const downloadPdf = async (req, res) => {
 
 
 const getSalesReportData = async ({ startDate, endDate, filter, page = 1, limit = 5, applyPagination = true }) => {
-    const searchQuery = { status: 'Pending' }; // Adjust status as needed
+    const searchQuery = { 
+        $or: [
+          { status: 'Delivered' }, 
+          { paymentStatus: 'Success' },
+          { paymentStatus: 'Paid' },
 
+        ] 
+      };
+      
     // Date filtering logic
     if (startDate && endDate) {
         const start = new Date(startDate);
@@ -113,19 +120,22 @@ const getSalesReportData = async ({ startDate, endDate, filter, page = 1, limit 
                 $gte: new Date(now.setHours(0, 0, 0, 0)), 
                 $lt: new Date(now.setHours(23, 59, 59, 999))
             };
-        } else if (filter === 'weekly') {
-            const startOfWeek = new Date(now);
-            startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Start of week
+    
+        if (filter === 'weekly') {
+            const nowClone = new Date(now); // Clone the current date
+            const startOfWeek = new Date(nowClone.setDate(nowClone.getDate() - nowClone.getDay())); // Start of the week (Sunday)
             startOfWeek.setHours(0, 0, 0, 0);
         
             const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of week
+            endOfWeek.setDate(startOfWeek.getDate() + 6); // End of the week (Saturday)
             endOfWeek.setHours(23, 59, 59, 999);
         
             searchQuery.orderDate = { 
                 $gte: startOfWeek, 
                 $lte: endOfWeek 
             };
+        }
+        
         } else if (filter === 'monthly') {
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             searchQuery.orderDate = { 
@@ -212,7 +222,7 @@ const generateSalesReportExcel = async (reportData) => {
     reportData.orders.forEach(order => {
         worksheet.addRow({
             orderId: order.orderId,
-            userName:order.userId.username,
+            userName:order.userId.username ,
             productName: order.products.map(p => p.productId.productName).join(', '),
 
             discount: `₹${order.discount.toFixed(2)}`,
@@ -295,5 +305,4 @@ module.exports = {
     getSalesReport,
     downloadPdf,
     downloadExcel,
-   // excelDownload
 };

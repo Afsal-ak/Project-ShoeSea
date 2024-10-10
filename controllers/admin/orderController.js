@@ -1,24 +1,6 @@
 const Order=require('../../models/orderModel')
-const Product = require('../../models/productModel');
-const Category = require('../../models/categoryModel');
 
-const User = require('../../models/userModel');
-const Address = require('../../models/addressModel');
-
-// const listOrder=async(req,res)=>{
-//     try {
-//        const orders=await Order.find()
-//        .populate('userId','username')
-//        .populate('products.productId') 
-
-//        res.render('order-list', { orders });
-//     } catch (error) {
-//         console.error('Error fetching orders:', error);
-//         res.status(500).send('Server Error');
-//     }
-// }
-
-const listOrder = async (req, res) => {
+const listOrder = async (req, res,next) => {
     try {
         const page = parseInt(req.query.page) || 1; // Get the current page, default to 1
         const limit = 10; // Number of orders per page
@@ -38,11 +20,11 @@ const listOrder = async (req, res) => {
         res.render('order-list', { orders, currentPage: page, totalPages });
     } catch (error) {
         console.error('Error fetching orders:', error);
-        res.status(500).send('Server Error');
+        next(error)
     }
 };
 
-const viewOrder=async(req,res)=>{
+const viewOrder=async(req,res,next)=>{
     try {
         const orderId=req.params.id
 
@@ -56,11 +38,11 @@ const viewOrder=async(req,res)=>{
         res.render('admin-orderDetails', { order });
     } catch (error) {
         console.error('Error fetching order details:', error);
-        res.status(500).send('Server Error');
+        next(error)
     }
 }
 
-const orderDelivered = async (req, res) => {
+const orderDelivered = async (req, res,next) => {
     try {
         const  orderId  = req.params.id;
         const order = await Order.findById(orderId);
@@ -76,14 +58,14 @@ const orderDelivered = async (req, res) => {
         order.status = 'Delivered';
         await order.save();
 
-        res.redirect('/admin/orders');
+        res.redirect(`/admin/orders/${orderId}`);
     } catch (error) {
         console.error('Error updating order status:', error);
-        res.status(500).send('Server Error');
+        next(error)
     }
 };
 
-const orderCancel = async (req, res) => {
+const orderCancel = async (req, res,next) => {
     try {
         const orderId = req.params.id;
         const order = await Order.findById(orderId);
@@ -100,14 +82,14 @@ const orderCancel = async (req, res) => {
         order.status = 'Cancelled';
         await order.save();
 
-        res.redirect('/admin/orders');
+        res.redirect(`/admin/orders/${orderId}`);
     } catch (error) {
         console.error('Error canceling order:', error);
-        res.status(500).send('Server Error');
+        next(error)
     }
 };
 
-const orderShipped = async (req, res) => {
+const orderShipped = async (req, res,next) => {
     try {
         const { id: orderId } = req.params;
 
@@ -122,13 +104,13 @@ const orderShipped = async (req, res) => {
             order.status = 'Shipped';
             await order.save();
 
-            res.redirect('/admin/orders');
+            res.redirect(`/admin/orders/${orderId}`);
         } else {
             res.status(400).send('Order cannot be marked as shipped');
         }
     } catch (error) {
         console.error('Error shipping order:', error);
-        res.status(500).send('Server Error');
+        next(error)
     }
 };
 

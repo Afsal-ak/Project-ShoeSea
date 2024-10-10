@@ -70,8 +70,17 @@
                     <% orders.forEach(order => { %>
                         <tr>
                             <td><%= order.orderId %></td>
-                            <td><%= order.userId.username %></td>
-                            <td><%= order.orderDate.toDateString() %></td>
+                            
+                            <td> 
+                                <% if (order.userId && order.userId.username) { %>
+                                    <%= order.userId.username %>
+                                <% } else { %>
+                                    <%= '' %> 
+                                <% } %>
+                            </td>
+                            
+
+                             <td><%= order.orderDate.toDateString() %></td>
                             <td>₹<%= order.totalAmount.toFixed(2) %></td>
                             <td><%= order.paymentMethod %></td>
                             <td><%= order.status %></td>
