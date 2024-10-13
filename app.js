@@ -8,8 +8,7 @@ const passport = require('./config/passport')
 const session=require('express-session')
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
-  
-const path=require('path')
+ const path=require('path')
 
 // Set the view engine to EJS
 app.set('view engine', 'ejs');
