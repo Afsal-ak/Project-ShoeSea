@@ -1,7 +1,7 @@
 
 
 // controllers/userController.js
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const User = require('../../models/userModel');
 const nodemailer = require('nodemailer');
 const Product = require('../../models/productModel');

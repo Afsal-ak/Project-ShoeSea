@@ -2,7 +2,7 @@
 const Address = require('../../models/addressModel');
 
 const User = require('../../models/userModel');
-const bcrypt=require('bcrypt')
+const bcrypt=require('bcryptjs')
 const nodemailer = require('nodemailer');
 const getAccount=async(req,res)=>{
     try {
