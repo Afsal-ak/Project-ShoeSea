@@ -13,11 +13,9 @@ const mongoose=require('mongoose')
 const dbConnect=mongoose.connect(process.env.MONGODB_URI)
 .then(()=>{
     console.log("mongodb connected")
-    console.log(process.env.MONGODB_URI)
  
 }).catch((err)=>{
     console.log("Error in connecting mongodb",err)
-    console.log(process.env.MONGODB_URI)
 
 })
 

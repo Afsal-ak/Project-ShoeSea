@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     number: {
         type: String,
         required: false,
-        unique: true,
+       // unique: true,
         sparse: true,
         default: null
     },
