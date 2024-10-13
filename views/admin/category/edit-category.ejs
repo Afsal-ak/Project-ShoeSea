@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Category</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css" />
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +13,7 @@
             margin: 0;
             padding: 0;
         }
+
         .content-main {
             max-width: 800px;
             margin: 20px auto;
@@ -20,24 +22,30 @@
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
+
         .content-header {
             margin-bottom: 20px;
         }
+
         .content-title {
             font-size: 24px;
             font-weight: 600;
         }
+
         form {
             display: flex;
             flex-direction: column;
         }
+
         form div {
             margin-bottom: 15px;
         }
+
         form label {
             margin-bottom: 5px;
             font-weight: 500;
         }
+
         form input[type="text"],
         form textarea {
             padding: 8px;
@@ -46,6 +54,7 @@
             width: 100%;
             font-size: 14px;
         }
+
         form button {
             padding: 10px 20px;
             background-color: #28a745;
@@ -55,62 +64,145 @@
             cursor: pointer;
             align-self: flex-start;
         }
+
         .alert {
             padding: 10px;
             border-radius: 4px;
             margin-bottom: 20px;
         }
+
         .alert-danger {
             background-color: #f8d7da;
             color: #721c24;
         }
+
         .alert-success {
             background-color: #d4edda;
             color: #155724;
         }
     </style>
 </head>
+
 <body>
     <%- include('../../partials/admin/header') %>
-    <section class="content-main">
-        <div class="content-header">
-            <h2 class="content-title">Edit Category</h2>
-        </div>
+        <section class="content-main">
+            <div class="content-header">
+                <h2 class="content-title">Edit Category</h2>
+            </div>
 
-        <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-        
-        <% if (message) { %>
-            <div class="alert alert-success"><%= message %></div>
-        <% } %>
-        
-        <!-- Category Edit Form -->
-        <form action="/admin/edit-category/<%= category._id %>" method="post">
-            <input type="hidden" name="id" value="<%= category._id %>">
-            <div>
-                <label for="categoryName">Category Name</label>
-                <input type="text" name="categoryName" id="categoryName" value="<%= category.categoryName %>" required>
-            </div>
-            <div>
-                <label for="description">Description</label>
-                <textarea name="description" id="description" required><%= category.description %></textarea>
-            </div>
-            <div>
-                <label for="categoryOffer">Category Offer (%)</label>
-                <input type="number" name="categoryOffer" id="categoryOffer" min="0" step="0.01" value="<%= category.categoryOffer %>" required>
-            </div>
-            <div>
-                <label for="offerExpiry">Offer Expiry Date</label>
-                <input type="date" name="offerExpiry" id="offerExpiry"  value="<%= category.offerExpiry %>" >
-            </div>
-            <button type="submit">Update Category</button>
-        </form>
-    </section>
+            <% if (errors) { %>
+                <h5 style="color: red; text-align: center;"><%= errors %></h5>
+                <% } %>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-    <script>
-        // You can add custom JavaScript here if needed
-    </script>
+                    <% if (message) { %>
+                        <div style="color: #155724;">
+                            <%= message %>
+                        </div>
+                        <% } %>
+
+                            <!-- Category Edit Form -->
+                            <form id="editCategoryForm" action="/admin/edit-category/<%= category._id %>" method="post">
+                                <input type="hidden" name="id" value="<%= category._id %>">
+                                <div>
+                                    <label for="categoryName">Category Name</label>
+                                    <input type="text" name="categoryName" id="categoryName"
+                                        value="<%= category.categoryName %>" required>
+                                    <small id="categoryNameError" style="color: red; display: none;"></small>
+                                </div>
+                                <div>
+                                    <label for="description">Description</label>
+                                    <textarea name="description" id="description"
+                                        required><%= category.description %></textarea>
+                                    <small id="descriptionError" style="color: red; display: none;"></small>
+                                </div>
+                                <div>
+                                    <label for="categoryOffer">Category Offer (%)</label><br>
+                                    <input type="number" name="categoryOffer" id="categoryOffer"
+                                        value="<%= category.categoryOffer %>" required>
+                                    <small id="categoryOfferError" style="color: red; display: none;"></small>
+                                </div>
+                                <div>
+                                    <label for="offerExpiry">Offer Expiry Date</label><br>
+                                    <input type="date" name="offerExpiry" id="offerExpiry"
+                                        value="<%= category.offerExpiry %>">
+                                    <small id="offerExpiryError" style="color: red; display: none;"></small>
+                                </div>
+                                <button type="submit">Update Category</button>
+                            </form>
+        </section>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+
+        <script>
+
+            // Add event listener to the form submission
+            document.getElementById('editCategoryForm').addEventListener('submit', function (event) {
+                const categoryName = document.getElementById('categoryName').value.trim();
+                const description = document.getElementById('description').value.trim();
+                const categoryOffer = document.getElementById('categoryOffer').value.trim();
+                const offerExpiry = document.getElementById('offerExpiry').value.trim();
+
+                const categoryNameError = document.getElementById('categoryNameError');
+                const descriptionError = document.getElementById('descriptionError');
+                const categoryOfferError = document.getElementById('categoryOfferError');
+                const offerExpiryError = document.getElementById('offerExpiryError');
+
+                // Reset error messages and styles
+                categoryNameError.style.display = 'none';
+                descriptionError.style.display = 'none';
+                categoryOfferError.style.display = 'none';
+                offerExpiryError.style.display = 'none';
+
+                categoryNameError.textContent = '';
+                descriptionError.textContent = '';
+                categoryOfferError.textContent = '';
+                offerExpiryError.textContent = '';
+
+                document.getElementById('categoryName').style.border = '';
+                document.getElementById('description').style.border = '';
+                document.getElementById('categoryOffer').style.border = '';
+                document.getElementById('offerExpiry').style.border = '';
+
+                let isValid = true;
+
+                // Validate Category Name
+                if (categoryName === '') {
+                    categoryNameError.textContent = 'Category Name  cannot be empty.';
+                    categoryNameError.style.display = 'block';
+                    document.getElementById('categoryName').style.border = '2px solid red';
+                    isValid = false;
+                }
+
+                // Validate Description
+                if (description === '') {
+                    descriptionError.textContent = 'Description cannot be empty.';
+                    descriptionError.style.display = 'block';
+                    document.getElementById('description').style.border = '2px solid red';
+                    isValid = false;
+                }
+
+                // Validate Category Offer
+                if (categoryOffer === '' || isNaN(categoryOffer) || categoryOffer < 0 || categoryOffer > 100) {
+                    categoryOfferError.textContent = 'Category Offer must be a number between 0 and 100.';
+                    categoryOfferError.style.display = 'block';
+                    document.getElementById('categoryOffer').style.border = '2px solid red';
+                    isValid = false;
+                }
+
+                // Validate Offer Expiry Date
+                if (offerExpiry !== '' && new Date(offerExpiry) < new Date()) {
+                    offerExpiryError.textContent = 'Offer Expiry Date cannot be in the past.';
+                    offerExpiryError.style.display = 'block';
+                    document.getElementById('offerExpiry').style.border = '2px solid red';
+                    isValid = false;
+                }
+
+                // Prevent form submission if there are validation errors
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });   
+        </script>
 </body>
+
 </html>

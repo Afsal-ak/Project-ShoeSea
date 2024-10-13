@@ -13,9 +13,10 @@ const productSchema = new Schema({
         type: String,
         required: true
     },
-    brand: {
-        type: String,
-        required: false
+    brandId: {
+        type: Schema.Types.ObjectId, // Refers to ObjectId, not Number
+        ref: 'Brand', // Assuming you have a Category model
+        required: true
     },
     categoryId: {
         type: Schema.Types.ObjectId, // Refers to ObjectId, not Number

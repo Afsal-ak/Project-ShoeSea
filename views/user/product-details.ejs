@@ -80,24 +80,7 @@
 
 </div> 
 <div class="d-flex flex-wrap mt-3">
-    <!-- <% if (product.productImages && product.productImages.length > 0) { %>
-        <% product.productImages.forEach((image, index) => { %>
-            <img src="/<%= product.productImages.length > index ? image : 'styles/images/no_images.jpg' %>" 
-                 onclick="changeImage('/<%= product.productImages.length > index ? image : 'styles/images/no_images.jpg' %>', <%= index %>)" 
-                 alt="Thumbnail <%= index + 1 %>"
-                 class="thumbnail <%= index === 0 ? 'active' : '' %>"
-                 id="thumbnail-<%= index %>"
-                 onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
-        <% }) %>
-    <% } else { %>
-        <img src="/styles/images/no_images.jpg" alt="No Image Available" class="thumbnail active">
-    <% } %> -->
-    <!-- <div class="thumbnail-images">
-        <img src="/<%= product.productImages && product.productImages.length > 0 ? product.productImages[0] : 'styles/images/no_images.jpg' %>" alt="Product Image 1" class="thumbnail" onclick="changeMainImage(this)">
-        <img src="/<%= product.productImages && product.productImages.length > 0 ? product.productImages[1] : 'styles/images/no_images.jpg' %>" alt="Product Image 2" class="thumbnail" onclick="changeMainImage(this)">
-        <img src="/<%= product.productImages && product.productImages.length > 0 ? product.productImages[2] : 'styles/images/no_images.jpg' %>" alt="Product Image 3" class="thumbnail" onclick="changeMainImage(this)">
-        <img src="/<%= product.productImages && product.productImages.length > 0 ? product.productImages[3] : 'styles/images/no_images.jpg' %>" alt="Product Image 4" class="thumbnail" onclick="changeMainImage(this)">
-    </div> -->
+   
     <div class="thumbnail-images d-flex flex-wrap">
         <% if (product.productImages && product.productImages.length > 0) { %>
             <% product.productImages.forEach((image, index) => { %>
@@ -123,6 +106,9 @@
                 <p>Status: <span class="<%= product.quantity > 0 ? 'status-available' : 'status-unavailable' %>">
                     <%= product.quantity > 0 ? 'Available' : 'Sold Out' %></span>
                 </p>
+                <p>Brand: <%= product.brandId ? product.brandId.brandName : 'Not available' %></p>
+                <p>Category: <%= product.categoryId ? product.categoryId.categoryName : 'Not available' %></p>
+
                 <p>Price: <%= product.salePrice %> rupees</p>
                 <p>Stock: <%= product.quantity %> units</p>
                 <p>Discount: <%= product.productOffer || 'No discount' %>%</p>

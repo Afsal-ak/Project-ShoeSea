@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Management</title>
+    <title>Brand Management</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
     <style>
         body {
@@ -158,75 +158,77 @@
     <%- include('../../partials/admin/header') %>
     <section class="content-main">
         <div class="content-header">
-            <h2 class="content-title">Category Management</h2>
-            <form class="search-form" action="/admin/category" method="get">
+            <h2 class="content-title">Brand Management</h2>
+            <form class="search-form" action="/admin/brand" method="get">
                 <input type="text" name="search" placeholder="Search categories..." value="<%= searchQuery %>">
                 <button type="submit">Search</button>
             </form>
         </div>
 
         <!-- Display Success or Error Messages -->
-        <% if (errors && errors.length > 0) { %>
-            <h5 style="color: red; text-align: center;" class="text-danger"><%= errors[0] %></h5>
+        <% if (errorMessage && errorMessage.length > 0) { %>
+            <h5 style="color: red; text-align: center;" class="text-danger"><%= errorMessage[0] %></h5>
           <% } %>
         
-        <% if (message && message.length > 0) { %>
-            <h5 style="color: green; text-align: center;" ><%= message[0] %></h5>
+        <% if (successMessage && successMessage.length > 0) { %>
+            <h5 style="color: green; text-align: center;" ><%= successMessage[0] %></h5>
           <% } %>
           
-    
-        <form id="categoryForm" action="/admin/addCategory" method="post">
+        <!-- Brand Form -->
+        <form id="brandForm"  action="/admin/addBrand" method="post">
             <div>
-                <label for="categoryName">Category Name</label>
-                <input type="text" name="categoryName" id="categoryName" required>
-                <small id="categoryNameError" style="color: red; display: none;">Category Name cannot be empty or contain only spaces.</small>
+                <label for="brandName">Brand Name</label>
+                <input type="text" name="brandName" id="brandName" required>
+                <small id="brandNameError" style="color: red; display: none;"></small>
+
             </div>
             <div>
                 <label for="description">Description</label>
                 <textarea name="description" id="description" required></textarea>
-                <small id="descriptionError" style="color: red; display: none;">Description cannot be empty or contain only spaces.</small>
+                <small id="descriptionError" style="color: red; display: none;"></small>
+
             </div>
-            <div>
+            <!-- <div>
                 <label for="categoryOffer">Category Offer (%)</label>
                 <input type="number" name="categoryOffer" id="categoryOffer" min="0" max="100">
             </div>
             <div>
                 <label for="offerExpiry">Offer Expiry Date</label>
                 <input type="date" name="offerExpiry" id="offerExpiry">
-            </div>
-            <button type="submit">Add Category</button>
+            </div> -->
+            <button type="submit">Add Brand</button>
         </form>
-        
-        <!-- Category List -->
+
+        <!-- Brand List -->
         <table>
             <thead>
                 <tr>
-                    <th>Category Name</th>
+                    <th>Brand Name</th>
                     <th>Description</th>
-                    <th>Offer</th>
+                    <!-- <th>Offer</th> -->
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <% cta.forEach(function(category) { %>
+                <% brand.forEach(function(brand) { %>
                     <tr>
-                        <td><%= category.categoryName %></td>
-                        <td><%= category.description %></td>
-                        <td><%= category.categoryOffer || 'No Offer' %> %</td>
+                        <td><%= brand.brandName %></td>
+                        <td><%= brand.description %></td>
+                        <!-- <td><%= brand.brandOffer || 'No Offer' %> %</td> -->
                         <td>
-                            <% if (category.isListed) { %>
+                            <% if (brand.isListed) { %>
                                 <span class="badge badge-success">Listed</span>
                             <% } else { %>
                                 <span class="badge badge-danger">Unlisted</span>
                             <% } %>
                         </td>
                         <td>
-                            <a href="/admin/edit-category/<%= category._id %>" class="btn btn-info">Edit</a>
-                            <% if (category.isListed) { %>
-                                <a href="/admin/unlistCategory?id=<%= category._id %>" class="btn btn-danger unlist-category">Unlist</a>
+                            <a href="/admin/edit-brand/<%= brand._id %>" class="btn btn-info">Edit</a>
+                            <% if (brand.isListed) { %>
+                                <a href="/admin/unlistBrand?id=<%= brand._id %>" class="btn btn-danger unlist-category">Unlist</a>
                             <% } else { %>
-                                <a href="/admin/listCategory?id=<%= category._id %>" class="btn btn-success list-category">List</a>
+                                <a href="/admin/listBrand?id=<%= brand._id %>" class="btn btn-success list-category">List</a>
                             <% } %>
                         </td>
                     </tr>
@@ -245,39 +247,46 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
     <script>
 
+        document.getElementById('brandForm').addEventListener('submit',function(event){
 
-document.getElementById('categoryForm').addEventListener('submit', function(event) {
-        // Get the values from the form
-        const categoryName = document.getElementById('categoryName').value.trim();
-        const description = document.getElementById('description').value.trim();
+            const brandName=document.getElementById('brandName').value.trim()
+            const description=document.getElementById('description').value.trim()
 
-        // Get error message elements
-        const categoryNameError = document.getElementById('categoryNameError');
-        const descriptionError = document.getElementById('descriptionError');
+            const brandNameError=document.getElementById('brandNameError')
+            const descriptionError=document.getElementById('descriptionError')
 
-        // Reset error messages
-        categoryNameError.style.display = 'none';
-        descriptionError.style.display = 'none';
+            brandNameError.style.display='none';
+            descriptionError.style.display='none';
+            brandNameError.textContent='';
+            descriptionError.textContent='';
 
-        let isValid = true;
+            let isValid=true;
 
-        // Validate Category Name
-        if (categoryName === '') {
-            categoryNameError.style.display = 'block';
-            isValid = false;
-        }
+            //validate brand name
 
-        // Validate Description
-        if (description === '') {
-            descriptionError.style.display = 'block';
-            isValid = false;
-        }
+            if(brandName===''){
+                brandNameError.textContent='Brand Name cannot be empty or contain only spaces.';
+                brandNameError.style.display='block';
+                isValid=false
+            }
 
-        // Prevent form submission if there are validation errors
+
+            if(description===''){
+                descriptionError.textContent='Description   cannot be empty or contain only spaces.';
+                descriptionError.style.display='block';
+                isValid=false
+            }
+
+            // Prevent form submission if there are validation errors
         if (!isValid) {
             event.preventDefault();
         }
-    });
+
+        })
+
+
+
+
 
         document.querySelectorAll('.list-category').forEach(button => {
             button.addEventListener('click', function(event) {

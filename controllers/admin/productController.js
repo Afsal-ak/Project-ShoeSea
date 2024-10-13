@@ -2,6 +2,7 @@
 
 const Product = require('../../models/productModel');
 const Category = require('../../models/categoryModel');
+const Brand = require('../../models/brandModel')
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
@@ -41,7 +42,8 @@ const productsList = async (req, res) => {
             );
         }
         const productData = await Product.find(productFilter)
-            .populate('categoryId')  // Ensure category is populated
+            .populate('categoryId')
+            .populate('brandId')  // Ensure category is populated
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -76,12 +78,14 @@ const productsList = async (req, res) => {
 const loadAddProduct = async (req, res) => {
     try {
         const categoryData = await Category.find({ isListed: true });
+        const brandData = await Brand.find({ isListed: true });
 
         // Get flash messages
         const errorMessage = req.flash('error'); // Get any error messages
 
         res.render('./products/add-products', {
             cat: categoryData,
+            brand:brandData,
             messages: {
                 error: errorMessage.length > 0 ? errorMessage[0] : null // Pass the first error message, if any
             }
@@ -196,7 +200,7 @@ const addNewProduct = async (req, res) => {
             productName: productName,
             description: req.body.description?.trim() || '', // Default empty string if undefined
             categoryId: req.body.categoryId,
-            brand: req.body.brand?.trim() || '', // Handle brand safely
+            brandId: req.body.brandId,
             regularPrice: regularPrice,
             salePrice: finalPrice,
             productOffer: Math.round(productOffer),
@@ -243,12 +247,15 @@ const loadEditProduct = async (req, res) => {
         }
 
         // Fetch categories for the select dropdown
-        const categories = await Category.find({ isListed: true }); // Adjust the path according to your project structure
+        const categories = await Category.find({ isListed: true });
+        const brand = await Brand.find({ isListed: true });
+
 
         // Render the edit form with product data
         res.render('./products/edit-product', {
             product,
             cat: categories,
+            brand,
             message: req.flash('errors') // Pass flash messages to the template
         });
     } catch (error) {
@@ -306,6 +313,7 @@ const editProduct = async (req, res) => {
         // Fetch the category offer as a percentage
         const category = await Category.findById(req.body.categoryId).select('categoryOffer').lean();
         const categoryOffer = category?.categoryOffer || 0;
+
 
         // Determine the effective offer to apply (higher of product offer or category offer)
         const effectiveOffer = Math.max(productOffer, categoryOffer);
@@ -376,6 +384,7 @@ const editProduct = async (req, res) => {
             description: req.body.description?.trim() || '',
             brand: req.body.brand?.trim() || '',
             categoryId: req.body.categoryId,
+            brandId: req.body.brandId,
             regularPrice: regularPrice,
             salePrice: finalPrice,
             productOffer: Math.round(productOffer),
@@ -393,7 +402,7 @@ const editProduct = async (req, res) => {
         await product.save();
 
         req.flash('success', 'Product updated successfully');
-        return res.redirect(`/admin/edit-product/${id}`);
+        return res.redirect('/admin/products');
     } catch (error) {
         console.error(error.message);
         req.flash('error', 'An error occurred while updating the product');

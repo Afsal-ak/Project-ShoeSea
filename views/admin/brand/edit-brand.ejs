@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Brand</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .content-main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .content-header {
+            margin-bottom: 20px;
+        }
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        form div {
+            margin-bottom: 15px;
+        }
+        form label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        form input[type="text"],
+        form textarea {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 14px;
+        }
+        form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/admin/header') %>
+    <section class="content-main">
+        <div class="content-header">
+            <h2 class="content-title">Edit Brand</h2>
+        </div>
+  <!-- Display Success or Error Messages -->
+  <% if (errorMessage && errorMessage.length > 0) { %>
+    <h5 style="color: red; text-align: center;" class="text-danger"><%= errorMessage[0] %></h5>
+  <% } %>
+
+<% if (successMessage && successMessage.length > 0) { %>
+    <h5 style="color: green; text-align: center;" ><%= successMessage[0] %></h5>
+  <% } %>
+  
+      <!-- Brand Edit Form -->
+<form id="editBrandForm" action="/admin/edit-brand/<%= brand._id %>" method="post">
+    <input type="hidden" name="id" value="<%= brand._id %>">
+    <div>
+        <label for="brandName">Brand Name</label>
+        <input type="text" name="brandName" id="brandName" value="<%= brand.brandName %>" required>
+        <small id="brandNameError" style="color: red; display: none;"></small>
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <textarea name="description" id="description" required><%= brand.description %></textarea>
+        <small id="descriptionError" style="color: red; display: none;"></small>
+    </div>
+    
+    <button type="submit">Update Brand</button>
+</form>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+    
+      
+<script>
+    // Add event listener to the form submission
+    document.getElementById('editBrandForm').addEventListener('submit', function(event) {
+        const brandName = document.getElementById('brandName').value.trim();
+        const description = document.getElementById('description').value.trim();
+
+        const brandNameError = document.getElementById('brandNameError');
+        const descriptionError = document.getElementById('descriptionError');
+
+        // Reset error messages and styles
+        brandNameError.style.display = 'none';
+        descriptionError.style.display = 'none';
+        brandNameError.textContent = '';
+        descriptionError.textContent = '';
+        document.getElementById('brandName').style.border = '';
+        document.getElementById('description').style.border = '';
+
+        let isValid = true;
+
+        // Validate Brand Name
+        if (brandName === '' ) {
+            brandNameError.textContent = 'Brand Name ustcannot be empty.';
+            brandNameError.style.display = 'block';
+            document.getElementById('brandName').style.border = '2px solid red';
+            isValid = false;
+        }
+
+        // Validate Description
+        if (description === '' ) {
+            descriptionError.textContent = 'Description and cannot be empty.';
+            descriptionError.style.display = 'block';
+            document.getElementById('description').style.border = '2px solid red';
+            isValid = false;
+        }
+
+        // Prevent form submission if there are validation errors
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

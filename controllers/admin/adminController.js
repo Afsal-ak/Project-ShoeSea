@@ -3,8 +3,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/userModel');
 const Order = require('../../models/orderModel')
-const Product = require('../../models/productModel')
-const Category = require('../../models/categoryModel')
 
 const getAdminLogin = (req, res,next) => {
     try {
@@ -156,6 +154,28 @@ const getAdminDashboard = async (req, res, next) => {
         ]);
 
         // Top 10 Brands aggregation
+        // const topBrands = await Order.aggregate([
+        //     { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
+        //     { $unwind: "$products" },
+        //     {
+        //         $lookup: {
+        //             from: 'products',
+        //             localField: 'products.productId',
+        //             foreignField: '_id',
+        //             as: 'brandDetails'
+        //         }
+        //     },
+        //     { $unwind: "$brandDetails" },
+        //     {
+        //         $group: {
+        //             _id: "$brandDetails.brand",
+        //             brandName: { $first: "$brandDetails.brand" },
+        //             totalSales: { $sum: "$products.quantity" }
+        //         }
+        //     },
+        //     { $sort: { totalSales: -1 } },
+        //     { $limit: 10 }
+        // ]);
         const topBrands = await Order.aggregate([
             { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
             { $unwind: "$products" },
@@ -164,21 +184,29 @@ const getAdminDashboard = async (req, res, next) => {
                     from: 'products',
                     localField: 'products.productId',
                     foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: "$productDetails" },
+            {
+                $lookup: {
+                    from: 'brands',
+                    localField: 'productDetails.brandId',
+                    foreignField: '_id',
                     as: 'brandDetails'
                 }
             },
             { $unwind: "$brandDetails" },
             {
                 $group: {
-                    _id: "$brandDetails.brand",
-                    brandName: { $first: "$brandDetails.brand" },
+                    _id: "$brandDetails._id",
+                    brandName: { $first: "$brandDetails.brandName" },
                     totalSales: { $sum: "$products.quantity" }
                 }
             },
             { $sort: { totalSales: -1 } },
             { $limit: 10 }
         ]);
-
         // Sales chart data aggregation based on the filter (sum of products.quantity)
         let salesChartData = [];
         switch (filter) {

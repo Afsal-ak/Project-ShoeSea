@@ -1,48 +1,58 @@
 const Product = require('../../models/productModel');
-const Category = require('../../models/categoryModel'); // Assuming you have a category model
+const Category = require('../../models/categoryModel');
+const Brand = require('../../models/brandModel')
 const Order = require('../../models/orderModel');
 const Referral=require('../../models/referralModel')
 
 
 
-
 const getHome = async (req, res) => {
-    try {
-      // Fetch trending products based on view count
+  try {
+      // Fetch trending products based on view count, ensuring the related category and brand are active
       const trendingProducts = await Product.find({ is_blocked: false })
-        .sort({ views: -1 }) // Sort by views in descending order
-        .limit(8); // Limit to 8 trending products
-  
-      
-  
-      // Fetch sports products using the ObjectId of the sports category
-      const sportsProducts = await Product.find({
-        is_blocked: false,
-        //categoryId: sportsCategory._id, // Use ObjectId here
-      }).limit(8);
-  
-      // Fetch products for new collections based on creation date
-      const newCollectionProducts = await Product.find({ is_blocked: false })
-        .sort({ createdAt: -1 })
-        .limit(8);
-  
+          .populate({
+              path: 'categoryId',
+              match: { isListed: true }, // Only include products with listed categories
+              select: '_id'
+          })
+          .populate({
+              path: 'brandId',
+              match: { isListed: true }, // Only include products with listed brands
+              select: '_id'
+          })
+          .sort({ views: -1 }) // Sort by views in descending order
+          .limit(8); // Limit to 8 trending products
+
+      // Filter out products where the populated category or brand is null (unlisted)
+      const filteredTrendingProducts = trendingProducts.filter(product => 
+          product.categoryId && product.brandId
+      );
+
       res.render('home', {
-        trendingProducts,
-        sportsProducts,
-        newCollectionProducts,
+          trendingProducts: filteredTrendingProducts
       });
-    } catch (error) {
+  } catch (error) {
       console.log('Error fetching products for home page:', error.message);
       res.redirect('/500');
-    }
-  };
-  
+  }
+};
+
 
 
   const productDetails = async (req, res) => {
     try {
       // Find the product by ID and ensure it is not blocked
-      const product = await Product.findOne({ _id: req.params.id, is_blocked: false });
+      const product = await Product.findOne({ _id: req.params.id, is_blocked: false })
+      .populate({
+        path:'categoryId',
+        match:{isListed:true},
+        select:'categoryName'
+    })
+      .populate({
+        path:'brandId',
+        match:{isListed:true},
+        select:'brandName'
+    })
   
       // If the product is not found or is blocked, return a 404 error page or message
       if (!product) {
@@ -56,6 +66,11 @@ const getHome = async (req, res) => {
         is_blocked: false // Exclude blocked products
       })
       .limit(4);
+
+      //for increasing the view of product
+      await Product.findByIdAndUpdate(product._id,{$inc:{views:1}})
+ 
+
   
       // Ensure reviews is always an array
       product.productReview = product.productReview || [];
@@ -71,157 +86,161 @@ const getHome = async (req, res) => {
     }
   };
   
-  
-  
-   const search = async (req, res) => {
+  const search = async (req, res) => {
     const { query, sort = 'popularity', category = '', minPrice = 0, maxPrice = Infinity, page = 1 } = req.query;
     const itemsPerPage = 10; // Number of items per page
     const skip = (page - 1) * itemsPerPage;
-  
+
     try {
-      // Fetch categories for category filter
-      const categories = await Category.find({ isListed: true }); // Adjust according to your schema
-  
-      // Build the search query
-      const searchQuery = {
-        $or: [
-          { productName: { $regex: query, $options: 'i' } },
-          { description: { $regex: query, $options: 'i' } }
-        ],
-        salePrice: { $gte: minPrice, $lte: maxPrice }, // Filter by price range
-        is_blocked: false, // Ensure blocked products are excluded
-      };
-  
-      if (category) {
-        searchQuery.categoryId = category; // Assuming you use category IDs, adjust if needed
-      }
-  
-      // Build sorting options
-      const sortOptions = {};
-      switch (sort) {
-        case 'price_low_to_high':
-          sortOptions.salePrice = 1;
-          break;
-        case 'price_high_to_low':
-          sortOptions.salePrice = -1;
-          break;
-        case 'average_rating':
-          sortOptions.averageRating = -1;
-          break;
-        default:
-          sortOptions.popularity = -1;
-          break;
-      }
-  
-      // Execute search with pagination and sorting
-      const searchResults = await Product.find(searchQuery)
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(itemsPerPage);
-  
-      // Count total results for pagination
-      const totalResults = await Product.countDocuments(searchQuery);
-      const totalPages = Math.ceil(totalResults / itemsPerPage);
-  
-      // Render the search results
-      res.render('search-results', { 
-        searchResults, 
-        query, 
-        sort, 
-        categories, // Pass categories to view for category filtering
-        selectedCategory: category, 
-        minPrice, 
-        maxPrice, 
-        currentPage: Number(page),
-        totalPages 
-      });
+        // Fetch categories for category filter
+        const categories = await Category.find({ isListed: true });
+
+        // Build the search query
+        const searchQuery = {
+            $or: [
+                { productName: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } }
+            ],
+            salePrice: { $gte: minPrice, $lte: maxPrice },
+            is_blocked: false,
+        };
+
+        if (category) {
+            searchQuery.categoryId = category;
+        }
+
+        // Build sorting options
+        const sortOptions = getSortOption(sort);
+
+        // Fetch products with pagination and sorting, while filtering out unlisted categories or brands
+        const searchResults = await Product.find(searchQuery)
+            .populate({
+                path: 'categoryId',
+                match: { isListed: true },
+                select: '_id'
+            })
+            .populate({
+                path: 'brandId',
+                match: { isListed: true },
+                select: '_id'
+            })
+            .sort(sortOptions)
+            .skip(skip)
+            .limit(itemsPerPage);
+
+        // Filter out products with unlisted categories or brands
+        const filteredResults = searchResults.filter(product => product.categoryId && product.brandId);
+
+        // Count total results for pagination
+        const totalResults = filteredResults.length;
+        const totalPages = Math.ceil(totalResults / itemsPerPage);
+
+        // Render the search results
+        res.render('search-results', {
+            searchResults: filteredResults,
+            query,
+            sort,
+            categories,
+            selectedCategory: category,
+            minPrice,
+            maxPrice,
+            currentPage: Number(page),
+            totalPages
+        });
     } catch (error) {
-      console.error('Error during search:', error.message);
-      res.status(500).render('error', { message: 'An error occurred while searching for products.' });
+        console.error('Error during search:', error.message);
+        res.status(500).render('error', { message: 'An error occurred while searching for products.' });
     }
-   }
-  
-  
-  
-  const listProducts = async (req, res) => {
-    try {
+};
+
+const listProducts = async (req, res) => {
+  try {
       const { sort, category, page = 1, search = '', minPrice = 0, maxPrice = Infinity } = req.query;
       const limit = 12;
       const skip = (page - 1) * limit;
-  
+
       // Build the query object to filter products
       let query = { is_blocked: false };
-  
-      // Apply category filter
+
       if (category) {
-        query.categoryId = category;
+          query.categoryId = category;
       }
-  
-      // Apply search filter
+
       if (search) {
-        query.$or = [
-          { productName: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-          { brand: { $regex: search, $options: 'i' } },
-        ];
+          query.$or = [
+              { productName: { $regex: search, $options: 'i' } },
+              { description: { $regex: search, $options: 'i' } },
+              { brand: { $regex: search, $options: 'i' } },
+          ];
       }
-  
-      // Apply price range filter
+
       query.salePrice = { $gte: minPrice, $lte: maxPrice };
-  
+
       // Fetch products based on filters, sort, and pagination
       const products = await Product.find(query)
-        .sort(getSortOption(sort))
-        .skip(skip)
-        .limit(limit);
-  
+          .populate({
+              path: 'categoryId',
+              match: { isListed: true },
+              select: '_id'
+          })
+          .populate({
+              path: 'brandId',
+              match: { isListed: true },
+              select: '_id'
+          })
+          .sort(getSortOption(sort))
+          .skip(skip)
+          .limit(limit);
+
+      // Filter out products with unlisted categories or brands
+      const filteredProducts = products.filter(product => product.categoryId && product.brandId);
+
       // Fetch categories for dropdown
       const categories = await Category.find({ isListed: true });
-  
-      // Fetch total number of products for pagination
-      const totalProducts = await Product.countDocuments(query);
+
+      // Fetch total number of filtered products for pagination
+      const totalProducts = filteredProducts.length;
       const totalPages = Math.ceil(totalProducts / limit);
-  
-      // Render the product list page with the fetched data
+
+      // Render the product list page with the filtered data
       res.render('product-list', {
-        products,
-        categories,
-        sortOption: sort,
-        selectedCategory: category,
-        searchQuery: search,
-        currentPage: parseInt(page),
-        totalPages,
-        minPrice,
-        maxPrice,
+          products: filteredProducts,
+          categories,
+          sortOption: sort,
+          selectedCategory: category,
+          searchQuery: search,
+          currentPage: parseInt(page),
+          totalPages,
+          minPrice,
+          maxPrice,
       });
-    } catch (error) {
+  } catch (error) {
       console.error('Error fetching products:', error.message);
       res.status(500).render('error', { message: 'An error occurred while fetching products.' });
-    }
-  };
-  
-  // Helper function to handle sorting options
-  function getSortOption(sort) {
-    switch (sort) {
-      case 'price_low_to_high':
-        return { salePrice: 1 };
-      case 'price_high_to_low':
-        return { salePrice: -1 };
-      case 'average_rating':
-        return { averageRating: -1 };
-      case 'new_arrivals':
-        return { createdAt: -1 };
-      case 'a_to_z':
-        return { productName: 1 };
-      case 'z_to_a':
-        return { productName: -1 };
-      case 'featured':
-        return { isFeatured: -1 };
-      default:
-        return { popularity: -1 }; // Default sort by popularity
-    }
   }
-  
+};
+
+function getSortOption(sort) {
+  switch (sort) {
+      case 'price_low_to_high':
+          return { salePrice: 1 };
+      case 'price_high_to_low':
+          return { salePrice: -1 };
+      case 'average_rating':
+          return { averageRating: -1 };
+      case 'new_arrivals':
+          return { createdAt: -1 };
+      case 'a_to_z':
+          return { productName: 1 };
+      case 'z_to_a':
+          return { productName: -1 };
+      case 'featured':
+          return { isFeatured: -1 };
+      default:
+          return { popularity: -1 };
+  }
+}
+
 module.exports={
     getHome,
     productDetails,

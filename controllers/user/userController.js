@@ -396,7 +396,7 @@ const postLogin = async (req, res,next) => {
     }
     // If the user is an OAuth user, bypass password check
  if (user.authType === 'google') {
-      req.flash('error', 'Please use Google Sign-In');
+      req.flash('error', 'Incorrect Email or Password');
       return res.redirect('/login');
      }
     // Check if the user is blocked

@@ -26,7 +26,7 @@ const stockController=require('../controllers/admin/stockController')
 const couponController=require('../controllers/admin/couponController')
 const salesController=require('../controllers/admin/salesController')
 const offerController=require('../controllers/admin/offerController')
-
+const brandController=require('../controllers/admin/brandController')
 
 // Make flash messages available globally
 adminRoute.use((req, res, next) => {
@@ -116,6 +116,18 @@ adminRoute.get('/add-referral',offerController.addReferralCode)
 adminRoute.post('/add-referral-offer',offerController.postAddReferralCode)
 adminRoute.get('/block-referral/:id',offerController.blockReferral)
 adminRoute.get('/unblock-referral/:id',offerController.unBlockReferral)
+
+
+
+
+
+// Category routes
+adminRoute.get('/brand', authAdmin.isLogin, brandController.getBrand);
+adminRoute.post('/addBrand', authAdmin.isLogin, brandController.addBrand);
+adminRoute.get('/listBrand', authAdmin.isLogin, brandController.listBrand);
+adminRoute.get('/unlistBrand', authAdmin.isLogin, brandController.unlistBrand);
+adminRoute.get('/edit-brand/:id', authAdmin.isLogin, brandController.getEditbrand);
+adminRoute.post('/edit-brand/:id', authAdmin.isLogin, brandController.postEditbrand);
 
 
 adminRoute.get('/logout', authAdmin.isLogin, adminController.logout);

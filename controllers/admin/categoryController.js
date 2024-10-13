@@ -32,7 +32,7 @@ const getCategory = async (req, res,next) => {
             totalPage: totalPages,
             totalCategories: totalCategories,
             searchQuery: searchQuery,
-           error: req.flash('error'), // Handle flash message for,error
+           errors: req.flash('errors'), // Handle flash message for,error
             message: req.flash('message') // Handle flash message for success
         });
 
@@ -50,7 +50,7 @@ const addCategory = async (req, res,next) => {
         let categoryCheck = await Category.findOne({ categoryName: new RegExp('^' + categoryName + '$', 'i') });
 
         if (categoryCheck) {
-            req.flash('error', 'Category Name Already Exists');
+            req.flash('errors', 'Category Name Already Exists');
             console.log('name already exists');
             return res.redirect('/admin/category');
         }
@@ -115,7 +115,7 @@ const getEditCategory = async (req, res,next) => {
 
         res.render('./category/edit-category', {
             category: category,
-            error: req.flash('error')[0] || '',  // Pass the error message or an empty string
+            errors: req.flash('errors')[0] || '',  // Pass the error message or an empty string
             message: req.flash('message')[0] || ''  // Pass the success message or an empty string
         });
     } catch (error) {
@@ -124,17 +124,18 @@ const getEditCategory = async (req, res,next) => {
     }
 };
 
-
-const updateCategory = async (req, res,next) => {
+const updateCategory = async (req, res, next) => {
     try {
         const categoryId = req.params.id;
         const { categoryName, description, categoryOffer, offerExpiry } = req.body;
 
-        // Check if another category with the same name exists
-        const existingCategory = await Category.findOne({ categoryName });
+        // Check if another category with the same name exists (case-insensitive)
+        const existingCategory = await Category.findOne({
+            categoryName: { $regex: new RegExp(`^${categoryName}$`, 'i') }
+        });
 
         if (existingCategory && existingCategory._id.toString() !== categoryId) {
-            req.flash('error', 'Category name must be unique');
+            req.flash('errors', 'Category name must be unique');
             return res.redirect(`/admin/edit-category/${categoryId}`);
         }
 
@@ -151,7 +152,7 @@ const updateCategory = async (req, res,next) => {
         );
 
         if (!updatedCategory) {
-            req.flash('error', 'Failed to update category');
+            req.flash('errors', 'Failed to update category');
             return res.redirect('/admin/category');
         }
 
@@ -179,13 +180,14 @@ const updateCategory = async (req, res,next) => {
             await product.save();
         }
 
-        req.flash('message', 'Category and associated products updated successfully');
+        req.flash('message', 'Category updated successfully');
         return res.redirect('/admin/category');
     } catch (error) {
         console.error(error.message);
-        next(error)
-   }
+        next(error);
+    }
 };
+
 
 
 

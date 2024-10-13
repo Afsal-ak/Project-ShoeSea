@@ -44,11 +44,6 @@ userRoute.use((req, res, next) => {
   next();
 });
 
-// Example route that triggers an error
-userRoute.get('/error-test', (req, res) => {
-  throw new Error('This is a test error!'); // This will be caught by the error handler
-});
- 
 
 userRoute.use('/public', express.static(path.join(__dirname, '../public')));
 userRoute.set('views', path.join(__dirname, '../views/user'));
@@ -84,7 +79,7 @@ userRoute.get('/auth/google',passport.authenticate('google', { scope: ['profile'
 userRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/signup' }), (req, res) => {
 
   req.session.userId = req.user.id;
-  //for assigning referalcode to google auth users
+    //for assigning referalcode to google auth users
   userController.assignReferralCodesToUsers(); 
   res.redirect('/home');
 });
