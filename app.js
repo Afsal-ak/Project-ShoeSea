@@ -31,9 +31,7 @@ app.use((req, res, next) => {
     next();
 });
 const PORT = process.env.PORT || 3002;
-//userRoute.use(express.static(path.join(__dirname, '../public/uploads'))); // Ensure correct path for uploads
 app.use('/public', express.static(path.join(__dirname, '../public'))); // Ensure correct path for public
-//userRoute.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views/user'));
 app.use(passport.initialize())
 app.use(passport.session())

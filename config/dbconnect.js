@@ -1,5 +1,4 @@
 const mongoose=require('mongoose')
-const resoure=require('../resource_management')
 
 // mongoose.connect('mongodb://127.0.0.1:27017/Shoe-Sea')
 
