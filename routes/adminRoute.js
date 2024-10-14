@@ -16,6 +16,13 @@ adminRoute.use(flash());
 adminRoute.use(express.static(path.join(__dirname, '../public/uploads')));
 adminRoute.use('/public', express.static(path.join(__dirname, '../public')));
 
+// Make flash messages available globally
+adminRoute.use((req, res, next) => {
+    res.locals.successMessage = req.flash('success');
+    res.locals.errorMessage = req.flash('error');
+    next();
+});
+
 //controllers
 const authAdmin = require('../middlewares/adminAuth');
 const adminController = require('../controllers/admin/adminController');
@@ -27,14 +34,7 @@ const couponController=require('../controllers/admin/couponController')
 const salesController=require('../controllers/admin/salesController')
 const offerController=require('../controllers/admin/offerController')
 const brandController=require('../controllers/admin/brandController')
-
-// Make flash messages available globally
-adminRoute.use((req, res, next) => {
-    res.locals.successMessage = req.flash('success');
-    res.locals.errorMessage = req.flash('error');
-    next();
-});
-
+ 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -72,6 +72,16 @@ adminRoute.get('/listCategory', authAdmin.isLogin, categoryController.listCatego
 adminRoute.get('/unlistCategory', authAdmin.isLogin, categoryController.unListCategory);
 adminRoute.get('/edit-category/:id', authAdmin.isLogin, categoryController.getEditCategory);
 adminRoute.post('/edit-category/:id', authAdmin.isLogin, categoryController.updateCategory);
+
+
+
+// Brand routes
+adminRoute.get('/brand', authAdmin.isLogin, brandController.getBrand);
+adminRoute.post('/addBrand', authAdmin.isLogin, brandController.addBrand);
+adminRoute.get('/listBrand', authAdmin.isLogin, brandController.listBrand);
+adminRoute.get('/unlistBrand', authAdmin.isLogin, brandController.unlistBrand);
+adminRoute.get('/edit-brand/:id', authAdmin.isLogin, brandController.getEditbrand);
+adminRoute.post('/edit-brand/:id', authAdmin.isLogin, brandController.postEditbrand);
 
 // Product routes
 adminRoute.get('/products', authAdmin.isLogin, productController.productsList);
@@ -117,17 +127,6 @@ adminRoute.post('/add-referral-offer',offerController.postAddReferralCode)
 adminRoute.get('/block-referral/:id',offerController.blockReferral)
 adminRoute.get('/unblock-referral/:id',offerController.unBlockReferral)
 
-
-
-
-
-// Category routes
-adminRoute.get('/brand', authAdmin.isLogin, brandController.getBrand);
-adminRoute.post('/addBrand', authAdmin.isLogin, brandController.addBrand);
-adminRoute.get('/listBrand', authAdmin.isLogin, brandController.listBrand);
-adminRoute.get('/unlistBrand', authAdmin.isLogin, brandController.unlistBrand);
-adminRoute.get('/edit-brand/:id', authAdmin.isLogin, brandController.getEditbrand);
-adminRoute.post('/edit-brand/:id', authAdmin.isLogin, brandController.postEditbrand);
 
 
 adminRoute.get('/logout', authAdmin.isLogin, adminController.logout);
