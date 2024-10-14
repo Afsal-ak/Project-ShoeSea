@@ -142,6 +142,16 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+         /* Media query to hide the left panel on smaller screens */
+    @media (max-width: 600px) { /* Changed to 600px */
+        .left-panel {
+            display: none; /* Hides the left panel on mobile devices */
+        }
+        .signup-container {
+            flex: 1; /* Ensures the signup container takes up the full width */
+            padding: 2rem; /* Adjust padding for mobile */
+        }
+    }
     </style>
 </head>
 <body>

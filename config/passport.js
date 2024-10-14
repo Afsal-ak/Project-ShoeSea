@@ -13,9 +13,7 @@ passport.use(new GoogleStrategy({
     try {
       // Get the user's email from Google profile
       const email = profile.emails[0].value;
-      console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log("GOOGLE_CLIENT_SECRET:", process.env.GOOGLE_CLIENT_SECRET);
-
+  
       // First, check if the user already exists by email
       let user = await User.findOne({ email: email });
       

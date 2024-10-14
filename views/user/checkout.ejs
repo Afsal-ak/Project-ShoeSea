@@ -452,7 +452,7 @@ table tr:hover {
                     <input type="number" name="pincode" placeholder="Pincode" required>
                     <input type="number" name="phone" placeholder="Phone Number" required>
 
-                    <button type="submit" class="btn">Save Address</button>
+                    <button style="background-color: #007bff; color: white;" type="submit" class="btn">Save Address</button>
                 </form>
 
                 <!-- Existing Addresses -->
@@ -604,7 +604,7 @@ table tr:hover {
                     <input type="hidden" name="totalQuantity" value="<%= userCart.cart.reduce((sum, item) => sum + item.quantity, 0) %>">
                     <input type="hidden" name="addressId" id="selectedAddressId" value="">
             
-                    <button type="submit" class="btn">Place Order</button>
+                    <button type="submit" class="btn" style="background-color: #007bff;color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; font-weight: 600;  cursor: pointer;">Place Order</button>
                 </form>
             </div>
             
