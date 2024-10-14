@@ -422,6 +422,53 @@ table tr:hover {
     font-size: 16px; /* Font size for the label */
     color: #555; /* Color for the label text */
 }
+/* Responsive table container */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Style adjustments for smaller screens */
+@media (max-width: 768px) {
+    .cart-table thead {
+        display: none;
+    }
+
+    .cart-table, .cart-table tbody, .cart-table tr, .cart-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .cart-table tr {
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 1rem;
+    }
+
+    .cart-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        text-align: right;
+    }
+
+    .cart-table td::before {
+        content: attr(data-label);
+        flex: 1;
+        text-align: left;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .cart-table .product-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .product-img {
+        max-width: 100px;
+        height: auto;
+    }
+}
 
     </style>
 </head>
@@ -430,9 +477,8 @@ table tr:hover {
 
     <div class="container">
         <h2><i class="fas fa-shopping-cart"></i> Checkout</h2>
-<!-- Coupon Link -->
-<a href="/coupons" class="coupon-link">see coupons</a>
-<div class="checkout-grid">
+ 
+        <div class="checkout-grid">
             <div class="checkout-section">
                 <h3><i class="fas fa-map-marker-alt"></i> Shipping Address</h3>
 

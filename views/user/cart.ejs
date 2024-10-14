@@ -176,66 +176,68 @@
                 <a href="/products">Continue shopping</a>
             </div>
         <% } else { %>
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Subtotal</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% userCart.cart.forEach(function(item) { %>
-                        <tr data-product-id="<%= item.productId._id %>">
-                            <td>
-                                <div class="product-info">
-                                    <% if (item.productId) { %>
-                                        <img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.productName %>" class="product-img">
-                                        <div class="product-name"><%= item.productId.productName %></div>
-                                    <% } else { %>
-                                        <p>Product not available</p>
-                                    <% } %>
-                                </div>
-                            </td>
-                            <td>
-                                <% if (item.productId) { %>
-                                    ₹<%= item.productId.salePrice.toFixed(2) %>
-                                <% } else { %>
-                                    N/A
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (item.productId) { %>
-                                    <div class="quantity-controls">
-                                        <button class="btn-minus">-</button>
-                                        <span class="quantity"><%= item.quantity %></span>
-                                        <button class="btn-plus">+</button>
-                                    </div>
-                                <% } else { %>
-                                    N/A
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (item.productId) { %>
-                                    <span class="subtotal"><%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
-                                <% } else { %>
-                                    N/A
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (item.productId) { %>
-                                    <a href="/cart/delete?id=<%= item.productId._id %>" class="btn-delete">Remove</a>
-                                <% } else { %>
-                                    <span class="text-muted">Unavailable</span>
-                                <% } %>
-                            </td>
+            <div class="table-responsive">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Actions</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-
+                    </thead>
+                    <tbody>
+                        <% userCart.cart.forEach(function(item) { %>
+                            <tr data-product-id="<%= item.productId._id %>">
+                                <td>
+                                    <div class="product-info">
+                                        <% if (item.productId) { %>
+                                            <img src="<%= item.productId.productImages[0] %>" alt="<%= item.productId.productName %>" class="product-img">
+                                            <div class="product-name"><%= item.productId.productName %></div>
+                                        <% } else { %>
+                                            <p>Product not available</p>
+                                        <% } %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% if (item.productId) { %>
+                                        ₹<%= item.productId.salePrice.toFixed(2) %>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (item.productId) { %>
+                                        <div class="quantity-controls">
+                                            <button class="btn-minus">-</button>
+                                            <span class="quantity"><%= item.quantity %></span>
+                                            <button class="btn-plus">+</button>
+                                        </div>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (item.productId) { %>
+                                        <span class="subtotal"><%= (item.productId.salePrice * item.quantity).toFixed(2) %></span>
+                                    <% } else { %>
+                                        N/A
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (item.productId) { %>
+                                        <a href="/cart/delete?id=<%= item.productId._id %>" class="btn-delete">Remove</a>
+                                    <% } else { %>
+                                        <span class="text-muted">Unavailable</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
             <div class="cart-summary">
                 <p>Total Items: <span id="total-items"><%= userCart.cart.reduce((total, item) => total + (item.productId ? item.quantity : 0), 0) %></span></p>
                 <p>Total Price: ₹<span id="total-price"><%= userCart.cart.reduce((total, item) => {

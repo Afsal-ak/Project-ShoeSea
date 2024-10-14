@@ -9,7 +9,6 @@ passport.use(new GoogleStrategy({
    // callbackURL: '/auth/google/callback'
    callbackURL: 'https://shoesea.in/auth/google/callback'
 
-    
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
