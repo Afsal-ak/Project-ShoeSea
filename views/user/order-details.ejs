@@ -81,6 +81,7 @@
             max-height: 80px;
             object-fit: cover;
         }
+        
     </style>
 </head>
 
@@ -110,90 +111,83 @@
             <h4 class="order-status <%= order.paymentStatus.toLowerCase().replace(/ /g, '-') %>">Payment Status: <%= order.paymentStatus %></h4>
  
             <h4>Order Details</h4>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Total Returns/Cancel</th>
-
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% order.products.forEach(product => { %>
-                        <% if (product.productId) { %>
-                            <tr>
-                                <td>
-                                    <% if (product.productId.productImages && product.productId.productImages.length > 0) { %>
-                                        <a href="/product-details/<%= product.productId._id %>">
-                                            <img src="/<%= product.productId.productImages[0] %>" alt="<%= product.productId.productName %>" class="product-image">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Total Returns/Cancel</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% order.products.forEach(product => { %>
+                            <% if (product.productId) { %>
+                                <tr>
+                                    <td>
+                                        <% if (product.productId.productImages && product.productId.productImages.length > 0) { %>
+                                            <a href="/product-details/<%= product.productId._id %>">
+                                                <img src="/<%= product.productId.productImages[0] %>" alt="<%= product.productId.productName %>" class="product-image">
+                                            </a>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <a style="text-decoration: none;" href="/product-details/<%= product.productId._id %>">
+                                            <%= product.productId.productName %>
                                         </a>
-                                    <% } %>
-                                </td>
-                                <td>
-                                    <a style="text-decoration: none;" href="/product-details/<%= product.productId._id %>">
-                                        <%= product.productId.productName %>
-                                    </a>
-                                </td>
-                                <td>₹<%= product.productId.salePrice.toFixed(2) %></td>
-                                <td><%= product.quantity %></td>
-                                <td>₹<%= (product.productId.salePrice * product.quantity).toFixed(2) %></td>
-                                <td>
-                                    <% 
-                                    // Find the return request for the specific product
-                                    const returnRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
-                                    const totalReturnedQuantity = returnRequest ? returnRequest.quantity : 0; // Get the returned quantity or 0 if not found
-                                    %>
-                                    <%= totalReturnedQuantity %>
-                                </td>
-                                
-                                <td>
-                                    <% if (order.status === 'Delivered') { %>
+                                    </td>
+                                    <td>₹<%= product.productId.salePrice.toFixed(2) %></td>
+                                    <td><%= product.quantity %></td>
+                                    <td>₹<%= (product.productId.salePrice * product.quantity).toFixed(2) %></td>
+                                    <td>
                                         <% 
-                                        // Check total quantity returned
-                                        const returnRequest = order.products.find(req => req.productId.toString() === product.productId._id.toString());
+                                        const returnRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
                                         const totalReturnedQuantity = returnRequest ? returnRequest.quantity : 0;
-                                        const isFullyReturned = totalReturnedQuantity >= product.quantity; // Check if fully returned
                                         %>
-                                        <% if (isFullyReturned) { %>
-                                            <span class="text-success">Returned</span>
-                                        <% } else { %>
-                                            <!-- Return Button -->
-                                            <form action="/order/<%= order._id %>/<%= product.productId._id %>/return" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
-                                                <button type="submit" class="btn btn-warning btn-sm" onclick="return confirmProductReturn('<%= product._id %>', '<%= product.quantity %>')">Return</button>
-                                            </form>
+                                        <%= totalReturnedQuantity %>
+                                    </td>
+                                    <td>
+                                        <% if (order.status === 'Delivered') { %>
+                                            <% 
+                                            const returnRequest = order.products.find(req => req.productId.toString() === product.productId._id.toString());
+                                            const totalReturnedQuantity = returnRequest ? returnRequest.quantity : 0;
+                                            const isFullyReturned = totalReturnedQuantity >= product.quantity;
+                                            %>
+                                            <% if (isFullyReturned) { %>
+                                                <span class="text-success">Returned</span>
+                                            <% } else { %>
+                                                <form action="/order/<%= order._id %>/<%= product.productId._id %>/return" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
+                                                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirmProductReturn('<%= product._id %>', '<%= product.quantity %>')">Return</button>
+                                                </form>
+                                            <% } %>
                                         <% } %>
-                                    <% } %>
-                                    
-                                    <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
-                                        <% 
-                                        // Check total quantity canceled
-                                        const cancelRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
-                                        const totalCanceledQuantity = cancelRequest ? cancelRequest.quantity : 0;
-                                        const isCanceled = 0 >= product.quantity; // Check if fully canceled
-                                        %>
-                                        <% if (isCanceled) { %>
-                                            <span class="text-danger">Cancelled</span>
-                                        <% } else { %>
-                                            <!-- Cancel Button -->
-                                            <form action="/order/<%= order._id %>/<%= product.productId._id %>/cancel" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
-                                                <input type="number" name="quantity" id="cancel-quantity-<%= product._id %>" min="1" max="<%= product.quantity %>" value="1" style="width: 60px; margin-right: 5px;">
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmProductCancel('<%= product._id %>')">Cancel</button>
-                                            </form>
+                                        <% if (order.status === 'Pending' || order.status === 'Shipped') { %>
+                                            <% 
+                                            const cancelRequest = order.returnRequest.find(req => req.productId.toString() === product.productId._id.toString());
+                                            const totalCanceledQuantity = cancelRequest ? cancelRequest.quantity : 0;
+                                            const isCanceled = 0 >= product.quantity;
+                                            %>
+                                            <% if (isCanceled) { %>
+                                                <span class="text-danger">Cancelled</span>
+                                            <% } else { %>
+                                                <form action="/order/<%= order._id %>/<%= product.productId._id %>/cancel" method="POST" id="returnOrderForm-<%= product._id %>" class="form-inline" style="display:inline;">
+                                                    <input type="number" name="quantity" id="cancel-quantity-<%= product._id %>" min="1" max="<%= product.quantity %>" value="1" style="width: 60px; margin-right: 5px;">
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmProductCancel('<%= product._id %>')">Cancel</button>
+                                                </form>
+                                            <% } %>
                                         <% } %>
-                                    <% } %>
-                                </td>
-                            </tr>
-                        <% } %>
-                    <% }) %>
-                </tbody>
-                
-                
-            </table>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            
             <% if (order.status === 'Pending' || order.status === 'Shipped' ) { %>
                 <form id="cancelOrderForm-<%= order._id %>" action="/order/<%= order._id %>/cancel" method="POST" style="display:inline;">
                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirmCancel('<%= order._id %>')">Cancel All</button>

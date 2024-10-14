@@ -141,34 +141,35 @@
             <div class="container transaction-container">
                 <section class="wallet-transactions">
                     <h2>Transaction History</h2>
-                    <table id="transactionsTable" class="display">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Debited/Credited</th>
-                                <th>Amount</th>
-                                <th>Description</th>
-
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% if (wallet && wallet.length > 0) { %>
-                                <% wallet.forEach(transaction => { %>
-                                    <tr>
-                                        <td><%= new Date(transaction.date).toLocaleDateString('en-GB') %></td>
-                                        <td><%= transaction.type === 'credit' ? 'Credit' : 'Debit' %></td>
-                                        <td>₹<%= transaction.amount.toFixed(2) %></td>
-                                        <td><%= transaction.description %></td>
-                                    </tr>
-                                <% }); %>
-                            <% } else { %>
+                    <div class="table-responsive">
+                        <table id="transactionsTable" class="display">
+                            <thead>
                                 <tr>
-                                    <td colspan="4">No transactions available</td>
+                                    <th>Date</th>
+                                    <th>Debited/Credited</th>
+                                    <th>Amount</th>
+                                    <th>Description</th>
                                 </tr>
-                            <% } %>
-                        </tbody>
-                        
-                    </table>
+                            </thead>
+                            <tbody>
+                                <% if (wallet && wallet.length > 0) { %>
+                                    <% wallet.forEach(transaction => { %>
+                                        <tr>
+                                            <td><%= new Date(transaction.date).toLocaleDateString('en-GB') %></td>
+                                            <td><%= transaction.type === 'credit' ? 'Credit' : 'Debit' %></td>
+                                            <td>₹<%= transaction.amount.toFixed(2) %></td>
+                                            <td><%= transaction.description %></td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4">No transactions available</td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    
                 </section>
             </div>
         </div>

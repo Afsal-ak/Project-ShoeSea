@@ -62,32 +62,35 @@
     <div class="coupon-container">
         <h1>Available Coupons</h1>
         <% if (coupons.length > 0) { %>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Coupon Name</th>
-                        <th>Discount</th>
-                        <th>Minimum Purchase</th>
-                        <th>Expires On</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% coupons.forEach(coupon => { %>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td><%= coupon.name %></td>
-                            <td>
-                                <% if (coupon.discountType === 'percentage') { %>
-                                    <%= coupon.offerPrice %>% off
-                                <% } else { %>
-                                    ₹<%= coupon.offerPrice.toFixed(2) %> off
-                                <% } %>
-                            </td>
-                            <td>₹<%= coupon.minimumPrice.toFixed(2) %></td>
-                            <td><%= coupon.expirationDate.toDateString() %></td>
+                            <th>Coupon Name</th>
+                            <th>Discount</th>
+                            <th>Minimum Purchase</th>
+                            <th>Expires On</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% coupons.forEach(coupon => { %>
+                            <tr>
+                                <td><%= coupon.name %></td>
+                                <td>
+                                    <% if (coupon.discountType === 'percentage') { %>
+                                        <%= coupon.offerPrice %>% off
+                                    <% } else { %>
+                                        ₹<%= coupon.offerPrice.toFixed(2) %> off
+                                    <% } %>
+                                </td>
+                                <td>₹<%= coupon.minimumPrice.toFixed(2) %></td>
+                                <td><%= coupon.expirationDate.toDateString() %></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
 
             <!-- Pagination Controls -->
             <div class="pagination">

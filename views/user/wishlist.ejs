@@ -52,38 +52,44 @@
     <div class="container mt-4">
         <h1>My Wishlist</h1>
         <% if (wishlist && wishlist.products.length > 0) { %>
-            <table class="table wishlist-table">
-                <thead>
-                    <tr>
-                        <th>Image</th>
-                        <th style="text-align: center;">Product Name</th>
-                        <th>Price</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% wishlist.products.forEach(item => { %>
+            <div class="table-responsive">
+                <table class="table wishlist-table">
+                    <thead>
                         <tr>
-                            <td ><a style="text-decoration: none;" href="/product-details/<%= item.productId._id %>"><img src="/<%= item.productId.productImages[0] %>" alt="<%= item.productId.productName %>"></a></td>
-                            <td class="product-name">
-                                <a  href="/product-details/<%= item.productId._id %>">
-                                    <%= item.productId.productName %>
-
-                                </a>
-                            </td>
-                            <td><%= item.productId.salePrice %> ₹</td>
-                            <td>
-                                <button class="remove-btn" onclick="confirmRemove('<%= item.productId._id %>')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <form id="remove-form-<%= item.productId._id %>" action="/wishlist/remove" method="POST" style="display: none;">
-                                    <input type="hidden" name="productId" value="<%= item.productId._id %>">
-                                </form>
-                            </td>
+                            <th>Image</th>
+                            <th style="text-align: center;">Product </th>
+                            <th>Price</th>
+                            <th>Action</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% wishlist.products.forEach(item => { %>
+                            <tr>
+                                <td>
+                                    <a style="text-decoration: none;" href="/product-details/<%= item.productId._id %>">
+                                        <img src="/<%= item.productId.productImages[0] %>" alt="<%= item.productId.productName %>">
+                                    </a>
+                                </td>
+                                <td class="product-name">
+                                    <a href="/product-details/<%= item.productId._id %>">
+                                        <%= item.productId.productName %>
+                                    </a>
+                                </td>
+                                <td><%= item.productId.salePrice %> ₹</td>
+                                <td>
+                                    <button class="remove-btn" onclick="confirmRemove('<%= item.productId._id %>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <form id="remove-form-<%= item.productId._id %>" action="/wishlist/remove" method="POST" style="display: none;">
+                                        <input type="hidden" name="productId" value="<%= item.productId._id %>">
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            
             <!-- Pagination -->
             <div class="pagination-container">
                 <nav aria-label="Page navigation">
@@ -105,7 +111,7 @@
         <% } else { %>
             <div class="empty-message">
                 <h2>Your wishlist is empty.</h2>
-                <p>Looks like you haven't added any items to your wishlist yet. <a style="text-decoration:solid;" href="/product-list">Browse our products</a> to find something you like!</p>
+                <p>Looks like you haven't added any items to your wishlist yet. <a style="text-decoration:double; color: #0056b3;" href="/products">Browse our products</a> to find something you like!</p>
             </div>
         <% } %>
     </div>
