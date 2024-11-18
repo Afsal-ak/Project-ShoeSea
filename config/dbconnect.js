@@ -1,22 +1,22 @@
 const mongoose=require('mongoose')
 
-// mongoose.connect('mongodb://127.0.0.1:27017/Shoe-Sea')
+mongoose.connect('mongodb://127.0.0.1:27017/Shoe-Sea')
 
-//// check
-// const dbConnect=mongoose.connection
-// dbConnect.on('error',console.error.bind(console,'Database connection error'))
-// dbConnect.once('open',function(){
-//     console.log('Database conection success')
-
-// })
-
-const dbConnect=mongoose.connect(process.env.MONGODB_URI)
-.then(()=>{
-    console.log("mongodb connected")
- 
-}).catch((err)=>{
-    console.log("Error in connecting mongodb",err)
+// check
+const dbConnect=mongoose.connection
+dbConnect.on('error',console.error.bind(console,'Database connection error'))
+dbConnect.once('open',function(){
+    console.log('Database conection success')
 
 })
+
+// const dbConnect=mongoose.connect(process.env.MONGODB_URI)
+// .then(()=>{
+//     console.log("mongodb connected")
+ 
+// }).catch((err)=>{
+//     console.log("Error in connecting mongodb",err)
+
+// })
 
 module.exports=dbConnect

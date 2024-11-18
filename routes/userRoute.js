@@ -94,6 +94,10 @@ userRoute.get('/products',productController.listProducts)
 userRoute.get('/product-details/:id', productController.productDetails);
 userRoute.get('/search',productController.search)
 
+//review
+
+userRoute.post('/submit-review/:id',authUser.isLogin,productController.postReview)
+
 // Profile routes
 userRoute.get('/account',authUser.isLogin,profileController.getAccount)
 userRoute.get('/profile', authUser.isLogin, profileController.getUserProfile);

@@ -118,6 +118,7 @@ const postSignup = async (req, res) => {
               return res.render('signup', { messages: 'Invalid referral code' });
           }
       }
+ 
 
       // Store OTP and user data in session
       req.session.userOtp = otp;
@@ -140,7 +141,6 @@ const verifyOtp = async (req, res) => {
 
       // If there's no active referral offer, set referralAmount to 0
       const referralAmount = referralOffer ? referralOffer.referralAmount : 0;
-
       // Check if the OTP matches
       if (otp.toString() === req.session.userOtp.toString()) {
           const userData = req.session.userData;

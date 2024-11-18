@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details - <%= product.productName %></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .zoom-container { position: relative; overflow: hidden; }
@@ -43,6 +44,150 @@
 .thumbnail:hover {
     opacity: 1; /* Increase opacity when hovered */
 }
+
+/* Modal Overlay */
+#reviewModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+#reviewModal > form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+/* Form Elements */
+h4 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+textarea {
+    height: 100px;
+}
+
+
+/* Button Styles */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+/* Modal Styling */
+#reviewModal > form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    margin: auto;
+}
+
+/* Close Modal Button */
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+/* Form Elements */
+h4 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+textarea {
+    height: 100px;
+}
+
+/* Submit Button */
+button[type="submit"] {
+    color: white;
+    transition: background-color 0.3s;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+
+/* Leave Review Button */
+#leaveReviewBtn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    font-size: 1em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#leaveReviewBtn:hover {
+    background-color: #218838;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #reviewModal > form {
+        width: 95%;
+    }
+}
+
 
     </style>
 </head>
@@ -102,8 +247,11 @@
             </div>
             <div class="col-md-6">
                 <h1><%= product.productName %></h1>
-                <p class="rating">★★★★☆ <%= product.ratings %> (<%= product.reviews ? product.reviews.length : 0 %> User feedback)</p>
-                <p>Status: <span class="<%= product.quantity > 0 ? 'status-available' : 'status-unavailable' %>">
+                <p class="rating">
+                    <%= product.productReview.length > 0 ? '★★★★☆ ' + product.productReview[0].rating : 'No ratings yet' %>
+                    (<%= product.productReview ? product.productReview.length : 0 %> User feedback)
+                </p>
+                                <p>Status: <span class="<%= product.quantity > 0 ? 'status-available' : 'status-unavailable' %>">
                     <%= product.quantity > 0 ? 'Available' : 'Sold Out' %></span>
                 </p>
                 <p>Brand: <%= product.brandId ? product.brandId.brandName : 'Not available' %></p>
@@ -142,86 +290,142 @@
                 </form>
 
              
-                
-                
                 <!-- Wishlist Button -->
-<form action="/wishlist/add" method="POST" class="d-inline">
-    <input type="hidden" name="productId" value="<%= product._id %>">
-    <button  class="btn btn-primary"  type="submit" <%= product.quantity>0?'':'disabled'  %>>
-        <i class="bi bi-heart"></i> Add to Wishlist
-    </button>
-</form>
+                <form action="/wishlist/add" method="POST" class="d-inline">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <button class="btn btn-primary" type="submit" <%=product.quantity>0?'':'disabled' %>>
+                        <i class="bi bi-heart"></i> Add to Wishlist
+                    </button>
+                </form>
                 <div class="mt-4">
                     <h5>Highlights/Specs:</h5>
-                    <p><%= product.highlights %></p>
+                    <p>
+                        <%= product.highlights %>
+                    </p>
                     <ul>
-                        <li><strong>Colour:</strong> <%= product.colour %></li>
+                        <li><strong>Colour:</strong>
+                            <%= product.colour %>
+                        </li>
                         <li>Item Weight: 600 g</li>
                         <li>Item Dimensions: LxWxH 45 x 30 x 3 Centimeters</li>
                         <li>Generic Name: Running Shoes</li>
                     </ul>
                 </div>
-            </div>
-        </div>
-
-        <!-- Reviews Section -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button" role="tab" aria-controls="review" aria-selected="false">Reviews</button>
-                    </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
-                        <p><%= product.description %></p>
-                    </div>
-                    <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
-                        <!-- Reviews content -->
-                        <% if (product.reviews && product.reviews.length > 0) { %>
-                            <ul class="list-unstyled">
-                                <% product.reviews.forEach((review) => { %>
-                                    <li class="mb-3">
-                                        <strong><%= review.user %>:</strong> <%= review.comment %> 
-                                        <br><small class="text-muted">Rating: <%= review.rating %>/5</small>
-                                    </li>
-                                <% }) %>
-                            </ul>
-                        <% } else { %>
-                            <p>No reviews available.</p>
-                        <% } %>
-                        <!-- Review Submission Form -->
-                        <div class="mt-4">
-                            <h5>Submit Your Review</h5>
-                            <form action="/products/<%= product._id %>/review" method="POST">
-                                <div class="mb-3">
-                                    <label for="reviewerName" class="form-label">Your Name</label>
-                                    <input type="text" class="form-control" id="reviewerName" name="user" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="reviewRating" class="form-label">Rating</label>
-                                    <select class="form-select" id="reviewRating" name="rating" required>
-                                        <option value="1">1 - Poor</option>
-                                        <option value="2">2 - Fair</option>
-                                        <option value="3">3 - Good</option>
-                                        <option value="4">4 - Very Good</option>
-                                        <option value="5">5 - Excellent</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="reviewComment" class="form-label">Comment</label>
-                                    <textarea class="form-control" id="reviewComment" name="comment" rows="3" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit Review</button>
-                            </form>
+                </div>
+                </div>
+            <!-- Reviews Section -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description"
+                                type="button" role="tab" aria-controls="description" aria-selected="true">Description</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="review-tab" data-bs-toggle="tab" data-bs-target="#review" type="button"
+                                role="tab" aria-controls="review" aria-selected="false">Reviews</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+                            <p>
+                                <%= product.description %>
+                            </p>
                         </div>
+                        <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
+                            
+                            <!-- Reviews content -->
+                            <% if (paginatedReviews && paginatedReviews.length> 0) { %>
+                                <ul class="list-unstyled">
+                                    <% paginatedReviews.forEach((review)=> { %>
+                                        <li class="mb-3 p-3 rounded" style="background-color: #f9f9f9;">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-user-circle fa-lg me-2"></i>
+                                                <strong>
+                                                    <%= review.name %>
+                                                </strong>
+                                            </div>
+                                            <p>
+                                                <%= review.comment %>
+                                            </p>
+                                            <small class="text-muted">Rating: <%= review.rating %>/5</small>
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                                <!-- Pagination Controls -->
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        <% if (currentPage> 1) { %>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=<%= currentPage - 1 %>&limit=<%= limit %>"
+                                                    aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <% } %>
+                                                <% for (let i=1; i <=totalPages; i++) { %>
+                                                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                        <a class="page-link" href="?page=<%= i %>&limit=<%= limit %>">
+                                                            <%= i %>
+                                                        </a>
+                                                    </li>
+                                                    <% } %>
+                                                        <% if (currentPage < totalPages) { %>
+                                                            <li class="page-item">
+                                                                <a class="page-link" href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" aria-label="Next">
+                                                                    <span aria-hidden="true">&raquo;</span>
+                                                                </a>
+                                                            </li>
+                                                            <% } %>
+                                                                </ul>
+                                                                </nav>
+                                                                <% } else { %>
+                                                                    <p>No reviews available.</p>
+                                                                    <% } %>
+                                                                        <!-- Leave Review Button -->
+                                                                        <% if (userId) { %>
+                                                                            <button id="leaveReviewBtn">Leave a Review</button>
+                                                                            <% } else { %>
+                                                                                <% } %>
+                                                       
+                                </div>
+                        
                     </div>
                 </div>
             </div>
-        </div>
+               
+               <!-- Review Form -->
+<div id="reviewModal" style="display: none;">
+    <form id="reviewForm">
+        <button type="button" class="close-modal" onclick="closeModal()">&times;</button>
+        <h4>Submit Your Review</h4>
+        <div id="formError" class="text-danger mt-2"></div>
+
+        <label for="rating">Rating</label>
+        <select id="rating" name="rating" required>
+            <option value="" disabled selected>Select a rating</option>
+            <option value="5">5 - Excellent</option>
+            <option value="4.5">4.5 - Very Good</option>
+            <option value="4">4 - Good</option>
+            <option value="3.5">3.5 - Above Average</option>
+            <option value="3">3 - Average</option>
+            <option value="2.5">2.5 - Below Average</option>
+            <option value="2">2 - Poor</option>
+            <option value="1.5">1.5 - Very Poor</option>
+            <option value="1">1 - Terrible</option>
+        </select>
+
+        <label for="reviewComment">Comment</label>
+        <textarea id="reviewComment" name="comment" rows="3" required></textarea>
+
+        <button style="background-color: #218838;" type="submit">Submit Review</button>
+    </form>
+</div>
+                
+                </div>
+                </div>
+                </div>
+                </div>
 
         <!-- Related Products Section -->
 <div class="row mt-5">
@@ -312,6 +516,72 @@ function changeMainImage(thumbnail) {
     thumbnail.classList.add('active-thumbnail');
 }
 
+document.getElementById('reviewForm').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get the input values and trim any whitespace
+    const rating = document.getElementById('rating').value.trim();
+    const comment = document.getElementById('reviewComment').value.trim();
+    const productId = window.location.pathname.split('/').pop(); // Get the product ID from the URL
+
+    // Clear any previous error message
+    const formError = document.getElementById('formError');
+    formError.textContent = '';
+
+    // Validate the inputs
+    if (!rating || !comment) {
+        formError.textContent = 'Please provide both a rating and a comment.';
+        formError.classList.remove('text-success');
+        formError.classList.add('text-danger');
+        return; // Stop the submission if validation fails
+    }
+
+    try {
+        const response = await fetch(`/submit-review/${productId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                rating,
+                comment
+            }),
+        });
+
+        // Check if the response is ok
+        if (response.ok) {
+            // If successful, show a success message or update the reviews section
+            formError.textContent = 'Review submitted successfully.';
+            formError.classList.remove('text-danger');
+            formError.classList.add('text-success');
+            // Optionally, update the reviews section dynamically without refreshing
+            window.location.reload(); // Reload the page to show the new review
+        } else {
+            // If an error occurs, get the error message
+            const errorData = await response.json();
+            formError.textContent = errorData.message || 'An error occurred while submitting your review.';
+            formError.classList.remove('text-success');
+            formError.classList.add('text-danger');
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        formError.textContent = 'An error occurred while submitting your review. Please try again.';
+        formError.classList.remove('text-success');
+        formError.classList.add('text-danger');
+    }
+});
+
+    // Open the modal
+    document.getElementById('leaveReviewBtn').onclick = function() {
+        document.getElementById('reviewModal').style.display = 'block';
+    };
+
+    // Close the modal
+    function closeModal() {
+        document.getElementById('reviewModal').style.display = 'none';
+    }
+
     </script>
+    
 </body>
 </html>

@@ -80,14 +80,18 @@ const productSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
+        name:{
+            type:String
+        },
         comment:{
             type:String
         },
         rating:{
             type:Number
         },
-        date:{
-            type:Date
+        date: {
+            type: Date,
+            default: Date.now
         }
     }],
     views: {

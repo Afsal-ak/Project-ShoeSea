@@ -153,29 +153,7 @@ const getAdminDashboard = async (req, res, next) => {
             { $limit: 10 }
         ]);
 
-        // Top 10 Brands aggregation
-        // const topBrands = await Order.aggregate([
-        //     { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
-        //     { $unwind: "$products" },
-        //     {
-        //         $lookup: {
-        //             from: 'products',
-        //             localField: 'products.productId',
-        //             foreignField: '_id',
-        //             as: 'brandDetails'
-        //         }
-        //     },
-        //     { $unwind: "$brandDetails" },
-        //     {
-        //         $group: {
-        //             _id: "$brandDetails.brand",
-        //             brandName: { $first: "$brandDetails.brand" },
-        //             totalSales: { $sum: "$products.quantity" }
-        //         }
-        //     },
-        //     { $sort: { totalSales: -1 } },
-        //     { $limit: 10 }
-        // ]);
+        
         const topBrands = await Order.aggregate([
             { $match: { orderDate: { $gte: startDate, $lte: endDate } } },
             { $unwind: "$products" },
@@ -326,19 +304,39 @@ const getAdminDashboard = async (req, res, next) => {
     }
 };
 
-
-
-const getUser = async (req, res,next) => {
+const getUser = async (req, res, next) => {
     try {
-        const activeUser = await User.find({ is_blocked: false });
-        const blockedUser = await User.find({ is_blocked: true });
-        const allUser = activeUser.concat(blockedUser);
-        res.render('user-list', { users: allUser });
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1; // Current page number, defaults to 1
+        const limit = parseInt(req.query.limit) || 10; // Number of users per page, defaults to 10
+        const skip = (page - 1) * limit; // Calculate how many users to skip
+
+        // Fetch all users sorted by created time
+        const allUsers = await User.find({})
+            .sort({ createdAt: -1 }) // Sort by created time in descending order
+            .skip(skip)
+            .limit(limit);
+
+        // Fetch the total count of all users for pagination purposes
+        const totalUsers = await User.countDocuments({});
+        
+        // Calculate total pages
+        const totalPages = Math.ceil(totalUsers / limit);
+
+        // Render the user list with pagination data
+        res.render('user-list', {
+            users: allUsers,
+            currentPage: page,
+            totalPages,
+            limit,
+            totalUsers,
+        });
     } catch (error) {
         console.log(error.message);
-        next(error)
+        next(error);
     }
 };
+
 
 const blockUser = async (req, res,next) => {
     const id = req.query.id;

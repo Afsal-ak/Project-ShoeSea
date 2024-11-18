@@ -1,5 +1,6 @@
 const Product = require('../../models/productModel');
 const Category = require('../../models/categoryModel');
+const User = require('../../models/userModel')
 const Brand = require('../../models/brandModel')
 const Order = require('../../models/orderModel');
 const Referral=require('../../models/referralModel')
@@ -38,53 +39,61 @@ const getHome = async (req, res) => {
 };
 
 
-
-  const productDetails = async (req, res) => {
+const productDetails = async (req, res) => {
     try {
-      // Find the product by ID and ensure it is not blocked
-      const product = await Product.findOne({ _id: req.params.id, is_blocked: false })
-      .populate({
-        path:'categoryId',
-        match:{isListed:true},
-        select:'categoryName'
-    })
-      .populate({
-        path:'brandId',
-        match:{isListed:true},
-        select:'brandName'
-    })
-  
-      // If the product is not found or is blocked, return a 404 error page or message
-      if (!product) {
-        return res.status(404).render('error', { message: 'Product not found' });
-      }
-  
-      // Fetch related products (e.g., products from the same category), excluding the current product and blocked products
-      const relatedProducts = await Product.find({
-        categoryId: product.categoryId,
-        _id: { $ne: product._id }, // Exclude the current product
-        is_blocked: false // Exclude blocked products
-      })
-      .limit(4);
 
-      //for increasing the view of product
-      await Product.findByIdAndUpdate(product._id,{$inc:{views:1}})
- 
+        const productId = req.params.id;
+        const currentPage = parseInt(req.query.page) || 1;  
+        const limit = parseInt(req.query.limit) || 5; // Limit of reviews per page
+        const userId=req.session.userId
+        const skip = (currentPage - 1) * limit;  
+        // Find the product by ID and ensure it is not blocked
+        const product = await Product.findOne({ _id: productId, is_blocked: false })
+            .populate({
+                path: 'categoryId',
+                match: { isListed: true },
+                select: 'categoryName'
+            })
+            .populate({
+                path: 'brandId',
+                match: { isListed: true },
+                select: 'brandName'
+            });
 
-  
-      // Ensure reviews is always an array
-      product.productReview = product.productReview || [];
-  
-      // Render the product details page with the product and related products
-      res.render('product-details', {
-        product,
-        relatedProducts
-      });
+        if (!product) {
+            return res.status(404).render('error', { message: 'Product not found' });
+        }
+
+        // Get paginated reviews
+        const totalReviews = product.productReview.length;
+        const paginatedReviews = product.productReview.slice(skip, skip + limit);
+
+        // Fetch related products (e.g., from the same category)
+        const relatedProducts = await Product.find({
+            categoryId: product.categoryId,
+            _id: { $ne: product._id },
+            is_blocked: false
+        }).limit(4);
+
+        // Increment the product's view count
+        await Product.findByIdAndUpdate(product._id, { $inc: { views: 1 } });
+
+        // Render the product details page
+        res.render('product-details', {
+            product,
+            userId,
+            relatedProducts,
+            currentPage,
+            totalPages: Math.ceil(totalReviews / limit),
+            paginatedReviews,
+            limit // Pass the limit value to the EJS template
+        });
     } catch (error) {
-      console.error('Error fetching product details:', error.message);
-      res.status(500).render('error', { message: 'An error occurred' });
+        console.error('Error fetching product details:', error.message);
+        res.status(500).render('error', { message: 'An error occurred' });
     }
-  };
+};
+
   
   const search = async (req, res) => {
     const { query, sort = 'popularity', category = '', minPrice = 0, maxPrice = Infinity, page = 1 } = req.query;
@@ -240,10 +249,60 @@ function getSortOption(sort) {
           return { popularity: -1 };
   }
 }
+const postReview = async (req, res) => {
+    try {
+        const { rating, comment } = req.body;
+        const productId = req.params.id;
+        const userId = req.session.userId;
+
+        // Check if the user is logged in
+        if (!userId) {
+            return res.status(401).json({ message: 'You must be logged in to submit a review.' });
+        }
+
+        // Find the product by ID
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found.' });
+        }
+
+        // Check if the user has already purchased the product
+        const order = await Order.findOne({ userId, 'products.productId': productId });
+        if (!order) {
+            return res.status(400).json({ message: 'You can only review products you have purchased.' });
+        }
+
+        // Find the user to get their username
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Add the new review to the product's review array
+        product.productReview.push({
+            userId: user._id,
+            name: user.username,
+            rating,
+            comment,
+            date: new Date()
+        });
+
+        // Save the updated product
+        await product.save();
+
+        // Send a success response
+        res.status(200).json({ message: 'Review submitted successfully.' });
+    } catch (error) {
+        console.error('Error submitting review:', error.message);
+        res.status(500).json({ message: 'An error occurred while submitting your review.' });
+    }
+};
+
 
 module.exports={
     getHome,
     productDetails,
     listProducts,
     search,
+    postReview
 }    

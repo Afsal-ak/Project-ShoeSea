@@ -261,95 +261,89 @@
                         </h5>
                         <% } %>
 
-                            <!-- Product List -->
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Product Name</th>
-                                        <th>Brand</th>
-                                        <th>Category</th>
-                                        <th>Sale Price</th>
-                                        <th>Offer</th>
-                                        <th>Status</th>
-                                        <th>Quantity</th>
-                                        <th>Image</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <tbody>
-                                    <% products.forEach(function(product) { %>
-                                        <tr>
-                                            <td>
-                                                <%= product.productName %>
-                                            </td>
-                                            <td>
-                                                <% if (product.brandId) { %>
-                                                    <%= product.brandId.brandName || 'No brand' %>
-                                                        <% } else { %>
-                                                            No Brand
-                                                            <% } %>
-                                            </td>
-                                            <td>
-                                                <% if (product.categoryId) { %>
-                                                    <%= product.categoryId.categoryName || 'No Category' %>
-                                                        <% } else { %>
-                                                            No Category
-                                                            <% } %>
-                                            </td>
-                                            <td>
-                                                <%= product.salePrice %>
-                                            </td>
-                                            <td>
-                                                <% const productOffer=product.productOffer || 0; const
-                                                    categoryOffer=product.categoryId ? product.categoryId.categoryOffer
-                                                    : 0; const highestOffer=Math.max(productOffer, categoryOffer); if
-                                                    (highestOffer> 0) { %>
-                                                    (Available)
-                                                    <% } else { %>
-                                                        No offer
-                                                        <% } %>
-                                            </td>
-                                            <td>
-                                                <% if (product.is_blocked) { %>
-                                                    <span class="badge badge-danger">Blocked</span>
-                                                    <% } else { %>
-                                                        <span class="badge badge-warning">Listed</span>
-                                                        <% } %>
-                                            </td>
-                                            <td>
-                                                <%= product.quantity %>
-                                            </td>
-                                            <td>
-                                                <% if (product.productImages.length> 0) { %>
-                                                    <img src="/<%= product.productImages[0] %>" alt="Product Image"
-                                                        class="thumbnail"
-                                                        onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                      <!-- Product List -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered shadow-sm">
+                    <thead style="background-color: #3b5d50 !important;">
+                        <tr style="color: #ddd;">
+                            <th>Product Name</th>
+                            <th>Brand</th>
+                            <th>Category</th>
+                            <th>Sale Price</th>
+                            <th>Offer</th>
+                            <th>Status</th>
+                            <th>Quantity</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(function(product) { %>
+                            <tr>
+                                <td><%= product.productName %></td>
+                                <td>
+                                    <% if (product.brandId) { %>
+                                        <%= product.brandId.brandName || 'No brand' %>
+                                    <% } else { %>
+                                        No Brand
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (product.categoryId) { %>
+                                        <%= product.categoryId.categoryName || 'No Category' %>
+                                    <% } else { %>
+                                        No Category
+                                    <% } %>
+                                </td>
+                                <td><%= product.salePrice %></td>
+                                <td>
+                                    <% 
+                                        const productOffer = product.productOffer || 0; 
+                                        const categoryOffer = product.categoryId ? product.categoryId.categoryOffer : 0; 
+                                        const highestOffer = Math.max(productOffer, categoryOffer); 
+                                    %>
+                                    <% if (highestOffer > 0) { %>
+                                        (Available)
+                                    <% } else { %>
+                                        No offer
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (product.is_blocked) { %>
+                                        <span class="badge bg-danger">Blocked</span>
+                                    <% } else { %>
+                                        <span class="badge bg-warning">Listed</span>
+                                    <% } %>
+                                </td>
+                                <td><%= product.quantity %></td>
+                                <td>
+                                    <% if (product.productImages.length > 0) { %>
+                                        <img src="/<%= product.productImages[0] %>" alt="Product Image"
+                                            class="thumbnail" onerror="this.onerror=null;this.src='/styles/images/no_images.jpg';">
+                                    <% } else { %>
+                                        <img src="/styles/images/no_images.jpg" alt="No Product Image" class="thumbnail">
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <a href="/admin/edit-product/<%= product._id %>" data-id="<%= product._id %>" class="btn btn-info edit-product">Edit</a>
+                                    <% if (product.is_blocked) { %>
+                                        <a href="/admin/unblock-product?id=<%= product._id %>" data-id="<%= product._id %>" class="btn btn-success unblock-product">Unblock</a>
+                                    <% } else { %>
+                                        <a href="/admin/block-product?id=<%= product._id %>" data-id="<%= product._id %>" class="btn btn-danger block-product">Block</a>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                                    <% } else { %>
-                                                        <img src="/styles/images/no_images.jpg" alt="No Product Image"
-                                                            class="thumbnail">
-                                                        <% } %>
-                                            </td>
-                                            <td>
-                                                <a href="/admin/edit-product/<%= product._id %>"
-                                                    data-id="<%= product._id %>"
-                                                    class="btn btn-info edit-product">Edit</a>
-                                                <% if (product.is_blocked) { %>
-                                                    <a href="/admin/unblock-product?id=<%= product._id %>"
-                                                        data-id="<%= product._id %>"
-                                                        class="btn btn-success unblock-product">Unblock</a>
-                                                    <% } else { %>
-                                                        <a href="/admin/block-product?id=<%= product._id %>"
-                                                            data-id="<%= product._id %>"
-                                                            class="btn btn-danger block-product">Block</a>
-                                                        <% } %>
-                                            </td>
-                                        </tr>
-                                        <% }) %>
-                                </tbody>
-
-                            </table>
 
                             <!-- Pagination -->
                             <div class="pagination-container">
